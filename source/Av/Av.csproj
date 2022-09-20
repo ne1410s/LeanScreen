@@ -8,9 +8,9 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IncludeSymbols>True</IncludeSymbols>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/ne1410s/DemoLibrary</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ne1410s/Av</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/ne1410s/DemoLibrary</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ne1410s/Av</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>$(AssemblyName)</Title>
