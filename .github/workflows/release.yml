@@ -23,14 +23,12 @@ jobs:
       run: |
         cd ./source
         vversion=${{ github.ref_name }}
-        dotnet nuget add source "https://nuget.pkg.github.com/ne1410s" --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text
+        dotnet nuget add source "https://nuget.pkg.github.com/ne1410s/index.json" --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text
         dotnet pack -c Release -o ${{ runner.temp }}/nu -p:Version=${vversion:1}
         dotnet nuget remove source ne1410s
     - name: Add package push and publish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        dotnet nuget add source "https://nuget.pkg.github.com/ne1410s" --name github --username ne1410s --password ${{ env.GITHUB_TOKEN }} --store-password-in-clear-text
+        dotnet nuget add source "https://nuget.pkg.github.com/ne1410s/index.json" --name github --username ne1410s --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
         dotnet nuget push ${{ runner.temp }}/nu/*.nupkg -s github
     - name: Increment patch (if stable release)
       run: |
