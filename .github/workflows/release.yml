@@ -17,7 +17,7 @@ jobs:
     - uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-    - name: Add local packages source and pack
+    - name: Pack and Publish
       env:
         READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
       run: |
@@ -25,11 +25,7 @@ jobs:
         vversion=${{ github.ref_name }}
         dotnet nuget add source "https://nuget.pkg.github.com/ne1410s/index.json" --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text
         dotnet pack -c Release -o ${{ runner.temp }}/nu -p:Version=${vversion:1}
-        dotnet nuget remove source ne1410s
-    - name: Add package push and publish
-      run: |
-        dotnet nuget add source "https://nuget.pkg.github.com/ne1410s/index.json" --name github --username ne1410s --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-        dotnet nuget push ${{ runner.temp }}/nu/*.nupkg -s github
+        dotnet nuget push ${{ runner.temp }}/nu/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}
     - name: Increment patch (if stable release)
       run: |
         if [[ ${{ github.ref_name }} =~ ^v([0-9]+\.[0-9]+\.)([0-9]+)$ ]]
