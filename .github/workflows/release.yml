@@ -26,7 +26,7 @@ jobs:
         cd ./source
         vversion=${{ github.ref_name }}
         dotnet pack -c Release -o ${{ runner.temp }}/nu -p:Version=${vversion:1}
-        dotnet nuget remove source --name ne1410s
+        dotnet nuget remove source ne1410s
         dotnet nuget add source --name github --username ne1410s --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
         dotnet nuget push ${{ runner.temp }}/nu/*.nupkg -s github
     - name: Increment patch (if stable release)
