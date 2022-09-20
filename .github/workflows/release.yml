@@ -17,12 +17,16 @@ jobs:
     - uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    - name: Add local packages source
+      env:
+        READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
+      run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
     - name: Publish NuGet package
       run: |
         cd ./source
         vversion=${{ github.ref_name }}
         dotnet pack -c Release -o ${{ runner.temp }}/nu -p:Version=${vversion:1}
-        dotnet nuget add source --username ne1410s --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ne1410s/index.json"
+        dotnet nuget add source --name ne1410s_push --username ne1410s --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ne1410s/index.json"
         dotnet nuget push ${{ runner.temp }}/nu/*.nupkg -s github
     - name: Increment patch (if stable release)
       run: |
