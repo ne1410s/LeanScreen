@@ -3,8 +3,8 @@
   <PropertyGroup>
     <Authors>Paul Jones</Authors>
     <Company>ne1410s</Company>
-    <Description>DESCRIPTION HERE</Description>
-    <PackageTags>PACKAGE_TAGS_HERE</PackageTags>
+    <Description>Multimedia operations and bulk processing</Description>
+    <PackageTags>av multimedia cryptography</PackageTags>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IncludeSymbols>True</IncludeSymbols>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
