@@ -45,8 +45,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\ffmcore\FFMpegCore\FFMpegCore.csproj" />
-  </ItemGroup>
-
 </Project>

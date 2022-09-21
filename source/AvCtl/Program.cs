@@ -1,9 +1,10 @@
 ﻿#if DEBUG
 _ = Comanche.Session.Route(new[] {
-    "demo",
-    "add",
-    "--n1 1",
-    "--n2 2"
+    "snap",
+    "evenly",
+    "-s c:\\temp\\media\\sample.mp4",
+    "-t 3",
+    "-d"
 });
 #else
 _ = Comanche.Session.Route();

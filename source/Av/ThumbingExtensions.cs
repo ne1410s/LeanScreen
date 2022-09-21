@@ -15,11 +15,20 @@ namespace Av
         /// <param name="action">The action callback.</param>
         public static void Distribute(this TimeSpan duration, int count, Action<TimeSpan, int> action)
         {
-            var deltaMs = duration.TotalMilliseconds / (count - 1);
-            for (var i = 0; i < count; i++)
+            if (count > 0)
             {
-                var time = TimeSpan.FromMilliseconds(deltaMs * i);
-                action.Invoke(time, i + 1);
+                var deltaMs = duration.TotalMilliseconds / (Math.Max(2, count) - 1);
+                for (var i = 0; i < count; i++)
+                {
+                    var time = TimeSpan.FromMilliseconds(deltaMs * i);
+                    if (i == count - 1)
+                    {
+                        // Receiving errors where right at end
+                        time -= TimeSpan.FromMilliseconds(100);
+                    }
+
+                    action.Invoke(time, i + 1);
+                }
             }
         }
     }
