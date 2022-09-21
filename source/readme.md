@@ -8,7 +8,7 @@ dotnet tool restore
 #dotnet build -c Release -o bin; dotnet coverlet bin/Av.Tests.dll -t dotnet -a "test bin/Av.Tests.dll -c Release --no-build" --threshold 100 -f cobertura -o TestResults/coverage; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html"; start coveragereport/index.html;
 
 # Run unit tests (multiple test projects, no threshold)
-gci TestResults/ | ri -r; gci **/TestResults/ | ri -r; dotnet test -c Release --collect:"XPlat Code Coverage"; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html"; start coveragereport/index.html;
+gci **/TestResults/ | ri -r; dotnet test -c Release --collect:"XPlat Code Coverage"; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html"; start coveragereport/index.html;
 
 # Run mutation tests and show report
 if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o
