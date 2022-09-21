@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Crypt" Version="1.1.1" />
+    <PackageReference Include="FFMpegCore" Version="4.8.0" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -42,6 +43,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\ffmcore\FFMpegCore\FFMpegCore.csproj" />
   </ItemGroup>
 
 </Project>

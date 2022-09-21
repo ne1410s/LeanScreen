@@ -15,6 +15,10 @@ if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o
 
 # Bundle up executable
 dotnet publish AvCtl -p:PublishSingleFile=true -p:DebugType=None -r win-x64 -c Release --sc false
+dotnet publish AvCtl -p:PublishSingleFile=true -p:DebugType=None -r ubuntu.20.04-x64 -c Release --self-contained
+
+# Allow execute (Linux)
+sudo chmod +x AvCtl
 ```
 
 ## Original Project Setup

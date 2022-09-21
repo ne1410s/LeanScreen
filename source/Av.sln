@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvCtl", "AvCtl\AvCtl.csproj", "{C625A6BD-B401-4A98-8410-E08E48F1EA3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvCtl.Tests", "AvCtl.Tests\AvCtl.Tests.csproj", "{3EE84B76-3459-4B8C-B7E7-7F8E40444DE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvCtl.Tests", "AvCtl.Tests\AvCtl.Tests.csproj", "{3EE84B76-3459-4B8C-B7E7-7F8E40444DE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
