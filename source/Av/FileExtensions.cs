@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Av.Models;
-using Crypt.IO;
 
 namespace Av
 {
@@ -15,6 +14,6 @@ namespace Av
         /// <param name="fi">The file.</param>
         /// <returns>Media type information.</returns>
         public static MediaTypeInfo GetMediaTypeInfo(this FileInfo fi)
-            => MediaTypeInfo.Get(fi.Extension);
+            => fi.Extension.GetMediaTypeInfo();
     }
 }

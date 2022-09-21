@@ -8,15 +8,16 @@ namespace Av.Tests;
 public class FileExtensionsTests
 {
     [Fact]
-    public void GetMediaTypeInfo_WithJpeg_ReturnsExpected()
+    public void GetMediaTypeInfo_WithJpg_ReturnsExpected()
     {
         // Arrange
         var fi = new FileInfo("test.jpg");
+        var expected = new MediaTypeInfo(MediaTypes.Image, "image/jpeg");
 
         // Act
         var result = fi.GetMediaTypeInfo();
 
         // Assert
-        result.Should().Be(MediaTypeInfo.Get("jpg"));
+        result.Should().Be(expected);
     }
 }
