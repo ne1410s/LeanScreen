@@ -1,5 +1,6 @@
 ﻿using System;
 using Av.Models;
+using Crypt.Streams;
 
 namespace Av.Services
 {
@@ -13,7 +14,7 @@ namespace Av.Services
         /// </summary>
         /// <param name="videoInput">The video input.</param>
         /// <param name="itemSize">Desired frame dimensions.</param>
-        RenderingSessionInfo Load(string videoInput, Dimensions2D? itemSize);
+        RenderingSessionInfo Load(ISimpleReadStream videoInput, Dimensions2D? itemSize);
 
         /// <summary>
         /// Renders a frame at the position specified.

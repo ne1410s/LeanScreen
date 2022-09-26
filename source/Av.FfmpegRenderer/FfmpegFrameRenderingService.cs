@@ -1,12 +1,13 @@
 ﻿using System;
 using Av.Models;
 using Av.Services;
+using Crypt.Streams;
 
 namespace Av.Renderer.Ffmpeg
 {
     public class FfmpegFrameRenderingService : IVideoFrameRenderingService, IDisposable
     {
-        private Decoder decoder;
+        private StreamSourceDecoder decoder;
         private Converter converter;
 
         public FfmpegFrameRenderingService()
@@ -15,11 +16,11 @@ namespace Av.Renderer.Ffmpeg
             FfmpegUtils.SetupLogging();
         }
 
-        public RenderingSessionInfo Load(string videoInput, Dimensions2D? itemSize = null)
+        public RenderingSessionInfo Load(ISimpleReadStream videoInput, Dimensions2D? itemSize = null)
         {
             converter?.Dispose();
             decoder?.Dispose();
-            decoder = new Decoder(videoInput);
+            decoder = new StreamSourceDecoder(videoInput);
             converter = new Converter(decoder.Dimensions, decoder.PixelFormat, decoder.TimeBase, itemSize ?? decoder.Dimensions);
             return new RenderingSessionInfo
             {
@@ -30,6 +31,7 @@ namespace Av.Renderer.Ffmpeg
 
         public RenderedFrame RenderAt(TimeSpan position)
         {
+            decoder.Seek(position.Clamp(decoder.Duration));
             decoder.TryDecodeNextFrame(out var frame);
             return converter.Render(frame);
         }

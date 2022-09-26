@@ -7,7 +7,7 @@ namespace Av.Renderer.Ffmpeg
 {
     internal sealed unsafe class Converter : IDisposable
     {
-        private static readonly AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
+        private const AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
 
         private readonly IntPtr _convertedFrameBufferPtr;
         private readonly Dimensions2D _destinationSize;

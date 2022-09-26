@@ -6,7 +6,7 @@ using FFmpeg.AutoGen;
 
 namespace Av.Renderer.Ffmpeg
 {
-    internal sealed unsafe class Decoder : IDisposable
+    internal sealed unsafe class PhysicalSourceDecoder : IDisposable
     {
         private readonly AVCodecContext* _pCodecContext;
         private readonly AVFormatContext* _pFormatContext;
@@ -15,7 +15,7 @@ namespace Av.Renderer.Ffmpeg
         private readonly AVFrame* _receivedFrame;
         private readonly int _streamIndex;
 
-        public Decoder(string url)
+        public PhysicalSourceDecoder(string url)
         {
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _receivedFrame = ffmpeg.av_frame_alloc();

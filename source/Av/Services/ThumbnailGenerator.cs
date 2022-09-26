@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Av.Models;
+using Crypt.Streams;
 
 namespace Av.Services
 {
@@ -49,7 +51,8 @@ namespace Av.Services
             Dimensions2D? itemSize = null,
             params TimeSpan[] times)
         {
-            var info = renderer.Load(filePath, itemSize);
+            var blockStream = new BlockReadStream(new FileInfo(filePath));
+            var info = renderer.Load(blockStream, itemSize);
             if (times.Length > 1 && times.All(t => t == default))
             {
                 times = info.Duration.DistributeEvenly(times.Length);

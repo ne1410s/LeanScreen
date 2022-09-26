@@ -8,11 +8,17 @@ namespace Av.Renderer.Ffmpeg
     {
         public static unsafe string av_strerror(int error)
         {
-            var bufferSize = 1024;
+            const int bufferSize = 1024;
             var buffer = stackalloc byte[bufferSize];
             ffmpeg.av_strerror(error, buffer, (ulong)bufferSize);
-            var message = Marshal.PtrToStringAnsi((IntPtr)buffer);
-            return message;
+            return Marshal.PtrToStringAnsi((IntPtr)buffer);
+        }
+
+        public static TimeSpan Clamp(this TimeSpan input, TimeSpan duration)
+        {
+            return input < TimeSpan.Zero ? TimeSpan.Zero
+                : input > duration ? duration
+                : input;
         }
 
         public static byte[] ToBytes(this IntPtr input, int ptrLen)
@@ -45,6 +51,11 @@ namespace Av.Renderer.Ffmpeg
 
             return TimeSpan.FromTicks(
                 Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd / timeBase));
+        }
+
+        public static long ToLong(this TimeSpan ts, AVRational timeBase)
+        {
+            return Convert.ToInt64(ts.TotalSeconds * timeBase.den / timeBase.num);
         }
 
         public static int ThrowExceptionIfError(this int error)
