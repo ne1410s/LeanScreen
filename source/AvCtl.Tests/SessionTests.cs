@@ -12,7 +12,7 @@ public class SessionTests
         Environment.ExitCode = 0;
         return Session.Route(
             Regex.Split(consoleInput, "\\s+"),
-            Assembly.GetAssembly(typeof(SnapshotModule)),
+            Assembly.GetAssembly(typeof(GenerateModule)),
             writer);
     }
 }

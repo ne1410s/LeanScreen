@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Av
 {
@@ -8,28 +9,17 @@ namespace Av
     public static class ThumbingExtensions
     {
         /// <summary>
-        /// Performs an action for an evenly-distributed sequence of times.
+        /// Gets an evenly-distributed sequence of times.
         /// </summary>
         /// <param name="duration">The total duration.</param>
-        /// <param name="count">The number of times to perform an action.</param>
-        /// <param name="action">The action callback.</param>
-        public static void Distribute(this TimeSpan duration, int count, Action<TimeSpan, int> action)
+        /// <param name="count">The number of items to distribute.</param>
+        /// <returns>A sequence of evenly-distributed times.</returns>
+        public static TimeSpan[] DistributeEvenly(this TimeSpan duration, int count)
         {
-            if (count > 0)
-            {
-                var deltaMs = duration.TotalMilliseconds / (Math.Max(2, count) - 1);
-                for (var i = 0; i < count; i++)
-                {
-                    var time = TimeSpan.FromMilliseconds(deltaMs * i);
-                    if (i == count - 1)
-                    {
-                        // Receiving errors where right at end
-                        time -= TimeSpan.FromMilliseconds(100);
-                    }
-
-                    action.Invoke(time, i + 1);
-                }
-            }
+            var deltaMs = duration.TotalMilliseconds / (Math.Max(2, count) - 1);
+            return Enumerable.Range(0, count)
+                .Select(n => TimeSpan.FromMilliseconds(deltaMs * n))
+                .ToArray();
         }
     }
 }

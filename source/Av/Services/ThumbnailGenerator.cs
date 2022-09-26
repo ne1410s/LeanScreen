@@ -1,61 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+using System.Linq;
 using Av.Models;
-using FFMpegCore;
 
 namespace Av.Services
 {
-    /// <inheritdoc cref="IThumbnailGenerator"/>
-    public class ThumbnailGenerator : IThumbnailGenerator
+    /// <summary>
+    /// Generates thumbnails.
+    /// </summary>
+    public class ThumbnailGenerator
     {
-        /// <inheritdoc/>
-        public void DumpCollation(
-            string filePath,
-            int count,
-            int maxWidth,
-            ISingleFilePathProvider pathProvider = null)
+        private readonly IVideoFrameRenderingService renderer;
+
+        /// <summary>
+        /// Initialises a new <see cref="ThumbnailGenerator"/>.
+        /// </summary>
+        /// <param name="renderer">A video renderer.</param>
+        public ThumbnailGenerator(IVideoFrameRenderingService renderer)
         {
-            pathProvider = pathProvider ?? new DefaultSingleFilePathProvider();
-
-            var fi = new FileInfo(filePath);
-            var analysis = FFProbe.Analyse(fi.FullName);
-            var targetPath = pathProvider.GetPath(fi, count);
-            var size = maxWidth < analysis.PrimaryVideoStream.Width ? new Size { Width = maxWidth } : (Size?)null;
-
-            // TODO: Remove this!
-            var tempList = new List<TimeSpan>();
-
-            analysis.Duration.Distribute(count, (time, number) =>
-            {
-                using (var bitmap = FFMpeg.Snapshot(fi.FullName, captureTime: time))
-                {
-                    // TODO: work out dimensions!!
-                    var x = bitmap.Width;
-                    tempList.Add(time);
-                }
-            });
+            this.renderer = renderer;
         }
 
-        /// <inheritdoc/>
-        public void DumpMany(
+        /// <summary>
+        /// Provides access for the caller to handle rendered frames directly,
+        /// over an evenly-distributed sequence of times.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="onRendered">On rendered callback.</param>
+        /// <param name="itemSize">The desired target dimensions.</param>
+        /// <param name="itemCount">The number to generate.</param>
+        public void Generate(
             string filePath,
-            int count,
-            int maxWidth,
-            ISequencedFilePathProvider pathProvider = null)
+            Action<RenderedFrame, int> onRendered,
+            Dimensions2D? itemSize = null,
+            int itemCount = 24)
+                => Generate(filePath, onRendered, itemSize, new TimeSpan[itemCount]);
+
+        /// <summary>
+        /// Provides access for the caller to handle rendered frames directly,
+        /// over a sequence of specific times.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="onRendered">On rendered callback.</param>
+        /// <param name="itemSize">The desired target dimensions.</param>
+        /// <param name="times">A sequence of times.</param>
+        public void Generate(
+            string filePath,
+            Action<RenderedFrame, int> onRendered,
+            Dimensions2D? itemSize = null,
+            params TimeSpan[] times)
         {
-            pathProvider = pathProvider ?? new DefaultSequencedFilePathProvider();
-
-            var fi = new FileInfo(filePath);
-            var analysis = FFProbe.Analyse(fi.FullName);
-            var size = maxWidth < analysis.PrimaryVideoStream.Width ? new Size { Width = maxWidth } : (Size?)null;
-
-            analysis.Duration.Distribute(count, (time, number) =>
+            var info = renderer.Load(filePath, itemSize);
+            if (times.Length > 1 && times.All(t => t == default))
             {
-                var targetPath = pathProvider.GetPath(fi, number, count);
-                FFMpeg.Snapshot(fi.FullName, targetPath, size, time);
-            });
+                times = info.Duration.DistributeEvenly(times.Length);
+            }
+
+            for (var i = 0; i < times.Length; i++)
+            {
+                var frame = renderer.RenderAt(times[i]);
+                onRendered.Invoke(frame, i);
+            }
         }
     }
 }
