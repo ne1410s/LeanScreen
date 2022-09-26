@@ -2,8 +2,6 @@
 using Av.Renderer.Ffmpeg;
 using Av.Services;
 using Comanche;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace AvCtl;
 
@@ -32,8 +30,8 @@ public static class GenerateModule
 
     private static void OnFrameReceived(RenderedFrame frame, int index)
     {
-        var dims = frame.Dimensions;
-        var img = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, dims.Width, dims.Height);
-        img.Save($"item-{index}_frame-{frame.FrameNumber}.jpg");
+        //var dims = frame.Dimensions;
+        //var img = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, dims.Width, dims.Height);
+        //img.Save($"item-{index}_frame-{frame.FrameNumber}.jpg");
     }
 }
