@@ -21,9 +21,9 @@ public static class GenerateModule
         [Alias("s")]string source,
         [Alias("t")]int itemCount = 24)
     {
-        source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        //source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
         //source = "C:\\Users\\Paul.Jones\\Videos\\sample.mp4";
-        //source = "C:\\temp\\media\\sample.mp4";
+        source = "C:\\temp\\media\\big_buck_bunny.mp4";
 
         var renderer = new FfmpegRenderer(source);
         var snapper = new ThumbnailGenerator(renderer);
@@ -34,6 +34,6 @@ public static class GenerateModule
     {
         var imager = new SixLaborsImagingService();
         using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-        File.WriteAllBytes($"item-{index}_frame-{frame.FrameNumber}.jpg", memStr.ToArray());
+        File.WriteAllBytes($"item-{index}_frame-{frame.FrameNumber:D8}.jpg", memStr.ToArray());
     }
 }

@@ -75,28 +75,11 @@ namespace Av.Rendering.Ffmpeg
         public AVPixelFormat PixelFormat { get; }
         public AVRational TimeBase { get; }
         public long FrameCount { get; }
+        public long TotalFrames { get; }
 
         public void Seek(TimeSpan position)
         {
-            var ts = position.ToLong(TimeBase);
-            var seekResult = ffmpeg.avformat_seek_file(_pFormatContext, -1, long.MinValue, ts, ts, 0);
-            seekResult.ThrowExceptionIfError();
-
-            //var rel = FrameCount * position.TotalMilliseconds / Duration.TotalMilliseconds;
-            //var rrr = ffmpeg.av_seek_frame(
-            //    _pFormatContext, _streamIndex, (long)rel, ffmpeg.AVSEEK_FLAG_ANY);
-
-            //_ = ffmpeg.av_seek_frame(
-            //    _pFormatContext,
-            //    _streamIndex,
-            //    seekTimestamp,
-            //    ffmpeg.AVSEEK_FLAG_BACKWARD);
-
-            //AVFrame frame = default;
-            //while (frame.key_frame != 1)
-            //{
-            //    _ = TryDecodeNextFrame(out frame);
-            //}
+            //
         }
 
         public void Dispose()

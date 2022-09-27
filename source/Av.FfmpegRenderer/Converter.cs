@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Av.Abstractions.Rendering;
 using Av.Abstractions.Shared;
 using FFmpeg.AutoGen;
 
@@ -11,19 +10,15 @@ namespace Av.Rendering.Ffmpeg
         private const AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
 
         private readonly IntPtr _convertedFrameBufferPtr;
-        private readonly Dimensions2D _destinationSize;
         private readonly byte_ptrArray4 _dstData;
         private readonly int_array4 _dstLinesize;
         private readonly SwsContext* _pConvertContext;
         private readonly int _destinationBufferLength;
-        private readonly AVRational _srcTimeBase;
 
-        public Converter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, AVRational sourceTimeBase, Dimensions2D destinationSize)
+        public Converter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, Dimensions2D destinationSize)
         {
-            _destinationSize = destinationSize;
-            _srcTimeBase = sourceTimeBase;
-
-            _pConvertContext = ffmpeg.sws_getContext(sourceSize.Width,
+            _pConvertContext = ffmpeg.sws_getContext(
+                sourceSize.Width,
                 sourceSize.Height,
                 sourcePixelFormat,
                 destinationSize.Width,
@@ -63,7 +58,7 @@ namespace Av.Rendering.Ffmpeg
             ffmpeg.sws_freeContext(_pConvertContext);
         }
 
-        public RenderedFrame Render(AVFrame sourceFrame)
+        public RawFrame RenderRawFrame(AVFrame sourceFrame)
         {
             ffmpeg.sws_scale(_pConvertContext,
                 sourceFrame.data,
@@ -79,13 +74,10 @@ namespace Av.Rendering.Ffmpeg
             linesize.UpdateFrom(_dstLinesize);
 
             var imageBytes = ((IntPtr)data[0]).ToBytes(_destinationBufferLength);
-
-            return new RenderedFrame
+            return new RawFrame
             {
                 Rgb24Bytes = imageBytes,
-                Dimensions = _destinationSize,
-                FrameNumber = sourceFrame.coded_picture_number,
-                Position = sourceFrame.best_effort_timestamp.ToTimeSpan(_srcTimeBase),
+                PresentationTime = sourceFrame.best_effort_timestamp,
             };
         }
     }

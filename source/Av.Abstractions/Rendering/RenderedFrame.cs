@@ -21,7 +21,7 @@ namespace Av.Abstractions.Rendering
         /// <summary>
         /// The chronological frame number.
         /// </summary>
-        public int FrameNumber { get; set; }
+        public long FrameNumber { get; set; }
 
         /// <summary>
         /// The presentation time of the frame.

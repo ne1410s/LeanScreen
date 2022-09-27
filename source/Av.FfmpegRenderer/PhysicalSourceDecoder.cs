@@ -36,6 +36,7 @@ namespace Av.Rendering.Ffmpeg
             CodecName = ffmpeg.avcodec_get_name(codec->id);
             Dimensions = new Dimensions2D { Width = _pCodecContext->width, Height = _pCodecContext->height };
             PixelFormat = _pCodecContext->pix_fmt;
+            TotalFrames = _pFormatContext->streams[_streamIndex]->nb_frames;
 
             _pPacket = ffmpeg.av_packet_alloc();
             _pFrame = ffmpeg.av_frame_alloc();
@@ -46,28 +47,17 @@ namespace Av.Rendering.Ffmpeg
         public TimeSpan Duration { get; }
         public AVPixelFormat PixelFormat { get; }
         public AVRational TimeBase { get; }
+        public long TotalFrames { get; }
 
         public void Seek(TimeSpan position)
         {
+            //ffmpeg.avcodec_flush_buffers(_pCodecContext);
+
             var ts = position.ToLong(TimeBase);
-            var seekResult = ffmpeg.avformat_seek_file(_pFormatContext, _streamIndex, 0, ts, ts, 0);
-            seekResult.ThrowExceptionIfError();
+            var res = ffmpeg.avformat_seek_file(_pFormatContext, _streamIndex, long.MinValue, ts, ts, 0);
 
-            //var rel = FrameCount * position.TotalMilliseconds / Duration.TotalMilliseconds;
-            //var rrr = ffmpeg.av_seek_frame(
-            //    _pFormatContext, _streamIndex, (long)rel, ffmpeg.AVSEEK_FLAG_ANY);
-
-            //_ = ffmpeg.av_seek_frame(
-            //    _pFormatContext,
-            //    _streamIndex,
-            //    seekTimestamp,
-            //    ffmpeg.AVSEEK_FLAG_BACKWARD);
-
-            //AVFrame frame = default;
-            //while (frame.key_frame != 1)
-            //{
-            //    _ = TryDecodeNextFrame(out frame);
-            //}
+            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_BACKWARD);
+            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_ANY);
         }
 
         public void Dispose()

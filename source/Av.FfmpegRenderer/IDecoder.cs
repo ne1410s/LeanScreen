@@ -16,6 +16,8 @@ namespace Av.Rendering.Ffmpeg
 
         AVRational TimeBase { get; }
 
+        long TotalFrames { get; }
+
         void Seek(TimeSpan position);
 
         bool TryDecodeNextFrame(out AVFrame frame);
