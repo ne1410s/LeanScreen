@@ -6,7 +6,7 @@ using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg
 {
-    internal sealed unsafe class PhysicalSourceDecoder : IDisposable
+    internal sealed unsafe class PhysicalSourceDecoder : IDecoder
     {
         private readonly AVCodecContext* _pCodecContext;
         private readonly AVFormatContext* _pFormatContext;

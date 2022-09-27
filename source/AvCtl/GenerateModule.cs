@@ -25,16 +25,15 @@ public static class GenerateModule
         //source = "C:\\Users\\Paul.Jones\\Videos\\sample.mp4";
         //source = "C:\\temp\\media\\sample.mp4";
 
-        var x = new FfmpegFrameRenderingService();
-        var snapper = new ThumbnailGenerator(x);
-        snapper.Generate(source, OnFrameReceived, itemCount: itemCount);
+        var renderer = new FfmpegRenderer(source);
+        var snapper = new ThumbnailGenerator(renderer);
+        snapper.Generate(OnFrameReceived, itemCount);
     }
 
     private static void OnFrameReceived(RenderedFrame frame, int index)
     {
         var imager = new SixLaborsImagingService();
         using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-        using var trgStr = File.OpenWrite($"item-{index}_frame-{frame.FrameNumber}.jpg");
-        memStr.CopyTo(trgStr);
+        File.WriteAllBytes($"item-{index}_frame-{frame.FrameNumber}.jpg", memStr.ToArray());
     }
 }

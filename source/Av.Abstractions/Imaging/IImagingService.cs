@@ -15,6 +15,6 @@ namespace Av.Abstractions.Imaging
         /// <param name="width">The image width.</param>
         /// <param name="height">The image height.</param>
         /// <returns>A stream of encoded bytes.</returns>
-        Stream Encode(byte[] rgb24Bytes, Dimensions2D size);
+        MemoryStream Encode(byte[] rgb24Bytes, Dimensions2D size);
     }
 }

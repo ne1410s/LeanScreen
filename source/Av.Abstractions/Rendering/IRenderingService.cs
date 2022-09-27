@@ -1,5 +1,4 @@
 ﻿using System;
-using Av.Abstractions.Models;
 using Av.Abstractions.Shared;
 
 namespace Av.Abstractions.Rendering
@@ -9,12 +8,9 @@ namespace Av.Abstractions.Rendering
     /// </summary>
     public interface IRenderingService
     {
-        /// <summary>
-        /// Loads a new rendering session.
-        /// </summary>
-        /// <param name="videoInput">The video input.</param>
-        /// <param name="itemSize">Desired frame dimensions.</param>
-        RenderingSessionInfo Load(string videoInput, Dimensions2D? itemSize);
+        TimeSpan Duration { get; }
+
+        Dimensions2D FrameSize { get; }
 
         /// <summary>
         /// Renders a frame at the position specified.

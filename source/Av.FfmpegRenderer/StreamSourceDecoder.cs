@@ -7,7 +7,7 @@ using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg
 {
-    internal sealed unsafe class StreamSourceDecoder : IDisposable
+    internal sealed unsafe class StreamSourceDecoder : IDecoder
     {
         private readonly AVCodecContext* _pCodecContext;
         private readonly AVFormatContext* _pFormatContext;
