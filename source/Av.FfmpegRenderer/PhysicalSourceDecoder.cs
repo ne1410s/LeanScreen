@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Av.Models;
+using Av.Abstractions.Shared;
 using FFmpeg.AutoGen;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
     internal sealed unsafe class PhysicalSourceDecoder : IDisposable
     {
@@ -46,6 +46,29 @@ namespace Av.Renderer.Ffmpeg
         public TimeSpan Duration { get; }
         public AVPixelFormat PixelFormat { get; }
         public AVRational TimeBase { get; }
+
+        public void Seek(TimeSpan position)
+        {
+            var ts = position.ToLong(TimeBase);
+            var seekResult = ffmpeg.avformat_seek_file(_pFormatContext, _streamIndex, 0, ts, ts, 0);
+            seekResult.ThrowExceptionIfError();
+
+            //var rel = FrameCount * position.TotalMilliseconds / Duration.TotalMilliseconds;
+            //var rrr = ffmpeg.av_seek_frame(
+            //    _pFormatContext, _streamIndex, (long)rel, ffmpeg.AVSEEK_FLAG_ANY);
+
+            //_ = ffmpeg.av_seek_frame(
+            //    _pFormatContext,
+            //    _streamIndex,
+            //    seekTimestamp,
+            //    ffmpeg.AVSEEK_FLAG_BACKWARD);
+
+            //AVFrame frame = default;
+            //while (frame.key_frame != 1)
+            //{
+            //    _ = TryDecodeNextFrame(out frame);
+            //}
+        }
 
         public void Dispose()
         {

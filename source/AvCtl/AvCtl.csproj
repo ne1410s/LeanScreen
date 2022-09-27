@@ -23,11 +23,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Av.FfmpegRenderer\Av.Renderer.Ffmpeg.csproj" />
+    <ProjectReference Include="..\Av.FfmpegRenderer\Av.Rendering.Ffmpeg.csproj" />
+    <ProjectReference Include="..\Av.Imaging.SixLabors\Av.Imaging.SixLabors.csproj" />
   </ItemGroup>
 
 </Project>

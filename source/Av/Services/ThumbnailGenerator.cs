@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using Av.Models;
-using Crypt.Streams;
+using Av.Abstractions.Rendering;
+using Av.Abstractions.Shared;
 
 namespace Av.Services
 {
@@ -11,13 +10,13 @@ namespace Av.Services
     /// </summary>
     public class ThumbnailGenerator
     {
-        private readonly IVideoFrameRenderingService renderer;
+        private readonly IRenderingService renderer;
 
         /// <summary>
         /// Initialises a new <see cref="ThumbnailGenerator"/>.
         /// </summary>
         /// <param name="renderer">A video renderer.</param>
-        public ThumbnailGenerator(IVideoFrameRenderingService renderer)
+        public ThumbnailGenerator(IRenderingService renderer)
         {
             this.renderer = renderer;
         }
@@ -51,8 +50,8 @@ namespace Av.Services
             Dimensions2D? itemSize = null,
             params TimeSpan[] times)
         {
-            var blockStream = new BlockReadStream(new FileInfo(filePath));
-            var info = renderer.Load(blockStream, itemSize);
+            //var blockStream = new BlockReadStream(new FileInfo(filePath));
+            var info = renderer.Load(filePath, itemSize);
             if (times.Length > 1 && times.All(t => t == default))
             {
                 times = info.Duration.DistributeEvenly(times.Length);

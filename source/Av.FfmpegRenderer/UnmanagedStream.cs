@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
     /// <summary>
     /// Wraps <see cref="ISimpleReadStream"/>, exposing the interface to the

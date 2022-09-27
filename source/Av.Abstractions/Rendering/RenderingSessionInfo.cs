@@ -1,6 +1,7 @@
 ﻿using System;
+using Av.Abstractions.Shared;
 
-namespace Av.Models
+namespace Av.Abstractions.Models
 {
     /// <summary>
     /// Information for a rendering session.

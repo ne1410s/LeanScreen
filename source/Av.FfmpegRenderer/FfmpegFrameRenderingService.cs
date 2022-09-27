@@ -1,13 +1,14 @@
 ﻿using System;
-using Av.Models;
-using Av.Services;
-using Crypt.Streams;
+using Av.Abstractions.Models;
+using Av.Abstractions.Rendering;
+using Av.Abstractions.Shared;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
-    public class FfmpegFrameRenderingService : IVideoFrameRenderingService, IDisposable
+    public class FfmpegFrameRenderingService : IRenderingService, IDisposable
     {
-        private StreamSourceDecoder decoder;
+        //private StreamSourceDecoder decoder;
+        private PhysicalSourceDecoder decoder;
         private Converter converter;
 
         public FfmpegFrameRenderingService()
@@ -16,11 +17,12 @@ namespace Av.Renderer.Ffmpeg
             FfmpegUtils.SetupLogging();
         }
 
-        public RenderingSessionInfo Load(ISimpleReadStream videoInput, Dimensions2D? itemSize = null)
+        public RenderingSessionInfo Load(string videoInput, Dimensions2D? itemSize = null)
         {
             converter?.Dispose();
             decoder?.Dispose();
-            decoder = new StreamSourceDecoder(videoInput);
+            //decoder = new StreamSourceDecoder(videoInput);
+            decoder = new PhysicalSourceDecoder(videoInput);
             converter = new Converter(decoder.Dimensions, decoder.PixelFormat, decoder.TimeBase, itemSize ?? decoder.Dimensions);
             return new RenderingSessionInfo
             {

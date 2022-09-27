@@ -1,4 +1,4 @@
-namespace Av.Renderer.Ffmpeg.Tests
+namespace Av.Rendering.Ffmpeg.Tests
 {
     public class UnitTest1
     {

@@ -1,9 +1,8 @@
-﻿using Av.Models;
-using Av.Renderer.Ffmpeg;
+﻿using Av.Abstractions.Rendering;
+using Av.Imaging.SixLabors;
+using Av.Rendering.Ffmpeg;
 using Av.Services;
 using Comanche;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace AvCtl;
 
@@ -22,9 +21,9 @@ public static class GenerateModule
         [Alias("s")]string source,
         [Alias("t")]int itemCount = 24)
     {
-        //source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-        //source = "C:\\Users\\Paul.Jones\\Videos\\sample.avi";
-        source = "C:\\temp\\media\\sample.mp4";
+        source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        //source = "C:\\Users\\Paul.Jones\\Videos\\sample.mp4";
+        //source = "C:\\temp\\media\\sample.mp4";
 
         var x = new FfmpegFrameRenderingService();
         var snapper = new ThumbnailGenerator(x);
@@ -33,8 +32,9 @@ public static class GenerateModule
 
     private static void OnFrameReceived(RenderedFrame frame, int index)
     {
-        var dims = frame.Dimensions;
-        var img = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, dims.Width, dims.Height);
-        img.Save($"item-{index}_frame-{frame.FrameNumber}.jpg");
+        var imager = new SixLaborsImagingService();
+        using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
+        using var trgStr = File.OpenWrite($"item-{index}_frame-{frame.FrameNumber}.jpg");
+        memStr.CopyTo(trgStr);
     }
 }

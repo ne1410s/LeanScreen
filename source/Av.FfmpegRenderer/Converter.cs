@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Av.Models;
+using Av.Abstractions.Rendering;
+using Av.Abstractions.Shared;
 using FFmpeg.AutoGen;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
     internal sealed unsafe class Converter : IDisposable
     {

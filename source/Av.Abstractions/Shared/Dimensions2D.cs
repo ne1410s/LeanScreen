@@ -1,4 +1,4 @@
-﻿namespace Av.Models
+﻿namespace Av.Abstractions.Shared
 {
     /// <summary>
     /// 2D dimensions.

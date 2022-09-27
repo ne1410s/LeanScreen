@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
     internal static class FfmpegUtils
     {

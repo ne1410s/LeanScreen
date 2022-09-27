@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Av.FfmpegRenderer\Av.Renderer.Ffmpeg.csproj" />
+    <ProjectReference Include="..\Av.FfmpegRenderer\Av.Rendering.Ffmpeg.csproj" />
   </ItemGroup>
 
 </Project>

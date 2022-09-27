@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Av.Models;
+using Av.Abstractions.Shared;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
 
-namespace Av.Renderer.Ffmpeg
+namespace Av.Rendering.Ffmpeg
 {
     internal sealed unsafe class StreamSourceDecoder : IDisposable
     {
@@ -78,10 +78,13 @@ namespace Av.Renderer.Ffmpeg
 
         public void Seek(TimeSpan position)
         {
-            var rel = FrameCount * position.TotalMilliseconds / Duration.TotalMilliseconds;
+            var ts = position.ToLong(TimeBase);
+            var seekResult = ffmpeg.avformat_seek_file(_pFormatContext, -1, long.MinValue, ts, ts, 0);
+            seekResult.ThrowExceptionIfError();
 
-            var rrr = ffmpeg.av_seek_frame(
-                _pFormatContext, _streamIndex, (long)rel, ffmpeg.AVSEEK_FLAG_ANY);
+            //var rel = FrameCount * position.TotalMilliseconds / Duration.TotalMilliseconds;
+            //var rrr = ffmpeg.av_seek_frame(
+            //    _pFormatContext, _streamIndex, (long)rel, ffmpeg.AVSEEK_FLAG_ANY);
 
             //_ = ffmpeg.av_seek_frame(
             //    _pFormatContext,

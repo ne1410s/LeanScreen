@@ -1,6 +1,7 @@
 ﻿using System;
+using Av.Abstractions.Shared;
 
-namespace Av.Models
+namespace Av.Abstractions.Rendering
 {
     /// <summary>
     /// A rendered frame.

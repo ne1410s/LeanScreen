@@ -1,20 +1,20 @@
 ﻿using System;
-using Av.Models;
-using Crypt.Streams;
+using Av.Abstractions.Models;
+using Av.Abstractions.Shared;
 
-namespace Av.Services
+namespace Av.Abstractions.Rendering
 {
     /// <summary>
     /// Obtains image stills from a video.
     /// </summary>
-    public interface IVideoFrameRenderingService
+    public interface IRenderingService
     {
         /// <summary>
         /// Loads a new rendering session.
         /// </summary>
         /// <param name="videoInput">The video input.</param>
         /// <param name="itemSize">Desired frame dimensions.</param>
-        RenderingSessionInfo Load(ISimpleReadStream videoInput, Dimensions2D? itemSize);
+        RenderingSessionInfo Load(string videoInput, Dimensions2D? itemSize);
 
         /// <summary>
         /// Renders a frame at the position specified.
