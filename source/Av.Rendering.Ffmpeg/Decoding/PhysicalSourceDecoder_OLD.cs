@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 using Av.Abstractions.Shared;
 using FFmpeg.AutoGen;
 
-namespace Av.Rendering.Ffmpeg
+namespace Av.Rendering.Ffmpeg.Decoding
 {
-    internal sealed unsafe class PhysicalSourceDecoder : IDecoder
+    internal sealed unsafe class PhysicalSourceDecoder_OLD : IDecoder
     {
         private readonly AVCodecContext* _pCodecContext;
         private readonly AVFormatContext* _pFormatContext;
@@ -15,7 +15,7 @@ namespace Av.Rendering.Ffmpeg
         private readonly AVFrame* _receivedFrame;
         private readonly int _streamIndex;
 
-        public PhysicalSourceDecoder(string url)
+        public PhysicalSourceDecoder_OLD(string url)
         {
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _receivedFrame = ffmpeg.av_frame_alloc();

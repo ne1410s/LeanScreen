@@ -5,9 +5,9 @@ using Av.Abstractions.Shared;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
 
-namespace Av.Rendering.Ffmpeg
+namespace Av.Rendering.Ffmpeg.Decoding
 {
-    internal sealed unsafe class StreamSourceDecoder : IDecoder
+    internal sealed unsafe class StreamSourceDecoder_OLD : IDecoder
     {
         private readonly AVCodecContext* _pCodecContext;
         private readonly AVFormatContext* _pFormatContext;
@@ -21,7 +21,7 @@ namespace Av.Rendering.Ffmpeg
         private avio_alloc_context_seek customInputStreamSeek;
         private AVIOContext* customInputStreamContext;
 
-        public StreamSourceDecoder(ISimpleReadStream stream)
+        public StreamSourceDecoder_OLD(ISimpleReadStream stream)
         {
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _receivedFrame = ffmpeg.av_frame_alloc();
