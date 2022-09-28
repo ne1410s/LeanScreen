@@ -1,6 +1,7 @@
 ﻿using System;
 using Av.Abstractions.Rendering;
 using Av.Abstractions.Shared;
+using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Streams;
 
 namespace Av.Rendering.Ffmpeg

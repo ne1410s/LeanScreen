@@ -53,14 +53,11 @@ public static class SnapshotModule
         var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
         var snapper = new ThumbnailGenerator(renderer);
         var imager = new SixLaborsImagingService();
-        var frameNumberFormat = renderer.TotalFrames.GetUpperBoundFormat();
-        var itemNumberFormat = itemCount.GetUpperBoundFormat();
         var onFrameReceived = (RenderedFrame frame, int index) =>
         {
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            var frameNo = frame.FrameNumber.ToString(frameNumberFormat);
-            var itemNo = (index + 1).ToString(itemNumberFormat);
-            var path = Path.Combine(di.FullName, $"{fi.Name}_item_{itemNo}_of_{itemCount}_frame_{frameNo}.jpg");
+            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.TotalFrames);
+            var path = Path.Combine(di.FullName, $"f{frameNo}.jpg");
             File.WriteAllBytes(path, memStr.ToArray());
         };
 

@@ -11,8 +11,8 @@ public class SnapshotModuleTests
     public void SnapEvenly_ForFileWithCustomTotal_ProducesSameTotal()
     {
         // Arrange
-        const string source = "Samples\\sample.mp4";
-        var destInfo = CreateTestDirectory();
+        var source = Path.Combine("Samples", "sample.mp4");
+        var destInfo = Directory.CreateDirectory("pic_count10");
         const int total = 10;
 
         // Act
@@ -23,25 +23,10 @@ public class SnapshotModuleTests
     }
 
     [Fact]
-    public void SnapEvenly_ForFileWithCustomDestination_SavesFlexibly()
-    {
-        // Arrange
-        const string source = "Samples\\sample.mp4";
-        var destInfo = CreateTestDirectory();
-
-        // Act
-        var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name}");
-
-        // Assert
-        returnDest.Should().Be(destInfo.FullName);
-        Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().BeGreaterThan(0);
-    }
-
-    [Fact]
     public void SnapEvenly_ForFileWithDefaultDestination_SavesAdjacently()
     {
         // Arrange
-        const string source = "Samples\\sample.mp4";
+        var source = Path.Combine("Samples", "sample.mp4");
         var expectedDest = new FileInfo(source).DirectoryName;
 
         // Act
@@ -71,9 +56,9 @@ public class SnapshotModuleTests
     public void SnapEvenly_ForCryptFile_ProducesResults()
     {
         // Arrange
-        const string source = "Samples\\4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+        var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
         const string keyCsv = "9,0,2,1,0";
-        var destInfo = CreateTestDirectory();
+        var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
         var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name} -k {keyCsv}");
@@ -81,6 +66,25 @@ public class SnapshotModuleTests
         // Assert
         returnDest.Should().Be(destInfo.FullName);
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().BeGreaterThan(0);
+    }
+
+    [Theory]
+    [InlineData("sample.avi")]
+    [InlineData("sample.flv")]
+    [InlineData("sample.mkv")]
+    [InlineData("sample.mp4")]
+    public void SnapEvenly_VaryingFile_ProducesExpected(string sampleFile)
+    {
+        // Arrange
+        var source = Path.Combine("Samples", sampleFile);
+        var folder = "pic_" + new FileInfo(source).Extension.TrimStart('.');
+        var destInfo = Directory.CreateDirectory(folder);
+
+        // Act
+        Route($"snap evenly -s {source} -d {destInfo.Name}");
+
+        // Assert
+        // e.g. check a list of hashes perhaps?
     }
 
     private static object? Route(string consoleInput, IOutputWriter? writer = null)
@@ -91,7 +95,4 @@ public class SnapshotModuleTests
             Assembly.GetAssembly(typeof(SnapshotModule)),
             writer);
     }
-
-    private static DirectoryInfo CreateTestDirectory()
-        => Directory.CreateDirectory($"TestOut_{Guid.NewGuid()}");
 }
