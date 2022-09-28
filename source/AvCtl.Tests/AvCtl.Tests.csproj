@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -37,6 +37,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AvCtl\AvCtl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Session\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Samples\sample.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,8 @@
 ﻿#if DEBUG
 _ = Comanche.Session.Route(new[] {
-    "gen",
-    "even",
-    "-s REPLACE_ME",
-    "-t 3"
+    "snap",
+    "evenly",
+    "-s C:\\temp\\media\\sample.mp4"
 });
 #else
 _ = Comanche.Session.Route();

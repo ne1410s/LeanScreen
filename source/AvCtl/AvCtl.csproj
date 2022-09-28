@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Av.FfmpegRenderer\Av.Rendering.Ffmpeg.csproj" />
+    <ProjectReference Include="..\Av.Rendering.Ffmpeg\Av.Rendering.Ffmpeg.csproj" />
     <ProjectReference Include="..\Av.Imaging.SixLabors\Av.Imaging.SixLabors.csproj" />
   </ItemGroup>
 

@@ -9,31 +9,40 @@ namespace AvCtl;
 /// <summary>
 /// Generate module.
 /// </summary>
-[Alias("gen")]
-public static class GenerateModule
+[Alias("snap")]
+public static class SnapshotModule
 {
     /// <summary>
     /// Generates frames from a video source.
     /// </summary>
     /// <param name="source">The source file.</param>
+    /// <param name="destination">The output folder.</param>
     /// <param name="itemCount">The total number of items.</param>
-    public static void Even(
+    /// <returns>The output path.</returns>
+    public static string Evenly(
         [Alias("s")]string source,
+        [Alias("d")]string? destination = null,
         [Alias("t")]int itemCount = 24)
     {
-        //source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-        //source = "C:\\Users\\Paul.Jones\\Videos\\sample.mp4";
-        source = "C:\\temp\\media\\big_buck_bunny.mp4";
+        if (destination == null)
+        {
+            var fi = new FileInfo(source);
+            destination = fi.DirectoryName ?? string.Empty;
+        }
 
+        Directory.CreateDirectory(destination);
         var renderer = new FfmpegRenderer(source);
         var snapper = new ThumbnailGenerator(renderer);
-        snapper.Generate(OnFrameReceived, itemCount);
-    }
-
-    private static void OnFrameReceived(RenderedFrame frame, int index)
-    {
         var imager = new SixLaborsImagingService();
-        using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-        File.WriteAllBytes($"item-{index}_frame-{frame.FrameNumber:D8}.jpg", memStr.ToArray());
+
+        var onFrameReceived = (RenderedFrame frame, int index) =>
+        {
+            using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
+            var path = Path.Combine(destination, $"item-{index}_frame-{frame.FrameNumber:D8}.jpg");
+            File.WriteAllBytes(path, memStr.ToArray());
+        };
+
+        snapper.Generate(onFrameReceived, itemCount);
+        return new DirectoryInfo(destination).FullName;
     }
 }
