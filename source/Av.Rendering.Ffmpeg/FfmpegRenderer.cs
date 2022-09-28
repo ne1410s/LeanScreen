@@ -9,6 +9,7 @@ namespace Av.Rendering.Ffmpeg
     {
         private readonly IDecoder decoder;
         private readonly Converter converter;
+        private readonly ISimpleReadStream inputStream;
 
         public FfmpegRenderer(string input, Dimensions2D? frameSize = null)
         {
@@ -23,6 +24,7 @@ namespace Av.Rendering.Ffmpeg
 
         public FfmpegRenderer(ISimpleReadStream input, Dimensions2D? frameSize = null)
         {
+            inputStream = input;
             FfmpegUtils.SetupBinaries();
             FfmpegUtils.SetupLogging();
             decoder = new StreamSourceDecoder(input);
@@ -32,9 +34,9 @@ namespace Av.Rendering.Ffmpeg
             converter = new Converter(decoder.Dimensions, decoder.PixelFormat, FrameSize);
         }
 
-        public Dimensions2D FrameSize { get; }
-
         public TimeSpan Duration { get; }
+
+        public Dimensions2D FrameSize { get; }
 
         public long TotalFrames { get; }
 
@@ -59,6 +61,7 @@ namespace Av.Rendering.Ffmpeg
         {
             converter?.Dispose();
             decoder?.Dispose();
+            inputStream?.Dispose();
         }
     }
 }

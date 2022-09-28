@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Av.Models;
 
 namespace Av
@@ -85,6 +86,48 @@ namespace Av
                 : bytes < Gigabyte ? $"{bytes / Megabyte:N0}mb"
                 : bytes < Terabyte ? $"{bytes / Gigabyte:N0}gb"
                 : $"{bytes / Terabyte:N0}tb";
+
+        /// <summary>
+        /// Gets an upper-bound format; which can be used to format shorter numbers
+        /// so that they are left-padded with the appropriate number of zeros.
+        /// </summary>
+        /// <param name="upperBound">The upper bound.</param>
+        /// <returns>A format string.</returns>
+        public static string GetUpperBoundFormat<T>(this T upperBound)
+            where T : struct
+                => "D" + $"{upperBound}".Length;
+
+        /// <summary>
+        /// Formats the value, left-padding with zeros to the length of the upper bound.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="upperBound">The upper bound.</param>
+        /// <returns>The formatted value.</returns>
+        public static string FormatToUpperBound(this long value, long upperBound)
+            => value.ToString(upperBound.GetUpperBoundFormat());
+
+        /// <summary>
+        /// Provides a format string sufficient to house the largest unit of
+        /// either hours, minutes or seconds in the supplied time span.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The concise format.</returns>
+        public static string GetConciseFormat(this TimeSpan value)
+            => value.TotalHours >= 1
+                ? @"h\:mm\:ss"
+                : value.TotalMinutes >= 10
+                    ? @"mm\:ss"
+                    : value.TotalMinutes >= 1
+                        ? @"m\:ss"
+                        : @"ss\.f\s";
+
+        /// <summary>
+        /// Concisely formats a timespan.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The concise text.</returns>
+        public static string FormatConcise(this TimeSpan value)
+            => value.ToString(value.GetConciseFormat(), CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Gets apparent media type information based on a file extension.

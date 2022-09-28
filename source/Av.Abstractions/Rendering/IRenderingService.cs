@@ -12,6 +12,8 @@ namespace Av.Abstractions.Rendering
 
         Dimensions2D FrameSize { get; }
 
+        long TotalFrames { get; }
+
         /// <summary>
         /// Renders a frame at the position specified.
         /// </summary>
