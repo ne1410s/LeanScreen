@@ -23,36 +23,48 @@ namespace Av.Rendering.Ffmpeg.Decoding
         }
 
         public string CodecName { get; private set; }
+        
         public Dimensions2D Dimensions { get; private set; }
+        
         public TimeSpan Duration { get; private set; }
+        
         public AVPixelFormat PixelFormat { get; private set; }
+        
         public AVRational TimeBase { get; private set; }
+        
         public long TotalFrames { get; private set; }
+        
         protected AVCodecContext* PtrCodecContext { get; private set; }
+        
         protected AVFormatContext* PtrFormatContext { get; private set; }
-        protected AVFrame* PtrFrame { get; }
-        protected AVPacket* PtrPacket { get; }
-        protected AVFrame* PtrReceivedFrame { get; }
+        
+        protected AVFrame* PtrFrame { get; private set; }
+        
+        protected AVPacket* PtrPacket { get; private set; }
+        
+        protected AVFrame* PtrReceivedFrame { get; private set; }
+        
         protected int StreamIndex { get; private set; }
 
-        protected void Initialise()
+        protected void OpenInputContext()
         {
             var pFormatContext = PtrFormatContext;
-            var codec = ptrCodec;
-
+            pFormatContext->seek2any = 1;
             ffmpeg.avformat_open_input(&pFormatContext, url, null, null).ThrowExceptionIfError();
             ffmpeg.av_format_inject_global_side_data(PtrFormatContext);
             ffmpeg.avformat_find_stream_info(PtrFormatContext, null).ThrowExceptionIfError();
+            AVCodec* codec = null;
 
-            StreamIndex = ffmpeg.av_find_best_stream(PtrFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
+            StreamIndex = ffmpeg
+                .av_find_best_stream(PtrFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
                 .ThrowExceptionIfError();
             ffmpeg.avcodec_parameters_to_context(PtrCodecContext, PtrFormatContext->streams[StreamIndex]->codecpar)
                 .ThrowExceptionIfError();
-            ffmpeg.avcodec_open2(PtrCodecContext, ptrCodec, null).ThrowExceptionIfError();
+            ffmpeg.avcodec_open2(PtrCodecContext, codec, null).ThrowExceptionIfError();
 
-            CodecName = ffmpeg.avcodec_get_name(ptrCodec->id);
             TimeBase = PtrFormatContext->streams[StreamIndex]->time_base;
             Duration = PtrFormatContext->duration.ToTimeSpan(ffmpeg.AV_TIME_BASE);
+            CodecName = ffmpeg.avcodec_get_name(codec->id);
             Dimensions = new Dimensions2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
             PixelFormat = PtrCodecContext->pix_fmt;
             TotalFrames = PtrFormatContext->streams[StreamIndex]->nb_frames;

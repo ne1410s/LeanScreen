@@ -1,62 +1,45 @@
-﻿using System;
-using Crypt.Streams;
+﻿using Crypt.Streams;
 using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
     internal sealed unsafe class StreamSourceDecoder : DecoderBase
     {
-        private UnmanagedStream unmanagedStream;
-        private avio_alloc_context_read_packet customInputStreamRead;
-        private avio_alloc_context_seek customInputStreamSeek;
-        private AVIOContext* customInputStreamContext;
+        private UnmanagedStream uStream;
+        private avio_alloc_context_read_packet readFn;
+        private avio_alloc_context_seek seekFn;
+        private AVIOContext* streamIc;
 
         public StreamSourceDecoder(ISimpleReadStream stream)
             : base(string.Empty)
         {
-            unmanagedStream = new UnmanagedStream(stream);
-            customInputStreamRead = unmanagedStream.ReadUnsafe;
-            customInputStreamSeek = unmanagedStream.SeekUnsafe;
-            var inputBuffer = (byte*)ffmpeg.av_malloc(
-                (ulong)unmanagedStream.BufferLength);
-            customInputStreamContext = ffmpeg.avio_alloc_context(
-                inputBuffer,
-                unmanagedStream.BufferLength,
-                0,
-                null,
-                customInputStreamRead,
-                null,
-                customInputStreamSeek);
-            customInputStreamContext->seekable = unmanagedStream.CanSeek ? 1 : 0;
-            PtrFormatContext->pb = customInputStreamContext;
-            PtrFormatContext->seek2any = 1;
+            // TODO: Compare with StreamSourceDecoder_OLD
+            // As it would seem this produced better results than below...?
 
-            Initialise();
-        }
+            uStream = new UnmanagedStream(stream);
+            readFn = uStream.ReadUnsafe;
+            seekFn = uStream.SeekUnsafe;
+            var bufLen = uStream.BufferLength;
+            var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
+            streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
+            streamIc->seekable = uStream.CanSeek ? 1 : 0;
+            PtrFormatContext->pb = streamIc;
 
-        public override void Seek(TimeSpan position)
-        {
-            //ffmpeg.avcodec_flush_buffers(_pCodecContext);
-
-            var ts = position.ToLong(TimeBase);
-            var res = ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0);
-
-            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_BACKWARD);
-            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_ANY);
+            OpenInputContext();
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            ffmpeg.av_freep(&customInputStreamContext->buffer);
-            var customInputContext = customInputStreamContext;
+            ffmpeg.av_freep(&streamIc->buffer);
+            var customInputContext = streamIc;
             ffmpeg.av_freep(&customInputContext);
-            customInputStreamContext = null;
-            customInputStreamRead = null;
-            customInputStreamSeek = null;
-            unmanagedStream?.Dispose();
-            unmanagedStream = null;
+            streamIc = null;
+            readFn = null;
+            seekFn = null;
+            uStream?.Dispose();
+            uStream = null;
         }
     }
 }

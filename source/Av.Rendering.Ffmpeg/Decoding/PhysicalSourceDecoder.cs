@@ -4,6 +4,8 @@
     {
         public PhysicalSourceDecoder(string url)
             : base(url)
-        { }
+        {
+            OpenInputContext();
+        }
     }
 }

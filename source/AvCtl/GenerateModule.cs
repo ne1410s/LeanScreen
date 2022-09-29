@@ -41,10 +41,10 @@ public static class SnapshotModule
             var key = (keyCsv ?? "").Split(',').Select(b => byte.Parse(b)).ToArray();
             renderer = new FfmpegRenderer(new CryptoBlockReadStream(fi, key));
         }
-        else if (fi.Exists) // this block is not necssary; but allows testing behaviour of block vs cryptoblock
-        {
-            renderer = new FfmpegRenderer(new BlockReadStream(fi));
-        }
+        //else if (fi.Exists) // this block is not necssary; but allows testing behaviour of block vs cryptoblock
+        //{
+        //    renderer = new FfmpegRenderer(new BlockReadStream(fi));
+        //}
         else
         {
             renderer = new FfmpegRenderer(source);
