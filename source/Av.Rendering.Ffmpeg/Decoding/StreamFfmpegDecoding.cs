@@ -3,20 +3,26 @@ using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
-    internal sealed unsafe class StreamSourceDecoder : DecoderBase
+    /// <summary>
+    /// Ffmpeg decoding session for stream sources.
+    /// </summary>
+    internal sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     {
-        private UnmanagedStream uStream;
+        private readonly ISimpleReadStream readStream;
+        private IUStream uStream;
         private avio_alloc_context_read_packet readFn;
         private avio_alloc_context_seek seekFn;
         private AVIOContext* streamIc;
 
-        public StreamSourceDecoder(ISimpleReadStream stream)
+        /// <summary>
+        /// Initialises a new <see cref="StreamFfmpegDecoding"/>.
+        /// </summary>
+        /// <param name="stream">A stream.</param>
+        public StreamFfmpegDecoding(ISimpleReadStream stream)
             : base(string.Empty)
         {
-            // TODO: Compare with StreamSourceDecoder_OLD
-            // As it would seem this produced better results than below...?
-
-            uStream = new UnmanagedStream(stream);
+            readStream = stream;
+            uStream = new UStream(stream);
             readFn = uStream.ReadUnsafe;
             seekFn = uStream.SeekUnsafe;
             var bufLen = uStream.BufferLength;
@@ -28,6 +34,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             OpenInputContext();
         }
 
+        /// <inheritdoc/>
         public override void Dispose()
         {
             base.Dispose();
@@ -40,6 +47,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             seekFn = null;
             uStream?.Dispose();
             uStream = null;
+            readStream?.Dispose();
         }
     }
 }

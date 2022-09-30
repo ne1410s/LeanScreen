@@ -6,7 +6,7 @@ namespace Av.Rendering.Ffmpeg
 {
     internal static class FfmpegUtils
     {
-        public static unsafe string av_strerror(int error)
+        public static unsafe string Av_StrError(int error)
         {
             const int bufferSize = 1024;
             var buffer = stackalloc byte[bufferSize];
@@ -60,7 +60,7 @@ namespace Av.Rendering.Ffmpeg
 
         public static int ThrowExceptionIfError(this int error)
         {
-            if (error < 0) throw new ApplicationException(av_strerror(error));
+            if (error < 0) throw new ApplicationException(Av_StrError(error));
             return error;
         }
 
@@ -81,7 +81,7 @@ namespace Av.Rendering.Ffmpeg
             {
                 if (level > ffmpeg.av_log_get_level()) return;
 
-                var lineSize = 1024;
+                const int lineSize = 1024;
                 var lineBuffer = stackalloc byte[lineSize];
                 var printPrefix = 1;
                 ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);

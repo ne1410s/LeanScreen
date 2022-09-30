@@ -6,12 +6,17 @@ using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
-    internal abstract unsafe class DecoderBase : IDecoder
+    /// <inheritdoc cref="IFfmpegDecodingSession"/>
+    internal abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
         private readonly string url;
         private readonly AVCodec* ptrCodec;
 
-        protected DecoderBase(string url)
+        /// <summary>
+        /// Initialises a new <see cref="FfmpegDecodingSessionBase"/>.
+        /// </summary>
+        /// <param name="url">The url (for physical media).</param>
+        protected FfmpegDecodingSessionBase(string url)
         {
             this.url = url;
             ptrCodec = null;
@@ -22,30 +27,57 @@ namespace Av.Rendering.Ffmpeg.Decoding
             PtrFrame = ffmpeg.av_frame_alloc();
         }
 
+        /// <inheritdoc/>
         public string CodecName { get; private set; }
-        
+
+        /// <inheritdoc/>
         public Dimensions2D Dimensions { get; private set; }
-        
+
+        /// <inheritdoc/>
         public TimeSpan Duration { get; private set; }
-        
+
+        /// <inheritdoc/>
         public AVPixelFormat PixelFormat { get; private set; }
-        
+
+        /// <inheritdoc/>
         public AVRational TimeBase { get; private set; }
-        
+
+        /// <inheritdoc/>
         public long TotalFrames { get; private set; }
-        
+
+        /// <summary>
+        /// A pointer to the codec context.
+        /// </summary>
         protected AVCodecContext* PtrCodecContext { get; private set; }
-        
+
+        /// <summary>
+        /// A pointer to the input format context.
+        /// </summary>
         protected AVFormatContext* PtrFormatContext { get; private set; }
-        
+
+        /// <summary>
+        /// A pointer to the frame.
+        /// </summary>
         protected AVFrame* PtrFrame { get; private set; }
-        
+
+        /// <summary>
+        /// A pointer to the packet.
+        /// </summary>
         protected AVPacket* PtrPacket { get; private set; }
-        
+
+        /// <summary>
+        /// A pointer to the received frame.
+        /// </summary>
         protected AVFrame* PtrReceivedFrame { get; private set; }
-        
+
+        /// <summary>
+        /// The stream index.
+        /// </summary>
         protected int StreamIndex { get; private set; }
 
+        /// <summary>
+        /// Opens the input format context.
+        /// </summary>
         protected void OpenInputContext()
         {
             var pFormatContext = PtrFormatContext;
@@ -70,17 +102,18 @@ namespace Av.Rendering.Ffmpeg.Decoding
             TotalFrames = PtrFormatContext->streams[StreamIndex]->nb_frames;
         }
 
+        /// <inheritdoc/>
         public virtual void Seek(TimeSpan position)
         {
-            //ffmpeg.avcodec_flush_buffers(_pCodecContext);
-
             var ts = position.ToLong(TimeBase);
-            var res = ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0);
+            //ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_BACKWARD)
+            ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0)
+                .ThrowExceptionIfError();
 
-            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_BACKWARD);
-            //var res = ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_ANY);
+            //ffmpeg.avcodec_flush_buffers(PtrCodecContext);
         }
 
+        /// <inheritdoc/>
         public virtual void Dispose()
         {
             var pFrame = PtrFrame;
@@ -97,6 +130,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             PtrFormatContext = null;
         }
 
+        /// <inheritdoc/>
         public virtual bool TryDecodeNextFrame(out AVFrame frame)
         {
             ffmpeg.av_frame_unref(PtrFrame);
@@ -139,11 +173,14 @@ namespace Av.Rendering.Ffmpeg.Decoding
                 frame = *PtrReceivedFrame;
             }
             else
+            {
                 frame = *PtrFrame;
+            }
 
             return true;
         }
 
+        /// <inheritdoc/>
         public IReadOnlyDictionary<string, string> GetContextInfo()
         {
             AVDictionaryEntry* tag = null;

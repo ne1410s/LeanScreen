@@ -1,6 +1,9 @@
 ﻿namespace Av.Rendering.Ffmpeg
 {
-    public class RawFrame
+    /// <summary>
+    /// Raw frame data.
+    /// </summary>
+    internal class RawFrame
     {
         /// <summary>
         /// The rendered bytes, in RGB 24-byte format.

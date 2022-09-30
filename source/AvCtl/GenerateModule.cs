@@ -4,8 +4,6 @@ using Av.Imaging.SixLabors;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
 using Comanche;
-using Crypt.IO;
-using Crypt.Streams;
 
 namespace AvCtl;
 
@@ -35,29 +33,17 @@ public static class SnapshotModule
             destination = fi.DirectoryName;
         }
 
-        IRenderingService renderer;
-        if (fi.IsSecure())
-        {
-            var key = (keyCsv ?? "").Split(',').Select(b => byte.Parse(b)).ToArray();
-            renderer = new FfmpegRenderer(new CryptoBlockReadStream(fi, key));
-        }
-        //else if (fi.Exists) // this block is not necssary; but allows testing behaviour of block vs cryptoblock
-        //{
-        //    renderer = new FfmpegRenderer(new BlockReadStream(fi));
-        //}
-        else
-        {
-            renderer = new FfmpegRenderer(source);
-        }
-
+        var key = (keyCsv ?? "").Split(',').Select(b => byte.Parse(b)).ToArray();
+        IRenderingService renderer = new FfmpegRenderer(source, key);
         var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
         var snapper = new ThumbnailGenerator(renderer);
         var imager = new SixLaborsImagingService();
         var onFrameReceived = (RenderedFrame frame, int index) =>
         {
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
+            var itemNo = (index + 1L).FormatToUpperBound(itemCount);
             var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.TotalFrames);
-            var path = Path.Combine(di.FullName, $"f{frameNo}.jpg");
+            var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
             File.WriteAllBytes(path, memStr.ToArray());
         };
 
