@@ -105,8 +105,11 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <inheritdoc/>
         public virtual void Seek(TimeSpan position)
         {
+            //var inferredFrame = TotalFrames * (position.TotalSeconds / Duration.TotalSeconds);
+            //ffmpeg.av_seek_frame(PtrFormatContext, StreamIndex, (int)inferredFrame, ffmpeg.AVSEEK_FLAG_FRAME)
+            //    .ThrowExceptionIfError();
+
             var ts = position.ToLong(TimeBase);
-            //ffmpeg.av_seek_frame(_pFormatContext, _streamIndex, ts, ffmpeg.AVSEEK_FLAG_BACKWARD)
             ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0)
                 .ThrowExceptionIfError();
 

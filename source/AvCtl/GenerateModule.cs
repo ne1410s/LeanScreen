@@ -33,7 +33,7 @@ public static class SnapshotModule
             destination = fi.DirectoryName;
         }
 
-        var key = (keyCsv ?? "").Split(',').Select(b => byte.Parse(b)).ToArray();
+        var key = keyCsv?.Split(',').Select(b => byte.Parse(b)).ToArray();
         IRenderingService renderer = new FfmpegRenderer(source, key);
         var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
         var snapper = new ThumbnailGenerator(renderer);

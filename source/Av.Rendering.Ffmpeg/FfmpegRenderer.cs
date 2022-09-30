@@ -24,22 +24,23 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="frameSize">The frame size.</param>
         public FfmpegRenderer(string source, byte[] key = null, Dimensions2D? frameSize = null)
         {
+            FfmpegUtils.SetupBinaries();
+            FfmpegUtils.SetupLogging();
+
             var fi = new FileInfo(source);
             if (fi.IsSecure())
             {
                 decoder = new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key));
             }
-            else if (fi.Exists) // allows testing behaviour of block vs cryptoblock
-            {
-                decoder = new StreamFfmpegDecoding(new BlockReadStream(fi));
-            }
+            //else if (fi.Exists) // allows testing behaviour of block vs cryptoblock
+            //{
+            //    decoder = new StreamFfmpegDecoding(new BlockReadStream(fi));
+            //}
             else
             {
                 decoder = new PhysicalFfmpegDecoding(source);
             }
 
-            FfmpegUtils.SetupBinaries();
-            FfmpegUtils.SetupLogging();
             FrameSize = frameSize ?? decoder.Dimensions;
             Duration = decoder.Duration;
             TotalFrames = decoder.TotalFrames;
