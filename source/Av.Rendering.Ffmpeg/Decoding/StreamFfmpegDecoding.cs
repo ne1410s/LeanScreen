@@ -6,7 +6,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <summary>
     /// Ffmpeg decoding session for stream sources.
     /// </summary>
-    internal sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
+    public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     {
         private readonly ISimpleReadStream readStream;
         private IUStream uStream;

@@ -8,7 +8,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <summary>
     /// Ffmpeg decoding session.
     /// </summary>
-    internal interface IFfmpegDecodingSession : IDisposable
+    public interface IFfmpegDecodingSession : IDisposable
     {
         /// <summary>
         /// The codec name.

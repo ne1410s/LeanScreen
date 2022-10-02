@@ -7,7 +7,7 @@ using FFmpeg.AutoGen;
 namespace Av.Rendering.Ffmpeg.Decoding
 {
     /// <inheritdoc cref="IFfmpegDecodingSession"/>
-    internal abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
+    public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
         private readonly string url;
         private readonly AVCodec* ptrCodec;
@@ -18,6 +18,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <param name="url">The url (for physical media).</param>
         protected FfmpegDecodingSessionBase(string url)
         {
+            FfmpegUtils.SetupBinaries();
+            FfmpegUtils.SetupLogging();
+
             this.url = url;
             ptrCodec = null;
             PtrCodecContext = ffmpeg.avcodec_alloc_context3(ptrCodec);

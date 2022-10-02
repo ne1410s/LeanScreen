@@ -21,26 +21,19 @@ namespace Av.Rendering.Ffmpeg
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="key">The key (for cryptographic sources).</param>
-        /// <param name="frameSize">The frame size.</param>
+        /// <param name="frameSize">The target frame size.</param>
         public FfmpegRenderer(string source, byte[] key = null, Dimensions2D? frameSize = null)
+            : this(GetDecoder(source, key), frameSize)
+        { }
+
+        /// <summary>
+        /// Initialises a new <see cref="FfmpegRenderer"/>.
+        /// </summary>
+        /// <param name="decoder">The decoder.</param>
+        /// <param name="frameSize">The target frame size.</param>
+        public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
         {
-            FfmpegUtils.SetupBinaries();
-            FfmpegUtils.SetupLogging();
-
-            var fi = new FileInfo(source);
-            if (fi.IsSecure())
-            {
-                decoder = new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key));
-            }
-            //else if (fi.Exists) // allows testing behaviour of block vs cryptoblock
-            //{
-            //    decoder = new StreamFfmpegDecoding(new BlockReadStream(fi));
-            //}
-            else
-            {
-                decoder = new PhysicalFfmpegDecoding(source);
-            }
-
+            this.decoder = decoder;
             FrameSize = frameSize ?? decoder.Dimensions;
             Duration = decoder.Duration;
             TotalFrames = decoder.TotalFrames;
@@ -79,6 +72,14 @@ namespace Av.Rendering.Ffmpeg
         {
             converter?.Dispose();
             decoder?.Dispose();
+        }
+
+        private static IFfmpegDecodingSession GetDecoder(string source, byte[] key = null)
+        {
+            var fi = new FileInfo(source);
+            return fi.IsSecure()
+                ? new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key))
+                : (IFfmpegDecodingSession)new PhysicalFfmpegDecoding(source);
         }
     }
 }
