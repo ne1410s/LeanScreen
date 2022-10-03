@@ -14,9 +14,9 @@ namespace Av.Rendering.Ffmpeg.Tests
         [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
         [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
         [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
-        [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 6 / 24d, "39ca2a04414fc5fdc2111683a459e688")]
-        [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 6 / 24d, "39ca2a04414fc5fdc2111683a459e688")]
-        [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 6 / 24d, "39ca2a04414fc5fdc2111683a459e688")]
+        [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
+        [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
+        [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
         public void RenderAt_VaryingDecoder(
             string sampleFileName,
             DecodeMode decodeMode,
