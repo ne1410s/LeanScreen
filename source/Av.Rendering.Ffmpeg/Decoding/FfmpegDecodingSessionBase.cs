@@ -84,7 +84,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         protected void OpenInputContext()
         {
             var pFormatContext = PtrFormatContext;
-            pFormatContext->seek2any = 1;
+            //pFormatContext->seek2any = 1;
             ffmpeg.avformat_open_input(&pFormatContext, url, null, null).ThrowExceptionIfError();
             ffmpeg.av_format_inject_global_side_data(PtrFormatContext);
             ffmpeg.avformat_find_stream_info(PtrFormatContext, null).ThrowExceptionIfError();
