@@ -58,7 +58,7 @@ namespace Av.Rendering.Ffmpeg
         public static TimeSpan ToTimeSpan(this long pts, AVRational timeBase)
         {
             var ptsd = (double)pts;
-            if (double.IsNaN(ptsd) || Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
+            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
             {
                 return TimeSpan.MinValue;
             }
@@ -77,7 +77,7 @@ namespace Av.Rendering.Ffmpeg
         public static TimeSpan ToTimeSpan(this long pts, double timeBase)
         {
             var ptsd = (double)pts;
-            if (double.IsNaN(ptsd) || Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
+            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
             {
                 return TimeSpan.MinValue;
             }

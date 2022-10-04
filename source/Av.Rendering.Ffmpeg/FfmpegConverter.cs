@@ -5,7 +5,10 @@ using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg
 {
-    internal sealed unsafe class Converter : IDisposable
+    /// <summary>
+    /// Ffmpeg frame converter.
+    /// </summary>
+    public sealed unsafe class FfmpegConverter : IDisposable
     {
         private const AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
 
@@ -15,8 +18,18 @@ namespace Av.Rendering.Ffmpeg
         private readonly SwsContext* _pConvertContext;
         private readonly int _destinationBufferLength;
 
-        public Converter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, Dimensions2D destinationSize)
+        /// <summary>
+        /// Initialises a new <see cref="FfmpegConverter"/>.
+        /// </summary>
+        /// <param name="sourceSize">The source size.</param>
+        /// <param name="sourcePixelFormat">The source pixel format.</param>
+        /// <param name="destinationSize">The destination size.</param>
+        /// <exception cref="ArgumentException"></exception>
+        public FfmpegConverter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, Dimensions2D destinationSize)
         {
+            AssertValid(sourceSize, nameof(sourceSize));
+            AssertValid(destinationSize, nameof(destinationSize));
+
             _pConvertContext = ffmpeg.sws_getContext(
                 sourceSize.Width,
                 sourceSize.Height,
@@ -28,8 +41,6 @@ namespace Av.Rendering.Ffmpeg
                 null,
                 null,
                 null);
-            if (_pConvertContext == null)
-                throw new ApplicationException("Could not initialize the conversion context.");
 
             _destinationBufferLength = ffmpeg.av_image_get_buffer_size(
                 DestinationPixelFormat,
@@ -50,15 +61,28 @@ namespace Av.Rendering.Ffmpeg
                 1);
         }
 
-        public int DestinationBufferLength { get; }
-
+        /// <inheritdoc/>
         public void Dispose()
         {
             Marshal.FreeHGlobal(_convertedFrameBufferPtr);
             ffmpeg.sws_freeContext(_pConvertContext);
         }
 
-        public RawFrame RenderRawFrame(AVFrame sourceFrame)
+        /// <summary>
+        /// Throws an exception if the size is not valid.
+        /// </summary>
+        /// <param name="size">The size to check.</param>
+        /// <param name="paramName">The original parameter name.</param>
+        /// <exception cref="ArgumentException"></exception>
+        private static void AssertValid(Dimensions2D size, string paramName)
+        {
+            if (size.Width <= 0 || size.Height <= 0)
+            {
+                throw new ArgumentException("The size is invalid.", paramName);
+            }
+        }
+
+        internal RawFrame RenderRawFrame(AVFrame sourceFrame)
         {
             ffmpeg.sws_scale(_pConvertContext,
                 sourceFrame.data,

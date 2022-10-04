@@ -14,7 +14,7 @@ namespace Av.Rendering.Ffmpeg
     public class FfmpegRenderer : IRenderingService, IDisposable
     {
         private readonly IFfmpegDecodingSession decoder;
-        private readonly Converter converter;
+        private readonly FfmpegConverter converter;
 
         /// <summary>
         /// Initialises a new <see cref="FfmpegRenderer"/>.
@@ -33,11 +33,11 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="frameSize">The target frame size.</param>
         public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
         {
-            this.decoder = decoder;
+            this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
             FrameSize = frameSize ?? decoder.Dimensions;
             Duration = decoder.Duration;
             TotalFrames = decoder.TotalFrames;
-            converter = new Converter(decoder.Dimensions, decoder.PixelFormat, FrameSize);
+            converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, FrameSize);
         }
 
         /// <inheritdoc/>
@@ -70,8 +70,8 @@ namespace Av.Rendering.Ffmpeg
         /// <inheritdoc/>
         public void Dispose()
         {
-            converter?.Dispose();
-            decoder?.Dispose();
+            converter.Dispose();
+            decoder.Dispose();
         }
 
         private static IFfmpegDecodingSession GetDecoder(string source, byte[] key = null)

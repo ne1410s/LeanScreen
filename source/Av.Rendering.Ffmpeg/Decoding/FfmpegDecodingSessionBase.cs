@@ -108,15 +108,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <inheritdoc/>
         public virtual void Seek(TimeSpan position)
         {
-            //var inferredFrame = TotalFrames * (position.TotalSeconds / Duration.TotalSeconds);
-            //ffmpeg.av_seek_frame(PtrFormatContext, StreamIndex, (int)inferredFrame, ffmpeg.AVSEEK_FLAG_FRAME)
-            //    .ThrowExceptionIfError();
-
             var ts = position.ToLong(TimeBase);
             ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0)
                 .ThrowExceptionIfError();
-
-            //ffmpeg.avcodec_flush_buffers(PtrCodecContext);
         }
 
         /// <inheritdoc/>
@@ -173,15 +167,18 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
             error.ThrowExceptionIfError();
 
-            if (PtrCodecContext->hw_device_ctx != null)
-            {
-                ffmpeg.av_hwframe_transfer_data(PtrReceivedFrame, PtrFrame, 0).ThrowExceptionIfError();
-                frame = *PtrReceivedFrame;
-            }
-            else
-            {
+            // TODO: Can we select a hw device automatically?
+            // ... and does it improve frame capture??
+
+            ////if (PtrCodecContext->hw_device_ctx != null)
+            ////{
+            ////    ffmpeg.av_hwframe_transfer_data(PtrReceivedFrame, PtrFrame, 0).ThrowExceptionIfError();
+            ////    frame = *PtrReceivedFrame;
+            ////}
+            ////else
+            ////{
                 frame = *PtrFrame;
-            }
+            ////}
 
             return true;
         }

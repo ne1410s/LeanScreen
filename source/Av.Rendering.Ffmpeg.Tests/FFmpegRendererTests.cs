@@ -1,3 +1,4 @@
+using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;
 using Crypt.Hashing;
@@ -11,30 +12,13 @@ namespace Av.Rendering.Ffmpeg.Tests
     public class FFmpegRendererTests
     {
         [Theory]
-        [InlineData("-1:0:0", "0:0:0")]
-        [InlineData("1:0:0", "0:12:30")]
-        public void Clamp_VaryingValue_ReturnsExpected(string positionString, string expectedString)
-        {
-            // Arrange
-            var duration = TimeSpan.FromMinutes(12.5);
-            var position = TimeSpan.Parse(positionString);
-            var expected = TimeSpan.Parse(expectedString);
-
-            // Act
-            var actual = position.Clamp(duration);
-
-            // Assert
-            actual.Should().Be(expected);
-        }
-
-        [Theory]
         [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
         [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
         [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
         [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
         [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
         [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
-        public void RenderAt_VaryingDecoder(
+        public void RenderAt_VaryingDecoder_ReturnsExpected(
             string sampleFileName,
             DecodeMode decodeMode,
             int bufferLength,
@@ -54,32 +38,48 @@ namespace Av.Rendering.Ffmpeg.Tests
             md5Hex.Should().Be(expectedMd5Hex);
         }
 
-        [Fact]
-        public void ThrowExceptionIfError_IsError_ThrowsException()
+        [Theory]
+        [InlineData(1, 1, "d46e041b07eea036492b33315f9bbe1d")]
+        [InlineData(500, 100, "3b1b21c9cf626ae54c2840c32a5b3ad6")]
+        [InlineData(100, 500, "126d8039f3d4ac0282fa0ec9e9e24a4b")]
+        public void RenderAt_VaryingSize_ReturnsExpected(int width, int height, string expectedMd5Hex)
         {
             // Arrange
-            FfmpegUtils.SetupBinaries();
-            const int code = -3;
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mkv"));
+            var decoder = Get(DecodeMode.BlockReads, fi);
+            var sut = new FfmpegRenderer(decoder, new Dimensions2D { Width = width, Height = height });
+            var ts = decoder.Duration / 7;
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var md5Hex = sut.RenderAt(ts).Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
             // Assert
-            act.Should().ThrowExactly<ApplicationException>()
-                .WithMessage("No such process");
+            md5Hex.Should().Be(expectedMd5Hex);
         }
 
         [Fact]
-        public void ThrowExceptionIfError_IsNotError_DoesNotThrow()
+        public void Dispose_WhenCalled_DoesNotError()
         {
             // Arrange
-            const int code = 0;
+            var fi = new FileInfo(Path.Combine("Samples", "sample.avi"));
+            var sut = new FfmpegRenderer(fi.FullName);
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var act = () => sut.Dispose();
 
             // Assert
             act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void Ctor_NullDecoder_ThrowsException()
+        {
+            // Arrange & Act
+            var act = () => new FfmpegRenderer((IFfmpegDecodingSession)null!);
+
+            // Assert
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("Required parameter is missing. (Parameter 'decoder')");
         }
 
         private static IFfmpegDecodingSession Get(DecodeMode mode, FileInfo fi, byte[]? key = null, int bufferLength = 32768) => mode switch
