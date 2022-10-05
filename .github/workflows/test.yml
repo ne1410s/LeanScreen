@@ -4,6 +4,7 @@ on:
     paths:
     - source/**
   workflow_call:
+  workflow_dispatch: # todo: remove this demo trigger!
 jobs:
   run_tests:
     runs-on: ubuntu-latest
