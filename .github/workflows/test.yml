@@ -33,8 +33,16 @@ jobs:
       id: getjson
       run: |
         json=$(<coveragereport/Summary.json)
-        $json="{ ${json} }"
         echo "::set-output name=json::$json"
+
+    - name: TESTTESTTEST1
+      run: echo "${{ steps.getjson.outputs.json }}"
+    - name: TESTTESTTEST2
+      run: echo "${{ fromJson(steps.getjson.outputs.json)['summary'] }}"
+    - name: TESTTESTTEST3
+      run: echo "${{ fromJson(steps.getjson.outputs.json).summary }}"
+
+
     - name: Check coverage values
       id: check_coverage
       if: fromJson(steps.getjson.outputs.json).summary.linecoverage != 100 || fromJson(steps.getjson.outputs.json).summary.branchcoverage != 100 || fromJson(steps.getjson.outputs.json).summary.methodcoverage != 100
