@@ -27,7 +27,7 @@ namespace Av.Rendering.Ffmpeg.Tests
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
-            var decoder = Get(decodeMode, fi, null, bufferLength);
+            var decoder = Get(decodeMode, fi, bufferLength);
             var sut = new FfmpegRenderer(decoder);
             var ts = decoder.Duration * position;
 
@@ -82,9 +82,22 @@ namespace Av.Rendering.Ffmpeg.Tests
                 .WithMessage("Required parameter is missing. (Parameter 'decoder')");
         }
 
-        private static IFfmpegDecodingSession Get(DecodeMode mode, FileInfo fi, byte[]? key = null, int bufferLength = 32768) => mode switch
+        [Fact]
+        public void InternalGet_UnrecognisedDecodeMode_ThrowsException()
         {
-            DecodeMode.Crypto => new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key, bufferLength)),
+            // Arrange
+            const DecodeMode decodeMode = (DecodeMode)999;
+
+            // Act
+            var act = () => Get(decodeMode, default!);
+
+            // Assert
+            act.Should().ThrowExactly<ArgumentException>()
+                .WithMessage("Decode mode not recognised");
+        }
+
+        private static IFfmpegDecodingSession Get(DecodeMode mode, FileInfo fi, int bufferLength = 32768) => mode switch
+        {
             DecodeMode.PhysicalFm => new PhysicalFfmpegDecoding(fi.FullName),
             DecodeMode.SimpleFile => new StreamFfmpegDecoding(new SimpleFileStream(fi, bufferLength)),
             DecodeMode.BlockReads => new StreamFfmpegDecoding(new BlockReadStream(fi, 32768)),

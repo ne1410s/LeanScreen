@@ -12,7 +12,7 @@ public class SnapshotModuleTests
     {
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
-        var destInfo = Directory.CreateDirectory("pic_count10");
+        var destInfo = Directory.CreateDirectory($"pic_count10_{Guid.NewGuid()}");
         const int total = 10;
 
         // Act
