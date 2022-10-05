@@ -21,6 +21,8 @@ jobs:
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
     - name: Restore tools
       run: dotnet tool restore
+    - name: Install test prerequisites (linux)
+      run: sudo apt install -y ffmpeg
     - name: Build for release
       run: dotnet build -c Release
     - name: Generate raw coverage data
@@ -30,7 +32,8 @@ jobs:
       run: |
         json=$(<coveragereport/Summary.json)
         echo "::set-output name=json::$json"
-    - id: check_coverage
+    - name: Check coverage values
+      id: check_coverage
       if: fromJson(steps.getjson.outputs.json).summary.linecoverage != 100 || fromJson(steps.getjson.outputs.json).summary.branchcoverage != 100 || fromJson(steps.getjson.outputs.json).summary.methodcoverage != 100
       run: exit 1
     - name: Process coverage report
