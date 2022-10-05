@@ -3,7 +3,7 @@
     /// <summary>
     /// Ffmpeg decoding session for physical sources.
     /// </summary>
-    internal sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
+    public sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
     {
         /// <summary>
         /// Initialises a new <see cref="PhysicalFfmpegDecoding"/>.

@@ -6,7 +6,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <summary>
     /// Ffmpeg decoding session for stream sources.
     /// </summary>
-    internal sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
+    public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     {
         private readonly ISimpleReadStream readStream;
         private IUStream uStream;
@@ -28,7 +28,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             var bufLen = uStream.BufferLength;
             var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
             streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
-            streamIc->seekable = uStream.CanSeek ? 1 : 0;
+            streamIc->seekable = 1;
             PtrFormatContext->pb = streamIc;
 
             OpenInputContext();
@@ -45,9 +45,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
             streamIc = null;
             readFn = null;
             seekFn = null;
-            uStream?.Dispose();
+            uStream.Dispose();
             uStream = null;
-            readStream?.Dispose();
+            readStream.Dispose();
         }
     }
 }

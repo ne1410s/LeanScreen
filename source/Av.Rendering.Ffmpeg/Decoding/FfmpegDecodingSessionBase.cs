@@ -7,7 +7,7 @@ using FFmpeg.AutoGen;
 namespace Av.Rendering.Ffmpeg.Decoding
 {
     /// <inheritdoc cref="IFfmpegDecodingSession"/>
-    internal abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
+    public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
         private readonly string url;
         private readonly AVCodec* ptrCodec;
@@ -18,6 +18,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <param name="url">The url (for physical media).</param>
         protected FfmpegDecodingSessionBase(string url)
         {
+            FfmpegUtils.SetupBinaries();
+            FfmpegUtils.SetupLogging();
+
             this.url = url;
             ptrCodec = null;
             PtrCodecContext = ffmpeg.avcodec_alloc_context3(ptrCodec);
@@ -81,7 +84,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         protected void OpenInputContext()
         {
             var pFormatContext = PtrFormatContext;
-            pFormatContext->seek2any = 1;
+            //pFormatContext->seek2any = 1;
             ffmpeg.avformat_open_input(&pFormatContext, url, null, null).ThrowExceptionIfError();
             ffmpeg.av_format_inject_global_side_data(PtrFormatContext);
             ffmpeg.avformat_find_stream_info(PtrFormatContext, null).ThrowExceptionIfError();
@@ -105,15 +108,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <inheritdoc/>
         public virtual void Seek(TimeSpan position)
         {
-            //var inferredFrame = TotalFrames * (position.TotalSeconds / Duration.TotalSeconds);
-            //ffmpeg.av_seek_frame(PtrFormatContext, StreamIndex, (int)inferredFrame, ffmpeg.AVSEEK_FLAG_FRAME)
-            //    .ThrowExceptionIfError();
-
             var ts = position.ToLong(TimeBase);
             ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, ts, 0)
                 .ThrowExceptionIfError();
-
-            //ffmpeg.avcodec_flush_buffers(PtrCodecContext);
         }
 
         /// <inheritdoc/>
@@ -170,15 +167,18 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
             error.ThrowExceptionIfError();
 
-            if (PtrCodecContext->hw_device_ctx != null)
-            {
-                ffmpeg.av_hwframe_transfer_data(PtrReceivedFrame, PtrFrame, 0).ThrowExceptionIfError();
-                frame = *PtrReceivedFrame;
-            }
-            else
-            {
+            // TODO: Can we select a hw device automatically?
+            // ... and does it improve frame capture??
+
+            ////if (PtrCodecContext->hw_device_ctx != null)
+            ////{
+            ////    ffmpeg.av_hwframe_transfer_data(PtrReceivedFrame, PtrFrame, 0).ThrowExceptionIfError();
+            ////    frame = *PtrReceivedFrame;
+            ////}
+            ////else
+            ////{
                 frame = *PtrFrame;
-            }
+            ////}
 
             return true;
         }

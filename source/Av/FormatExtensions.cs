@@ -113,13 +113,13 @@ namespace Av
         /// <param name="value">The value.</param>
         /// <returns>The concise format.</returns>
         public static string GetConciseFormat(this TimeSpan value)
-            => value.TotalHours >= 1
-                ? @"h\:mm\:ss"
-                : value.TotalMinutes >= 10
-                    ? @"mm\:ss"
+            => value.TotalDays >= 1
+                ? @"d\.hh\:mm\:ss"
+                : value.TotalHours >= 1
+                    ? @"h\:mm\:ss"
                     : value.TotalMinutes >= 1
                         ? @"m\:ss"
-                        : @"ss\.f\s";
+                        : @"s\.f\s";
 
         /// <summary>
         /// Concisely formats a timespan.

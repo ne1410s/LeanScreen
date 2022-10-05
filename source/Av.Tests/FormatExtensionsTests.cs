@@ -8,6 +8,23 @@ namespace Av.Tests;
 public class FormatExtensionsTests
 {
     [Theory]
+    [InlineData("1:1:1:1.2", "1.01:01:01")]
+    [InlineData("1:1:1.2", "1:01:01")]
+    [InlineData("0:1:1.2", "1:01")]
+    [InlineData("0:0:1.2", "1.2s")]
+    public void FormatConcise_VaryingInput_ReturnsExpected(string input, string expected)
+    {
+        // Arrange
+        var timeSpan = TimeSpan.Parse(input);
+
+        // Act
+        var actual = timeSpan.FormatConcise();
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
     [InlineData(1L, "1b")]
     [InlineData(1L * 1024, "1kb")]
     [InlineData(1L * 1024 * 1024, "1mb")]

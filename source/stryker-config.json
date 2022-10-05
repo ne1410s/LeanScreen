@@ -1,8 +1,5 @@
 {
   "stryker-config": {
-    "test-projects": [
-      "Av.Tests"
-    ],
     "thresholds": {
       "high": 100,
       "low": 100,
