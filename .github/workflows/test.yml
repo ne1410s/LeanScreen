@@ -22,7 +22,9 @@ jobs:
     - name: Restore tools
       run: dotnet tool restore
     - name: Install test prerequisites (linux)
-      run: sudo apt install -y ffmpeg
+      run: |
+        sudo apt update
+        sudo apt install -y ffmpeg
     - name: Build for release
       run: dotnet build -c Release
     - name: Generate raw coverage data
