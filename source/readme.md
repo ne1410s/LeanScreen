@@ -7,7 +7,7 @@ dotnet tool restore
 # Run unit tests (multiple test projects, no threshold)
 gci **/TestResults/ | ri -r; dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html"; start coveragereport/index.html;
 
-# Run mutation tests and show report (per project!)
+# Run mutation tests and show report (per project)
 if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o [-tp TEST_PROJECT_NAME]
 
 # Bundle up executable
