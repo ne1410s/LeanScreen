@@ -11,32 +11,32 @@ namespace Av.Rendering.Ffmpeg.Tests
     /// </summary>
     public class FFmpegRendererTests
     {
-        [Theory]
-        [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
-        [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
-        [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
-        [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
-        [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
-        [InlineData("sample.avi", DecodeMode.BlockReads, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
-        public void RenderAt_VaryingDecoder_ReturnsExpected(
-            string sampleFileName,
-            DecodeMode decodeMode,
-            int bufferLength,
-            double position,
-            string expectedMd5Hex)
-        {
-            // Arrange
-            var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
-            var decoder = Get(decodeMode, fi, bufferLength);
-            var sut = new FfmpegRenderer(decoder);
-            var ts = decoder.Duration * position;
+        //[Theory]
+        //[InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
+        //[InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
+        //[InlineData("sample.avi", DecodeMode.BlockReads, 32768, 0, "3c99996ed49f0c7891aec69f48d93329")]
+        //[InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
+        //[InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
+        //[InlineData("sample.avi", DecodeMode.BlockReads, 32768, 6 / 24d, "7c198dc342fd432cf30606c5f7281c6d")]
+        //public void RenderAt_VaryingDecoder_ReturnsExpected(
+        //    string sampleFileName,
+        //    DecodeMode decodeMode,
+        //    int bufferLength,
+        //    double position,
+        //    string expectedMd5Hex)
+        //{
+        //    // Arrange
+        //    var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
+        //    var decoder = Get(decodeMode, fi, bufferLength);
+        //    var sut = new FfmpegRenderer(decoder);
+        //    var ts = decoder.Duration * position;
 
-            // Act
-            var md5Hex = sut.RenderAt(ts).Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        //    // Act
+        //    var md5Hex = sut.RenderAt(ts).Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
-            // Assert
-            md5Hex.Should().Be(expectedMd5Hex);
-        }
+        //    // Assert
+        //    md5Hex.Should().Be(expectedMd5Hex);
+        //}
 
         [Theory]
         [InlineData(1, 1, "d46e041b07eea036492b33315f9bbe1d")]
