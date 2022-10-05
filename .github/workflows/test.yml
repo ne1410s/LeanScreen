@@ -32,8 +32,10 @@ jobs:
     - name: Get coverage json
       id: getjson
       run: |
-        json="$(<coveragereport/Summary.json)"
+        json=$(<coveragereport/Summary.json)
+        echo "-------------------------------"
         echo "$json"
+        echo "-------------------------------"
         echo "::set-output name=json::$json"
 
     - name: TESTTESTTEST1
