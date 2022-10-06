@@ -52,9 +52,9 @@ jobs:
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
       run: |
-        shopt -s extglob globstar
         status=0
-        for testproj in *.+(Test*(s)|UnitTest*(s)); do dotnet stryker -tp "$testproj"; status=$(($status + $?)); done; exit $status
+        shopt -s extglob globstar
+        for testproj in *.+(Test*(s)|UnitTest*(s)); do iter=$(dotnet stryker -tp "$testproj" &>/dev/null; echo $?); status=$(($status + $iter)); echo "$testproj --> $iter"; done; exit $status
     - name: Process mutation report
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
       run: |
