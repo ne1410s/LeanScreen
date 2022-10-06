@@ -50,4 +50,41 @@ public static class SnapshotModule
         snapper.Generate(onFrameReceived, itemCount);
         return di.FullName;
     }
+
+    /// <summary>
+    /// Generates a single frame from a video source.
+    /// </summary>
+    /// <param name="source">The source file.</param>
+    /// <param name="destination">The output folder.</param>
+    /// <param name="relative">The relative position, from 0 - 1.</param>
+    /// <param name="keyCsv">Key (if source is encrypted).</param>
+    /// <returns>The output path.</returns>
+    public static string Single(
+        [Alias("s")] string source,
+        [Alias("d")] string? destination = null,
+        [Alias("r")] double relative = .3,
+        [Alias("k")] string? keyCsv = null)
+    {
+        var fi = new FileInfo(source);
+        if (destination == null && fi.Exists)
+        {
+            destination = fi.DirectoryName;
+        }
+
+        var key = keyCsv?.Split(',').Select(b => byte.Parse(b)).ToArray();
+        IRenderingService renderer = new FfmpegRenderer(source, key);
+        var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
+        var snapper = new ThumbnailGenerator(renderer);
+        var imager = new SixLaborsImagingService();
+        var onFrameReceived = (RenderedFrame frame, int _) =>
+        {
+            using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
+            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.TotalFrames);
+            var path = Path.Combine(di.FullName, $"p{relative}_f{frameNo}.jpg");
+            File.WriteAllBytes(path, memStr.ToArray());
+        };
+
+        snapper.Generate(onFrameReceived, renderer.Duration * relative);
+        return di.FullName;
+    }
 }
