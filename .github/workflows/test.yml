@@ -34,10 +34,7 @@ jobs:
       run: |
         json=$(tr '\r\n' ' ' <coveragereport/Summary.json)
         echo "::set-output name=json::$json"
-    - name: TESTTESTTEST1
-      run: echo "${{ steps.getjson.outputs.json }}"
-    - name: TESTTESTTEST2
-      run: echo "${{ fromJson(steps.getjson.outputs.json)['summary'] }}"
+
     - name: TESTTESTTEST3
       run: echo "${{ fromJson(steps.getjson.outputs.json).summary }}"
 
