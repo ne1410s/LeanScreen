@@ -32,12 +32,8 @@ jobs:
     - name: Get coverage json
       id: getjson
       run: |
-        json=$(<coveragereport/Summary.json)
-        echo "-------------------------------"
-        echo "$json"
-        echo "-------------------------------"
+        json=$(tr '\r\n' ' ' <coveragereport/Summary.json)
         echo "::set-output name=json::$json"
-
     - name: TESTTESTTEST1
       run: echo "${{ steps.getjson.outputs.json }}"
     - name: TESTTESTTEST2
