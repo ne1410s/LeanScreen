@@ -34,15 +34,14 @@ jobs:
       run: |
         json=$(tr '\r\n' ' ' <coveragereport/Summary.json)
         echo "::set-output name=json::$json"
-
-    - name: TESTTESTTEST3
-      run: echo "${{ fromJson(steps.getjson.outputs.json).summary }}"
-
-
     - name: Check coverage values
       id: check_coverage
-      if: fromJson(steps.getjson.outputs.json).summary.linecoverage != 100 || fromJson(steps.getjson.outputs.json).summary.branchcoverage != 100 || fromJson(steps.getjson.outputs.json).summary.methodcoverage != 100
-      run: exit 1
+      run: |
+        line=${{ fromJson(steps.getjson.outputs.json).summary.linecoverage }}
+        branch=${{ fromJson(steps.getjson.outputs.json).summary.branchcoverage }}
+        method=${{ fromJson(steps.getjson.outputs.json).summary.methodcoverage }}
+        [ $line == 100 ] && [ $branch == 100 ] && [ $method == 100 ] && exit 0
+        exit 1
     - name: Process coverage report
       if: success() || steps.check_coverage.outcome == 'failure'
       run: |
