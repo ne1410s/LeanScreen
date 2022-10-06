@@ -48,18 +48,19 @@ jobs:
         dotnet reportgenerator -targetdir:'${{ github.workspace }}/drop/reports' -reports:**/coverage.cobertura.xml -reporttypes:"htmlsummary"
         rm -f ${{ github.workspace }}/drop/reports/summary.htm
         mv ${{ github.workspace }}/drop/reports/summary.html ${{ github.workspace }}/drop/reports/coverage-report.html
-    - name: Generate raw mutation data
+    - name: Get mutation data
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
       run: |
-        status=0
+        returncode=0
         shopt -s extglob globstar
-        for testproj in *.+(Test*(s)|UnitTest*(s)); do iter=$(dotnet stryker -tp "$testproj" &>/dev/null; echo $?); status=$(($status + $iter)); echo "$testproj --> $iter"; done; exit $status
-    - name: Process mutation report
-      if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
-      run: |
-        strykerFile=$(find ./StrykerOutput -name mutation-report.html)
-        cp $strykerFile ${{ github.workspace }}/drop/reports
+        for testproj in *.+(Test*(s)|UnitTest*(s)); do
+          iterr=$(dotnet stryker -tp "$testproj" &>/dev/null; echo $?)
+          [ $iterr != 0 ] && echo "$testproj --> FAIL :(" && returncode=1
+          [ $iterr == 0 ] && echo "$testproj --> WIN! :)"
+          mv ./StrykerOutput/**/mutation-report.html "${{ github.workspace }}/drop/reports/mutation-$testproj.html"
+        done
+        exit $returncode
     - name: Drop artifact - reports
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
       uses: actions/upload-artifact@v3
