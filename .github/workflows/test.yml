@@ -54,7 +54,7 @@ jobs:
       run: |
         shopt -s extglob globstar
         status=0
-        for testproj in *.+(Test*(s)|UnitTest*(s)); do dotnet stryker -tp "$testproj" &>/dev/null; status=$(($status + $?)); done; exit $status
+        for testproj in *.+(Test*(s)|UnitTest*(s)); do dotnet stryker -tp "$testproj"; status=$(($status + $?)); done; exit $status
     - name: Process mutation report
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
       run: |
