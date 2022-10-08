@@ -105,7 +105,6 @@ public class SnapshotModuleTests
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().Be(1);
     }
 
-
     [Fact]
     public void SnapSingle_ForCryptFile_ProducesResults()
     {

@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Analyse" Version="1.0.0" />
-    <PackageReference Include="Crypt" Version="1.1.2" />
+    <PackageReference Include="Crypt" Version="1.1.3" />
   </ItemGroup>
 
   <ItemGroup>
