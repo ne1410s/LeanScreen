@@ -16,25 +16,25 @@ namespace Av.Rendering.Ffmpeg
     {
         private const AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
 
-        private readonly IntPtr _convertedFrameBufferPtr;
-        private readonly byte_ptrArray4 _dstData;
-        private readonly int_array4 _dstLinesize;
-        private readonly SwsContext* _pConvertContext;
-        private readonly int _destinationBufferLength;
+        private readonly IntPtr convertedFrameBufferPtr;
+        private readonly byte_ptrArray4 dstData;
+        private readonly int_array4 dstLinesize;
+        private readonly SwsContext* pConvertContext;
+        private readonly int destinationBufferLength;
 
         /// <summary>
-        /// Initialises a new <see cref="FfmpegConverter"/>.
+        /// Initialises a new instance of the <see cref="FfmpegConverter"/> class.
         /// </summary>
         /// <param name="sourceSize">The source size.</param>
         /// <param name="sourcePixelFormat">The source pixel format.</param>
         /// <param name="destinationSize">The destination size.</param>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">Invalid data.</exception>
         public FfmpegConverter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, Dimensions2D destinationSize)
         {
             AssertValid(sourceSize, nameof(sourceSize));
             AssertValid(destinationSize, nameof(destinationSize));
 
-            this._pConvertContext = ffmpeg.sws_getContext(
+            this.pConvertContext = ffmpeg.sws_getContext(
                 sourceSize.Width,
                 sourceSize.Height,
                 sourcePixelFormat,
@@ -46,19 +46,20 @@ namespace Av.Rendering.Ffmpeg
                 null,
                 null);
 
-            this._destinationBufferLength = ffmpeg.av_image_get_buffer_size(
+            this.destinationBufferLength = ffmpeg.av_image_get_buffer_size(
                 DestinationPixelFormat,
                 destinationSize.Width,
                 destinationSize.Height,
                 1);
 
-            this._convertedFrameBufferPtr = Marshal.AllocHGlobal(this._destinationBufferLength);
-            this._dstData = new byte_ptrArray4();
-            this._dstLinesize = new int_array4();
+            this.convertedFrameBufferPtr = Marshal.AllocHGlobal(this.destinationBufferLength);
+            this.dstData = default;
+            this.dstLinesize = default;
 
-            ffmpeg.av_image_fill_arrays(ref this._dstData,
-                ref this._dstLinesize,
-                (byte*)this._convertedFrameBufferPtr,
+            ffmpeg.av_image_fill_arrays(
+                ref this.dstData,
+                ref this.dstLinesize,
+                (byte*)this.convertedFrameBufferPtr,
                 DestinationPixelFormat,
                 destinationSize.Width,
                 destinationSize.Height,
@@ -68,8 +69,37 @@ namespace Av.Rendering.Ffmpeg
         /// <inheritdoc/>
         public void Dispose()
         {
-            Marshal.FreeHGlobal(this._convertedFrameBufferPtr);
-            ffmpeg.sws_freeContext(this._pConvertContext);
+            Marshal.FreeHGlobal(this.convertedFrameBufferPtr);
+            ffmpeg.sws_freeContext(this.pConvertContext);
+        }
+
+        /// <summary>
+        /// Renders a raw frame.
+        /// </summary>
+        /// <param name="sourceFrame">The source frame.</param>
+        /// <returns>Frame data.</returns>
+        internal RawFrame RenderRawFrame(AVFrame sourceFrame)
+        {
+            ffmpeg.sws_scale(
+                this.pConvertContext,
+                sourceFrame.data,
+                sourceFrame.linesize,
+                0,
+                sourceFrame.height,
+                this.dstData,
+                this.dstLinesize);
+
+            var data = default(byte_ptrArray8);
+            data.UpdateFrom(this.dstData);
+            var linesize = default(int_array8);
+            linesize.UpdateFrom(this.dstLinesize);
+
+            var imageBytes = ((IntPtr)data[0]).ToBytes(this.destinationBufferLength);
+            return new RawFrame
+            {
+                Rgb24Bytes = imageBytes,
+                PresentationTime = sourceFrame.best_effort_timestamp,
+            };
         }
 
         /// <summary>
@@ -84,34 +114,6 @@ namespace Av.Rendering.Ffmpeg
             {
                 throw new ArgumentException("The size is invalid.", paramName);
             }
-        }
-
-        /// <summary>
-        /// Renders a raw frame.
-        /// </summary>
-        /// <param name="sourceFrame">The source frame.</param>
-        /// <returns>Frame data.</returns>
-        internal RawFrame RenderRawFrame(AVFrame sourceFrame)
-        {
-            ffmpeg.sws_scale(this._pConvertContext,
-                sourceFrame.data,
-                sourceFrame.linesize,
-                0,
-                sourceFrame.height,
-                this._dstData,
-                this._dstLinesize);
-
-            var data = new byte_ptrArray8();
-            data.UpdateFrom(this._dstData);
-            var linesize = new int_array8();
-            linesize.UpdateFrom(this._dstLinesize);
-
-            var imageBytes = ((IntPtr)data[0]).ToBytes(this._destinationBufferLength);
-            return new RawFrame
-            {
-                Rgb24Bytes = imageBytes,
-                PresentationTime = sourceFrame.best_effort_timestamp,
-            };
         }
     }
 }

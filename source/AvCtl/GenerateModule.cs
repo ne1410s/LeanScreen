@@ -26,7 +26,8 @@ public static class SnapshotModule
     /// <param name="itemCount">The total number of items.</param>
     /// <param name="keyCsv">Key (if source is encrypted).</param>
     /// <returns>The output path.</returns>
-    public static string Evenly(
+    [Alias("evenly")]
+    public static string SnapEvenly(
         [Alias("s")]string source,
         [Alias("d")]string? destination = null,
         [Alias("t")]int itemCount = 24,
@@ -65,7 +66,7 @@ public static class SnapshotModule
     /// <param name="keyCsv">Key (if source is encrypted).</param>
     /// <returns>The output path.</returns>
     [Alias("single")]
-    public static string SingleSnap(
+    public static string SnapSingle(
         [Alias("s")] string source,
         [Alias("d")] string? destination = null,
         [Alias("r")] double relative = .3,

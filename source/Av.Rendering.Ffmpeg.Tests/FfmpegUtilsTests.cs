@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Globalization;
 using FFmpeg.AutoGen;
 using Newtonsoft.Json.Bson;
 
@@ -19,8 +20,8 @@ namespace Av.Rendering.Ffmpeg.Tests
         {
             // Arrange
             var duration = TimeSpan.FromMinutes(12.5);
-            var position = TimeSpan.Parse(positionString);
-            var expected = TimeSpan.Parse(expectedString);
+            var position = TimeSpan.Parse(positionString, CultureInfo.InvariantCulture);
+            var expected = TimeSpan.Parse(expectedString, CultureInfo.InvariantCulture);
 
             // Act
             var actual = position.Clamp(duration);
@@ -40,7 +41,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             var act = () => code.ThrowExceptionIfError();
 
             // Assert
-            act.Should().ThrowExactly<ApplicationException>()
+            act.Should().ThrowExactly<InvalidOperationException>()
                 .WithMessage("No such process");
         }
 
