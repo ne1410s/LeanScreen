@@ -1,4 +1,8 @@
-﻿namespace Av.Rendering.Ffmpeg.Decoding
+﻿// <copyright file="PhysicalFfmpegDecoding.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+namespace Av.Rendering.Ffmpeg.Decoding
 {
     /// <summary>
     /// Ffmpeg decoding session for physical sources.
@@ -6,13 +10,13 @@
     public sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
     {
         /// <summary>
-        /// Initialises a new <see cref="PhysicalFfmpegDecoding"/>.
+        /// Initialises a new instance of the <see cref="PhysicalFfmpegDecoding"/> class.
         /// </summary>
         /// <param name="url">The url to the physical media.</param>
         public PhysicalFfmpegDecoding(string url)
             : base(url)
         {
-            OpenInputContext();
+            this.OpenInputContext();
         }
     }
 }

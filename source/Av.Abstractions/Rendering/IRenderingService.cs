@@ -1,25 +1,29 @@
-﻿using System;
-using Av.Abstractions.Shared;
+﻿// <copyright file="IRenderingService.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Abstractions.Rendering
 {
+    using System;
+    using Av.Abstractions.Shared;
+
     /// <summary>
     /// Obtains image stills from a video.
     /// </summary>
     public interface IRenderingService
     {
         /// <summary>
-        /// The duration.
+        /// Gets the duration.
         /// </summary>
         TimeSpan Duration { get; }
 
         /// <summary>
-        /// The target frame size.
+        /// Gets the target frame size.
         /// </summary>
         Dimensions2D FrameSize { get; }
 
         /// <summary>
-        /// The total number of frames.
+        /// Gets the total number of frames.
         /// </summary>
         long TotalFrames { get; }
 

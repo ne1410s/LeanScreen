@@ -4,7 +4,7 @@
   1. Add a Deploy Key called `COMMIT_KEY_PUB` containing the public part of the SSH key (do give write access)
   1. Add a Secret called `COMMIT_KEY` containing the private part of the SSH key
   1. Add a Secret called `READ_REPO_PACKAGES` containing the *packages:read* central PAT Token
-  1. Change every reference to DemoLibrary!
+  1. Change every reference to DemoLibrary! **NB:** *Especially the "repo url" in the csproj file(s) :')*
 
 ## Justification
 ### VersionPrefix

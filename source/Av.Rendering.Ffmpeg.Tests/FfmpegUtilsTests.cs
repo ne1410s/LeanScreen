@@ -1,4 +1,8 @@
-﻿using FFmpeg.AutoGen;
+﻿// <copyright file="FfmpegUtilsTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using FFmpeg.AutoGen;
 using Newtonsoft.Json.Bson;
 
 namespace Av.Rendering.Ffmpeg.Tests

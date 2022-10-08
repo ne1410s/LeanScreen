@@ -1,11 +1,16 @@
-﻿using Av;
+﻿// <copyright file="GenerateModule.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+namespace AvCtl;
+
+using System.Globalization;
+using Av;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
 using Comanche;
-
-namespace AvCtl;
 
 /// <summary>
 /// Generate module.
@@ -33,7 +38,7 @@ public static class SnapshotModule
             destination = fi.DirectoryName;
         }
 
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b)).ToArray();
+        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
         IRenderingService renderer = new FfmpegRenderer(source, key);
         var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
         var snapper = new ThumbnailGenerator(renderer);
@@ -59,7 +64,8 @@ public static class SnapshotModule
     /// <param name="relative">The relative position, from 0 - 1.</param>
     /// <param name="keyCsv">Key (if source is encrypted).</param>
     /// <returns>The output path.</returns>
-    public static string Single(
+    [Alias("single")]
+    public static string SingleSnap(
         [Alias("s")] string source,
         [Alias("d")] string? destination = null,
         [Alias("r")] double relative = .3,
@@ -71,7 +77,7 @@ public static class SnapshotModule
             destination = fi.DirectoryName;
         }
 
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b)).ToArray();
+        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
         IRenderingService renderer = new FfmpegRenderer(source, key);
         var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
         var snapper = new ThumbnailGenerator(renderer);

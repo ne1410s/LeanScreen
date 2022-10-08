@@ -1,4 +1,8 @@
-﻿namespace Av.Rendering.Ffmpeg
+﻿// <copyright file="RawFrame.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+namespace Av.Rendering.Ffmpeg
 {
     /// <summary>
     /// Raw frame data.
@@ -6,12 +10,12 @@
     internal class RawFrame
     {
         /// <summary>
-        /// The rendered bytes, in RGB 24-byte format.
+        /// Gets or sets the rendered bytes, in RGB 24-byte format.
         /// </summary>
         public byte[] Rgb24Bytes { get; set; }
 
         /// <summary>
-        /// The presentation time of the frame.
+        /// Gets or sets the presentation time of the frame.
         /// </summary>
         public long PresentationTime { get; set; }
     }

@@ -1,9 +1,13 @@
-﻿using System;
-using System.Linq;
-using Av.Abstractions.Rendering;
+﻿// <copyright file="ThumbnailGenerator.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Services
 {
+    using System;
+    using System.Linq;
+    using Av.Abstractions.Rendering;
+
     /// <summary>
     /// Generates thumbnails.
     /// </summary>
@@ -12,7 +16,7 @@ namespace Av.Services
         private readonly IRenderingService renderer;
 
         /// <summary>
-        /// Initialises a new <see cref="ThumbnailGenerator"/>.
+        /// Initialises a new instance of the <see cref="ThumbnailGenerator"/> class.
         /// </summary>
         /// <param name="renderer">A video renderer.</param>
         public ThumbnailGenerator(IRenderingService renderer)
@@ -29,7 +33,7 @@ namespace Av.Services
         public void Generate(
             Action<RenderedFrame, int> onRendered,
             int itemCount = 24)
-                => Generate(onRendered, new TimeSpan[itemCount]);
+                => this.Generate(onRendered, new TimeSpan[itemCount]);
 
         /// <summary>
         /// Provides access for the caller to handle rendered frames directly,
@@ -43,12 +47,12 @@ namespace Av.Services
         {
             if (times.Length > 1 && times.All(t => t == default))
             {
-                times = renderer.Duration.DistributeEvenly(times.Length);
+                times = this.renderer.Duration.DistributeEvenly(times.Length);
             }
 
             for (var i = 0; i < times.Length; i++)
             {
-                var frame = renderer.RenderAt(times[i]);
+                var frame = this.renderer.RenderAt(times[i]);
                 onRendered.Invoke(frame, i);
             }
         }

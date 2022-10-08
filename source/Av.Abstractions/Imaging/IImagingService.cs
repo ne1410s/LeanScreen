@@ -1,8 +1,12 @@
-﻿using System.IO;
-using Av.Abstractions.Shared;
+﻿// <copyright file="IImagingService.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Abstractions.Imaging
 {
+    using System.IO;
+    using Av.Abstractions.Shared;
+
     /// <summary>
     /// Implementation for image services.
     /// </summary>

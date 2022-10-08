@@ -1,42 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using Av.Abstractions.Shared;
-using FFmpeg.AutoGen;
+﻿// <copyright file="IFfmpegDecodingSession.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
+    using System;
+    using System.Collections.Generic;
+    using Av.Abstractions.Shared;
+    using FFmpeg.AutoGen;
+
     /// <summary>
     /// Ffmpeg decoding session.
     /// </summary>
     public interface IFfmpegDecodingSession : IDisposable
     {
         /// <summary>
-        /// The codec name.
+        /// Gets the codec name.
         /// </summary>
         string CodecName { get; }
 
         /// <summary>
-        /// The dimensions.
+        /// Gets the dimensions.
         /// </summary>
         Dimensions2D Dimensions { get; }
 
         /// <summary>
-        /// The duration.
+        /// Gets the duration.
         /// </summary>
         TimeSpan Duration { get; }
 
         /// <summary>
-        /// The pixel format.
+        /// Gets the pixel format.
         /// </summary>
         AVPixelFormat PixelFormat { get; }
 
         /// <summary>
-        /// The time base.
+        /// Gets the time base.
         /// </summary>
         AVRational TimeBase { get; }
 
         /// <summary>
-        /// The total frames.
+        /// Gets the total frames.
         /// </summary>
         long TotalFrames { get; }
 

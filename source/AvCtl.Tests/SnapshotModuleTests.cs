@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿// <copyright file="SnapshotModuleTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Comanche;
 using Comanche.Services;

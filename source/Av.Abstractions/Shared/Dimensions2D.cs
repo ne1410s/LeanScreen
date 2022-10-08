@@ -1,4 +1,8 @@
-﻿namespace Av.Abstractions.Shared
+﻿// <copyright file="Dimensions2D.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+namespace Av.Abstractions.Shared
 {
     /// <summary>
     /// 2D dimensions.
@@ -6,12 +10,12 @@
     public struct Dimensions2D
     {
         /// <summary>
-        /// The height.
+        /// Gets or sets the height.
         /// </summary>
         public int Height { get; set; }
 
         /// <summary>
-        /// The width.
+        /// Gets or sets the width.
         /// </summary>
         public int Width { get; set; }
     }

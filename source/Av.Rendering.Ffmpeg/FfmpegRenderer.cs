@@ -1,13 +1,17 @@
-﻿using System;
-using System.IO;
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
-using Av.Rendering.Ffmpeg.Decoding;
-using Crypt.IO;
-using Crypt.Streams;
+﻿// <copyright file="FfmpegRenderer.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg
 {
+    using System;
+    using System.IO;
+    using Av.Abstractions.Rendering;
+    using Av.Abstractions.Shared;
+    using Av.Rendering.Ffmpeg.Decoding;
+    using Crypt.IO;
+    using Crypt.Streams;
+
     /// <summary>
     /// Ffmpeg frame renderer.
     /// </summary>
@@ -17,7 +21,7 @@ namespace Av.Rendering.Ffmpeg
         private readonly FfmpegConverter converter;
 
         /// <summary>
-        /// Initialises a new <see cref="FfmpegRenderer"/>.
+        /// Initialises a new instance of the <see cref="FfmpegRenderer"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="key">The key (for cryptographic sources).</param>
@@ -27,17 +31,17 @@ namespace Av.Rendering.Ffmpeg
         { }
 
         /// <summary>
-        /// Initialises a new <see cref="FfmpegRenderer"/>.
+        /// Initialises a new instance of the <see cref="FfmpegRenderer"/> class.
         /// </summary>
         /// <param name="decoder">The decoder.</param>
         /// <param name="frameSize">The target frame size.</param>
         public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
         {
             this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
-            FrameSize = frameSize ?? decoder.Dimensions;
-            Duration = decoder.Duration;
-            TotalFrames = decoder.TotalFrames;
-            converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, FrameSize);
+            this.FrameSize = frameSize ?? decoder.Dimensions;
+            this.Duration = decoder.Duration;
+            this.TotalFrames = decoder.TotalFrames;
+            this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, this.FrameSize);
         }
 
         /// <inheritdoc/>
@@ -52,16 +56,16 @@ namespace Av.Rendering.Ffmpeg
         /// <inheritdoc/>
         public RenderedFrame RenderAt(TimeSpan position)
         {
-            decoder.Seek(position.Clamp(decoder.Duration));
-            decoder.TryDecodeNextFrame(out var frame);
-            var rawFrame = converter.RenderRawFrame(frame);
-            var actualPosition = rawFrame.PresentationTime.ToTimeSpan(decoder.TimeBase);
-            var inferredFrame = TotalFrames * (actualPosition.TotalSeconds / Duration.TotalSeconds);
+            this.decoder.Seek(position.Clamp(this.decoder.Duration));
+            this.decoder.TryDecodeNextFrame(out var frame);
+            var rawFrame = this.converter.RenderRawFrame(frame);
+            var actualPosition = rawFrame.PresentationTime.ToTimeSpan(this.decoder.TimeBase);
+            var inferredFrame = this.TotalFrames * (actualPosition.TotalSeconds / this.Duration.TotalSeconds);
 
             return new RenderedFrame
             {
                 Rgb24Bytes = rawFrame.Rgb24Bytes,
-                Dimensions = FrameSize,
+                Dimensions = this.FrameSize,
                 Position = actualPosition,
                 FrameNumber = (long)Math.Round(inferredFrame),
             };
@@ -70,8 +74,9 @@ namespace Av.Rendering.Ffmpeg
         /// <inheritdoc/>
         public void Dispose()
         {
-            converter.Dispose();
-            decoder.Dispose();
+            this.converter.Dispose();
+            this.decoder.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         private static IFfmpegDecodingSession GetDecoder(string source, byte[] key = null)

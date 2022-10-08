@@ -1,9 +1,13 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using FFmpeg.AutoGen;
+﻿// <copyright file="FfmpegUtils.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using FFmpeg.AutoGen;
+
     /// <summary>
     /// Ffmpeg utilities.
     /// </summary>
@@ -14,7 +18,7 @@ namespace Av.Rendering.Ffmpeg
         /// </summary>
         /// <param name="error">The error code.</param>
         /// <returns>The error message.</returns>
-        public static unsafe string Av_StrError(int error)
+        public static unsafe string AvStrError(int error)
         {
             const int bufferSize = 1024;
             var buffer = stackalloc byte[bufferSize];
@@ -102,10 +106,10 @@ namespace Av.Rendering.Ffmpeg
         /// </summary>
         /// <param name="status">The potential error code.</param>
         /// <returns>The code, if non-error.</returns>
-        /// <exception cref="ApplicationException"></exception>
+        /// <exception cref="InvalidOperationException">Error.</exception>
         public static int ThrowExceptionIfError(this int status) => status >= 0
             ? status
-            : throw new ApplicationException(Av_StrError(status));
+            : throw new InvalidOperationException(AvStrError(status));
 
         /// <summary>
         /// Sets up binaries, according to the operating system detected (or
@@ -128,7 +132,10 @@ namespace Av.Rendering.Ffmpeg
             // do not convert to local function
             av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
             {
-                if (level > ffmpeg.av_log_get_level()) return;
+                if (level > ffmpeg.av_log_get_level())
+                {
+                    return;
+                }
 
                 const int lineSize = 1024;
                 var lineBuffer = stackalloc byte[lineSize];

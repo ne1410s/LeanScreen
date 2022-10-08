@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Av.Models;
+﻿// <copyright file="FormatExtensions.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using Av.Models;
+
     /// <summary>
     /// Extensions for formatting.
     /// </summary>
@@ -91,6 +95,7 @@ namespace Av
         /// Gets an upper-bound format; which can be used to format shorter numbers
         /// so that they are left-padded with the appropriate number of zeros.
         /// </summary>
+        /// <typeparam name="T">The upper bounded type.</typeparam>
         /// <param name="upperBound">The upper bound.</param>
         /// <returns>A format string.</returns>
         public static string GetUpperBoundFormat<T>(this T upperBound)
@@ -104,7 +109,7 @@ namespace Av
         /// <param name="upperBound">The upper bound.</param>
         /// <returns>The formatted value.</returns>
         public static string FormatToUpperBound(this long value, long upperBound)
-            => value.ToString(upperBound.GetUpperBoundFormat());
+            => value.ToString(upperBound.GetUpperBoundFormat(), CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Provides a format string sufficient to house the largest unit of
@@ -136,7 +141,7 @@ namespace Av
         /// <returns>Media type information.</returns>
         public static MediaTypeInfo GetMediaTypeInfo(this string extension)
         {
-            extension = $".{extension?.ToLower().TrimStart('.')}";
+            extension = $".{extension?.ToLower(CultureInfo.InvariantCulture).TrimStart('.')}";
             return ArchiveMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Archive, ArchiveMimes[extension])
                 : ImageMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Image, ImageMimes[extension])
                 : AudioMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Audio, AudioMimes[extension])
@@ -152,10 +157,26 @@ namespace Av
         public static HashSet<string> GetExtensions(this MediaTypes mediaType)
         {
             var extensions = new List<string>();
-            if (mediaType.HasFlag(MediaTypes.Archive)) extensions.AddRange(ArchiveMimes.Keys);
-            if (mediaType.HasFlag(MediaTypes.Image)) extensions.AddRange(ImageMimes.Keys);
-            if (mediaType.HasFlag(MediaTypes.Audio)) extensions.AddRange(AudioMimes.Keys);
-            if (mediaType.HasFlag(MediaTypes.Video)) extensions.AddRange(VideoMimes.Keys);
+            if (mediaType.HasFlag(MediaTypes.Archive))
+            {
+                extensions.AddRange(ArchiveMimes.Keys);
+            }
+
+            if (mediaType.HasFlag(MediaTypes.Image))
+            {
+                extensions.AddRange(ImageMimes.Keys);
+            }
+
+            if (mediaType.HasFlag(MediaTypes.Audio))
+            {
+                extensions.AddRange(AudioMimes.Keys);
+            }
+
+            if (mediaType.HasFlag(MediaTypes.Video))
+            {
+                extensions.AddRange(VideoMimes.Keys);
+            }
+
             return new HashSet<string>(extensions, StringComparer.OrdinalIgnoreCase);
         }
     }

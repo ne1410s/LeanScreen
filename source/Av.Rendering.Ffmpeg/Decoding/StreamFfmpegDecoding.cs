@@ -1,8 +1,12 @@
-﻿using Crypt.Streams;
-using FFmpeg.AutoGen;
+﻿// <copyright file="StreamFfmpegDecoding.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
+    using Crypt.Streams;
+    using FFmpeg.AutoGen;
+
     /// <summary>
     /// Ffmpeg decoding session for stream sources.
     /// </summary>
@@ -15,23 +19,23 @@ namespace Av.Rendering.Ffmpeg.Decoding
         private AVIOContext* streamIc;
 
         /// <summary>
-        /// Initialises a new <see cref="StreamFfmpegDecoding"/>.
+        /// Initialises a new instance of the <see cref="StreamFfmpegDecoding"/> class.
         /// </summary>
         /// <param name="stream">A stream.</param>
         public StreamFfmpegDecoding(ISimpleReadStream stream)
             : base(string.Empty)
         {
-            readStream = stream;
-            uStream = new UStream(stream);
-            readFn = uStream.ReadUnsafe;
-            seekFn = uStream.SeekUnsafe;
-            var bufLen = uStream.BufferLength;
+            this.readStream = stream;
+            this.uStream = new UStreamInternal(stream);
+            this.readFn = this.uStream.ReadUnsafe;
+            this.seekFn = this.uStream.SeekUnsafe;
+            var bufLen = this.uStream.BufferLength;
             var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
-            streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
+            this.streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, this.readFn, null, this.seekFn);
             streamIc->seekable = 1;
-            PtrFormatContext->pb = streamIc;
+            PtrFormatContext->pb = this.streamIc;
 
-            OpenInputContext();
+            this.OpenInputContext();
         }
 
         /// <inheritdoc/>
@@ -40,14 +44,14 @@ namespace Av.Rendering.Ffmpeg.Decoding
             base.Dispose();
 
             ffmpeg.av_freep(&streamIc->buffer);
-            var customInputContext = streamIc;
+            var customInputContext = this.streamIc;
             ffmpeg.av_freep(&customInputContext);
-            streamIc = null;
-            readFn = null;
-            seekFn = null;
-            uStream.Dispose();
-            uStream = null;
-            readStream.Dispose();
+            this.streamIc = null;
+            this.readFn = null;
+            this.seekFn = null;
+            this.uStream.Dispose();
+            this.uStream = null;
+            this.readStream.Dispose();
         }
     }
 }

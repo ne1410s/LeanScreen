@@ -1,12 +1,16 @@
-﻿using System.IO;
-using Av.Abstractions.Imaging;
-using Av.Abstractions.Shared;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.PixelFormats;
+﻿// <copyright file="SixLaborsImagingService.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Imaging.SixLabors
 {
+    using System.IO;
+    using Av.Abstractions.Imaging;
+    using Av.Abstractions.Shared;
+    using global::SixLabors.ImageSharp;
+    using global::SixLabors.ImageSharp.Formats.Jpeg;
+    using global::SixLabors.ImageSharp.PixelFormats;
+
     /// <inheritdoc cref="IImagingService"/>
     public class SixLaborsImagingService : IImagingService
     {

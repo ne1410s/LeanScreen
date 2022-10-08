@@ -1,11 +1,15 @@
-﻿using Av.Rendering.Ffmpeg.Decoding;
+﻿// <copyright file="UStreamTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
 
 namespace Av.Rendering.Ffmpeg.Tests.Decoding
 {
     /// <summary>
-    /// Tests for <see cref="UStream"/>.
+    /// Tests for <see cref="UStreamInternal"/>.
     /// </summary>
     public class UStreamTests
     {
@@ -13,7 +17,7 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         public void Dispose_WithNullStream_DoesNotError()
         {
             // Arrange
-            var sut = new UStream(null!);
+            var sut = new UStreamInternal(null!);
 
             // Act
             var act = () => sut.Dispose();
@@ -27,7 +31,7 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
-            var sut = new UStream(new SimpleFileStream(fi));
+            var sut = new UStreamInternal(new SimpleFileStream(fi));
             var expected = ffmpeg.AVERROR_EOF;
 
             // Act
@@ -44,7 +48,7 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
             var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
 
             // Act
-            var sut = new UStream(new SimpleFileStream(fi));
+            var sut = new UStreamInternal(new SimpleFileStream(fi));
 
             // Assert
             sut.CanSeek.Should().BeTrue();

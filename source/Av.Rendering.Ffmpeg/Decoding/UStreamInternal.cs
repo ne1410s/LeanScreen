@@ -1,42 +1,46 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Crypt.Streams;
-using FFmpeg.AutoGen;
+﻿// <copyright file="UStreamInternal.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using Crypt.Streams;
+    using FFmpeg.AutoGen;
+
     /// <summary>
     /// Wraps <see cref="ISimpleReadStream"/>, exposing the interface to the
     /// internal workings of ffmpeg. This is an unmanaged instance.
     /// </summary>
-    public unsafe class UStream : IUStream
+    public unsafe class UStreamInternal : IUStream
     {
         private const int SeekSize = ffmpeg.AVSEEK_SIZE;
         private static readonly int EOF = ffmpeg.AVERROR_EOF;
 
-        private readonly object readLock = new object();
+        private readonly object readLock = new();
         private readonly ISimpleReadStream source;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UStream"/>.
+        /// Initialises a new instance of the <see cref="UStreamInternal"/> class.
         /// </summary>
         /// <param name="source">The input stream.</param>
-        public UStream(ISimpleReadStream source)
+        public UStreamInternal(ISimpleReadStream source)
         {
             this.source = source;
         }
 
         /// <inheritdoc/>
-        public int BufferLength => source.BufferLength;
+        public int BufferLength => this.source.BufferLength;
 
         /// <inheritdoc/>
-        public bool CanSeek => source.CanSeek;
+        public bool CanSeek => this.source.CanSeek;
 
         /// <inheritdoc/>
         public int ReadUnsafe(void* opaque, byte* buffer, int bufferLength) =>
-            TryManipulateStream(EOF, () =>
+            this.TryManipulateStream(EOF, () =>
             {
-                var read = source.Read();
+                var read = this.source.Read();
                 if (read.Length > 0)
                 {
                     Marshal.Copy(read, 0, (IntPtr)buffer, read.Length);
@@ -47,22 +51,29 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
         /// <inheritdoc/>
         public long SeekUnsafe(void* opaque, long offset, int whence) =>
-            TryManipulateStream(EOF, () => whence == SeekSize
-                ? source.Length
-                : source.Seek(offset));
+            this.TryManipulateStream(EOF, () => whence == SeekSize
+                ? this.source.Length
+                : this.source.Seek(offset));
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            source?.Dispose();
+            this.source?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         private T TryManipulateStream<T>(T fallback, Func<T> operation)
         {
-            lock (readLock)
+            lock (this.readLock)
             {
-                try { return operation(); }
-                catch { return fallback; }
+                try
+                {
+                    return operation();
+                }
+                catch
+                {
+                    return fallback;
+                }
             }
         }
     }

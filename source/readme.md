@@ -8,7 +8,10 @@ dotnet tool restore
 gci **/TestResults/ | ri -r; dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary"; start coveragereport/index.html;
 
 # Run mutation tests and show report (per project)
-if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o [-tp TEST_PROJECT_NAME]
+if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o -tp Av.Imaging.SixLabors.Tests
+if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o -tp Av.Rendering.Ffmpeg.Tests
+if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o -tp Av.Tests
+if (Test-Path StrykerOutput) { rm -r StrykerOutput }; dotnet stryker -o -tp AvCtl.Tests
 
 # Bundle up executable
 dotnet publish AvCtl -p:PublishSingleFile=true -p:DebugType=None -r win-x64 -c Release --sc false

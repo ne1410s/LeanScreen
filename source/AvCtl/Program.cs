@@ -1,8 +1,13 @@
-﻿#if DEBUG
-_ = Comanche.Session.Route(new[] {
+﻿// <copyright file="Program.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+#if DEBUG
+_ = Comanche.Session.Route(new[]
+{
     "snap",
     "evenly",
-    "-s C:\\temp\\media\\sample.mp4"
+    "-s C:\\temp\\media\\sample.mp4",
 });
 #else
 _ = Comanche.Session.Route();

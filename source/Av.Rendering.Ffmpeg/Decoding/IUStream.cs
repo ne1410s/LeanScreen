@@ -1,7 +1,11 @@
-﻿using System;
+﻿// <copyright file="IUStream.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av.Rendering.Ffmpeg.Decoding
 {
+    using System;
+
     /// <summary>
     /// Exposes the managed streams to the internal workings of ffmpeg.
     /// </summary>

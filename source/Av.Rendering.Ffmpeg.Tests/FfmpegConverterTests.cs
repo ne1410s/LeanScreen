@@ -1,4 +1,8 @@
-﻿using Av.Abstractions.Shared;
+﻿// <copyright file="FfmpegConverterTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using Av.Abstractions.Shared;
 
 namespace Av.Rendering.Ffmpeg.Tests;
 

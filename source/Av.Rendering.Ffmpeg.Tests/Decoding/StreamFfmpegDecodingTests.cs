@@ -1,4 +1,8 @@
-﻿using Av.Rendering.Ffmpeg.Decoding;
+﻿// <copyright file="StreamFfmpegDecodingTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
 
@@ -59,18 +63,19 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
 
         private unsafe class TestDecoding : FfmpegDecodingSessionBase
         {
-            public TestDecoding(string url) : base(url)
+            public TestDecoding(string url)
+                : base(url)
             {
-                OpenInputContext();
-                var pFormatContext = PtrFormatContext;
+                this.OpenInputContext();
+                var pFormatContext = this.PtrFormatContext;
                 pFormatContext->seek2any = 1;
             }
 
             public override void Seek(TimeSpan position)
             {
                 const long max_ts = long.MaxValue;
-                var ts = position.ToLong(TimeBase);
-                ffmpeg.avformat_seek_file(PtrFormatContext, StreamIndex, long.MinValue, ts, max_ts, 0);
+                var ts = position.ToLong(this.TimeBase);
+                ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, max_ts, 0);
             }
         }
     }

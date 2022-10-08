@@ -1,4 +1,8 @@
-﻿using Av.Models;
+﻿// <copyright file="FileExtensionsTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using Av.Models;
 
 namespace Av.Tests;
 

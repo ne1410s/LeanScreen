@@ -1,4 +1,9 @@
-﻿using Av.Models;
+﻿// <copyright file="FormatExtensionsTests.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
+
+using System.Globalization;
+using Av.Models;
 
 namespace Av.Tests;
 
@@ -15,7 +20,7 @@ public class FormatExtensionsTests
     public void FormatConcise_VaryingInput_ReturnsExpected(string input, string expected)
     {
         // Arrange
-        var timeSpan = TimeSpan.Parse(input);
+        var timeSpan = TimeSpan.Parse(input, CultureInfo.InvariantCulture);
 
         // Act
         var actual = timeSpan.FormatConcise();
@@ -80,7 +85,8 @@ public class FormatExtensionsTests
     [InlineData(".vob", MediaTypes.Video, "video/x-ms-vob")]
     [InlineData(".webm", MediaTypes.Video, "video/webm")]
     [InlineData(".wmv", MediaTypes.Video, "video/x-ms-wmv")]
-    public void GetMediaTypeInfo_ValidExtension_ReturnsInfo(string extension, MediaTypes expectedType, string expectedMime)
+    public void GetMediaTypeInfo_ValidExtension_ReturnsInfo(
+        string extension, MediaTypes expectedType, string expectedMime)
     {
         // Arrange
         var expected = new MediaTypeInfo(expectedType, expectedMime);

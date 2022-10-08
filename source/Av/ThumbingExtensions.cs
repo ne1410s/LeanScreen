@@ -1,8 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿// <copyright file="ThumbingExtensions.cs" company="ne1410s">
+// Copyright (c) ne1410s. All rights reserved.
+// </copyright>
 
 namespace Av
 {
+    using System;
+    using System.Linq;
+
     /// <summary>
     /// Extensions to assist with the production of thumbnails.
     /// </summary>
