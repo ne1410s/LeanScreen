@@ -58,10 +58,9 @@ jobs:
         shopt -s extglob globstar
         for testproj in *.+(Test*(s)|UnitTest*(s)); do
           echo "Generating mutants for: $testproj..."
-          #iterr=$(dotnet stryker -tp "$testproj" "$endArgs" &>/dev/null; echo $?)
-          iterr=$(dotnet stryker -tp "$testproj" "$endArgs"; echo $?)
-          [ $iterr != 0 ] && echo " -- failed to destroy all mutants :(" && returncode=1
-          [ $iterr == 0 ] && echo " -- you destroyed all the mutants :)"
+          iterr=$(dotnet stryker -tp "$testproj" "$endArgs" &>/dev/null; echo $?)
+          [ "$iterr" != 0 ] && echo " -- failed to destroy all mutants :(" && returncode=1
+          [ "$iterr" == 0 ] && echo " -- you destroyed all the mutants :)"
           echo " -- staging report to artifact location..."
           mv ./StrykerOutput/**/mutation-report.html "${{ github.workspace }}/drop/reports/mutation-$testproj.html"
         done
