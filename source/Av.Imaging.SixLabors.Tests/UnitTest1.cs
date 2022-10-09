@@ -8,7 +8,6 @@ namespace Av.Imaging.SixLabors.Tests
     {
         [Fact]
         public void Test1()
-        {
-        }
+        { }
     }
 }
