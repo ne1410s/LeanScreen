@@ -52,6 +52,8 @@ jobs:
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
       run: |
+        echo "base sha1: ${{ github.event.pull_request.base.sha }}"
+        echo "base sha2: ${{ github.event.workflow_run.base_sha }}"
         returncode=0
         shopt -s extglob globstar
         for testproj in *.+(Test*(s)|UnitTest*(s)); do
