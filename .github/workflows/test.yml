@@ -55,7 +55,7 @@ jobs:
         baseSha=${{ github.event.pull_request.base.sha }}
         if [ "$baseSha" ]; then
           git fetch
-          git checkout main
+          #git checkout main
           endArgs="-V Error --since:$baseSha"
         else
           endArgs="-V Error"
