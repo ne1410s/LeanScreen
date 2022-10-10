@@ -55,17 +55,14 @@ jobs:
         baseSha=${{ github.event.pull_request.base.sha }}
         if [ "$baseSha" ]; then
           git fetch
-          #git checkout main
-          endArgs="-V Error --since:$baseSha"
-        else
-          endArgs="-V Error"
+          sinceArg="--since:$baseSha"
         fi
         returncode=0
         shopt -s extglob globstar
         for testproj in *.+(Test*(s)|UnitTest*(s)); do
           echo "Generating mutants for: $testproj..."
 
-          dotnet stryker -tp "$testproj" --since:8568efd52b2f0ecc1e098f85a7e9f158146fd2d9
+          dotnet stryker -tp "$testproj" "$sinceArg"
 
           # iterr=$(dotnet stryker -tp "$testproj" "$endArgs" &>/dev/null; echo $?)
           # [ "$iterr" != 0 ] && echo " -- failed to destroy all mutants :(" && returncode=1
