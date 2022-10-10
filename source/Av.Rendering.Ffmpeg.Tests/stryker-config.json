@@ -1,0 +1,13 @@
+{
+  "stryker-config": {
+    "ignore-methods": [
+      "av_freep",
+      "Dispose"
+    ],
+    "thresholds": {
+      "high": 100,
+      "low": 100,
+      "break": 100
+    }
+  }
+}

@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
@@ -43,6 +44,23 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
 
             // Assert
             act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void Dispose_WhenCalled_NullsTheStreamReadFunction()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+            const BindingFlags fieldFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            // Act
+            sut.Dispose();
+
+            // Assert
+            var fnInfo = sut.GetType().GetField("readFn", fieldFlags);
+            var fnValue = fnInfo!.GetValue(sut);
+            fnValue.Should().BeNull();
         }
 
         [Fact]
