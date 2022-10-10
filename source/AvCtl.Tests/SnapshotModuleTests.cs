@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Comanche;
@@ -24,6 +25,24 @@ public class SnapshotModuleTests
 
         // Assert
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().Be(total);
+    }
+
+    [Fact]
+    public void SnapEvenly_WithFile_FileNamingConventionsApplied()
+    {
+        // Arrange
+        var source = Path.Combine("Samples", "sample.mp4");
+        var destInfo = Directory.CreateDirectory($"pic_names_{Guid.NewGuid()}");
+        const int total = 9;
+        var expectedPrefixes = Enumerable.Range(1, total).Select(i => $"n{i}_f");
+
+        // Act
+        var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name} -t {total}");
+        var actualPrefixes = Directory.GetFiles((string)returnDest!, "*.jpg")
+            .Select(name => new FileInfo(name).Name[..4]);
+
+        // Assert
+        actualPrefixes.Should().BeEquivalentTo(expectedPrefixes);
     }
 
     [Fact]
@@ -92,17 +111,25 @@ public class SnapshotModuleTests
     }
 
     [Fact]
-    public void SnapSingle_ForFile_ProducesFile()
+    public void SnapSingle_ForFile_ProducesFileApproxFrame()
     {
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
         var destInfo = Directory.CreateDirectory($"pic_snap1_{Guid.NewGuid()}");
+        const int mediaFrames = 973;
+        const double position = 0.5;
+        const int expectedFrame = (int)(mediaFrames * position);
 
         // Act
-        var returnDest = Route($"snap single -s {source} -d {destInfo.Name} -r 0.5");
+        var returnDest = Route($"snap single -s {source} -d {destInfo.Name} -r {position}");
+        var filePath = Directory.GetFiles((string)returnDest!, "*.jpg").Single();
+        var fileName = new FileInfo(filePath).Name;
+        var frameNo = int.Parse(
+            Regex.Match(fileName, "_f(?<frame>\\d+)").Groups["frame"].Value,
+            CultureInfo.InvariantCulture);
 
         // Assert
-        Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().Be(1);
+        frameNo.Should().BeCloseTo(expectedFrame, 20);
     }
 
     [Fact]
