@@ -1,8 +1,11 @@
 {
   "stryker-config": {
     "ignore-methods": [
-      "av_freep",
-      "Dispose"
+      "av*",
+      "sws*",
+      "Dispose",
+      "FreeHGlobal",
+      "SuppressFinalize"
     ],
     "thresholds": {
       "high": 100,

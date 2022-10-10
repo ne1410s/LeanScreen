@@ -33,17 +33,19 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
-        public void Dispose_WhenCalled_DoesNotError()
+        public void Dispose_WhenCalled_SetsNegativeStreamIndex()
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
             var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+            var indexInfo = sut.GetType().GetProperty("StreamIndex", BindingFlags.Instance | BindingFlags.NonPublic);
 
             // Act
-            var act = () => sut.Dispose();
+            sut.Dispose();
+            var index = (int?)indexInfo!.GetValue(sut);
 
             // Assert
-            act.Should().NotThrow();
+            index.Should().Be(-1);
         }
 
         [Fact]
@@ -75,6 +77,20 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
 
             // Assert
             info.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void TryDecodeNextFrame_AtStart_ReturnsTrue()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var sut = new TestDecoding(fi.FullName);
+
+            // Act
+            var result = sut.TryDecodeNextFrame(out _);
+
+            // Assert
+            result.Should().BeTrue();
         }
 
         [Fact]

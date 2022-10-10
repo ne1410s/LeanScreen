@@ -109,6 +109,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
             this.PtrCodecContext = null;
             this.PtrFormatContext = null;
+            this.StreamIndex = -1;
 
             GC.SuppressFinalize(this);
         }

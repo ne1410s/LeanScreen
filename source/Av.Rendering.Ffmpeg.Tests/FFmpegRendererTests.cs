@@ -2,6 +2,8 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;
@@ -28,6 +30,24 @@ namespace Av.Rendering.Ffmpeg.Tests
 
             /// <summary>Block read mode.</summary>
             BlockReads,
+        }
+
+        [Fact]
+        public void RenderAt_WhenCalled_CallsSeek()
+        {
+            // Arrange
+            FfmpegUtils.SetupBinaries();
+            var mockDecoder = new Mock<IFfmpegDecodingSession>();
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            mockDecoder.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(100));
+            var sut = new FfmpegRenderer(mockDecoder.Object);
+            var ts = TimeSpan.FromSeconds(1.34);
+
+            // Act
+            sut.RenderAt(ts);
+
+            // Assert
+            mockDecoder.Verify(m => m.Seek(ts), Times.Once());
         }
 
         [Theory]
@@ -76,17 +96,37 @@ namespace Av.Rendering.Ffmpeg.Tests
         }
 
         [Fact]
-        public void Dispose_WhenCalled_DoesNotError()
+        public void RenderAt_ForFile_ProducesFileApproxFrame()
         {
             // Arrange
-            var fi = new FileInfo(Path.Combine("Samples", "sample.avi"));
-            var sut = new FfmpegRenderer(fi.FullName);
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var decoder = Get(DecodeMode.BlockReads, fi);
+            var sut = new FfmpegRenderer(decoder);
+            const double relative = 0.5;
+            var ts = decoder.Duration * relative;
+            var expectedFrame = (int)(decoder.TotalFrames * relative);
 
             // Act
-            var act = () => sut.Dispose();
+            var result = sut.RenderAt(ts).FrameNumber;
 
             // Assert
-            act.Should().NotThrow();
+            result.Should().BeCloseTo(expectedFrame, 10);
+        }
+
+        [Fact]
+        public void Dispose_WhenCalled_DisposesDecoder()
+        {
+            // Arrange
+            FfmpegUtils.SetupBinaries();
+            var mockDecoder = new Mock<IFfmpegDecodingSession>();
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            var sut = new FfmpegRenderer(mockDecoder.Object);
+
+            // Act
+            sut.Dispose();
+
+            // Assert
+            mockDecoder.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]

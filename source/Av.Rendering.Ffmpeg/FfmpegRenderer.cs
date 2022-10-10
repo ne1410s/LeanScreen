@@ -15,7 +15,7 @@ namespace Av.Rendering.Ffmpeg
     /// <summary>
     /// Ffmpeg frame renderer.
     /// </summary>
-    public class FfmpegRenderer : IRenderingService, IDisposable
+    public sealed class FfmpegRenderer : IRenderingService, IDisposable
     {
         private readonly IFfmpegDecodingSession decoder;
         private readonly FfmpegConverter converter;
@@ -76,7 +76,6 @@ namespace Av.Rendering.Ffmpeg
         {
             this.converter.Dispose();
             this.decoder.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         private static IFfmpegDecodingSession GetDecoder(string source, byte[] key = null)

@@ -16,11 +16,11 @@ namespace Av.Rendering.Ffmpeg
     {
         private const AVPixelFormat DestinationPixelFormat = AVPixelFormat.AV_PIX_FMT_RGB24;
 
-        private readonly IntPtr convertedFrameBufferPtr;
         private readonly byte_ptrArray4 dstData;
         private readonly int_array4 dstLinesize;
-        private readonly SwsContext* pConvertContext;
         private readonly int destinationBufferLength;
+        private readonly SwsContext* pConvertContext;
+        private IntPtr convertedFrameBufferPtr;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="FfmpegConverter"/> class.
@@ -71,6 +71,7 @@ namespace Av.Rendering.Ffmpeg
         {
             Marshal.FreeHGlobal(this.convertedFrameBufferPtr);
             ffmpeg.sws_freeContext(this.pConvertContext);
+            this.convertedFrameBufferPtr = IntPtr.Zero;
         }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace Av.Rendering.Ffmpeg
         /// </summary>
         /// <param name="sourceFrame">The source frame.</param>
         /// <returns>Frame data.</returns>
-        internal RawFrame RenderRawFrame(AVFrame sourceFrame)
+        public RawFrame RenderRawFrame(AVFrame sourceFrame)
         {
             ffmpeg.sws_scale(
                 this.pConvertContext,
