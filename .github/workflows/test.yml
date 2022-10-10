@@ -53,8 +53,12 @@ jobs:
       if: success() || steps.check_coverage.outcome == 'failure'
       run: |
         baseSha=${{ github.event.pull_request.base.sha }}
-        if [ "$baseSha" ]; then endArgs="-V Error --since:$baseSha"; else endArgs="-V Error"; fi
-        git pull
+        if [ "$baseSha" ]; then
+          git checkout main
+          endArgs="-V Error --since:$baseSha"
+        else
+          endArgs="-V Error"
+        fi
         returncode=0
         shopt -s extglob globstar
         for testproj in *.+(Test*(s)|UnitTest*(s)); do

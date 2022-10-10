@@ -46,7 +46,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
             var decoder = Get(decodeMode, fi, bufferLength);
-            var sut = new FfmpegRenderer(decoder);
+            var sut = new FfmpegRenderer(decoder, new Dimensions2D { Width = 3, Height = 3 });
             var ts = decoder.Duration * position;
 
             // Act
