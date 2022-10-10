@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
@@ -138,6 +139,26 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("Required parameter is missing. (Parameter 'decoder')");
+        }
+
+        [Theory]
+        [InlineData("sample.mp4", true)]
+        [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", false)]
+        public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName, bool expectPhysicalDecoder)
+        {
+            // Arrange
+            var filePath = Path.Combine("Samples", fileName);
+            var expectedType = expectPhysicalDecoder
+                ? typeof(PhysicalFfmpegDecoding)
+                : typeof(StreamFfmpegDecoding);
+
+            // Act
+            var sut = new FfmpegRenderer(filePath, new byte[] { 9, 0, 2, 1, 0 });
+            var decoderInfo = sut.GetType().GetField("decoder", BindingFlags.Instance | BindingFlags.NonPublic);
+            var decoder = (IFfmpegDecodingSession)decoderInfo!.GetValue(sut)!;
+
+            // Assert
+            decoder.Should().BeOfType(expectedType);
         }
 
         [Fact]

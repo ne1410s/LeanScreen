@@ -5,6 +5,7 @@
 namespace Av.Rendering.Ffmpeg
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using FFmpeg.AutoGen;
 
@@ -107,7 +108,8 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="status">The potential error code.</param>
         /// <returns>The code, if non-error.</returns>
         /// <exception cref="InvalidOperationException">Error.</exception>
-        public static int ThrowExceptionIfError(this int status) => status >= 0
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Mutation ignore glob")]
+        public static int avThrowIfError(this int status) => status >= 0
             ? status
             : throw new InvalidOperationException(AvStrError(status));
 

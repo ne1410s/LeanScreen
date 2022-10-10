@@ -38,7 +38,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             const int code = -3;
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var act = () => code.avThrowIfError();
 
             // Assert
             act.Should().ThrowExactly<InvalidOperationException>()
@@ -52,7 +52,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             const int code = 0;
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var act = () => code.avThrowIfError();
 
             // Assert
             act.Should().NotThrow();

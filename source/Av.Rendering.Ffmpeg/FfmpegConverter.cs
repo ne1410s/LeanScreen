@@ -92,8 +92,8 @@ namespace Av.Rendering.Ffmpeg
 
             var data = default(byte_ptrArray8);
             data.UpdateFrom(this.dstData);
-            var linesize = default(int_array8);
-            linesize.UpdateFrom(this.dstLinesize);
+            ////var linesize = default(int_array8);
+            ////linesize.UpdateFrom(this.dstLinesize);
 
             var imageBytes = ((IntPtr)data[0]).ToBytes(this.destinationBufferLength);
             return new RawFrame

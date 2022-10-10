@@ -20,6 +20,19 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public void Ctor_WhenCalled_SetsBinariesPath()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+
+            // Act
+            _ = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+
+            // Assert
+            ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
         public void Ctor_WhenCalled_UriIsEmpty()
         {
             // Arrange
