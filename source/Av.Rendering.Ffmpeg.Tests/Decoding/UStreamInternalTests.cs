@@ -41,6 +41,25 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public unsafe void ReadUnsafe_AtEnd_DoesNotCopy()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
+            var mockCopier = new Mock<IByteArrayCopier>();
+            var sut = new UStreamInternal(new SimpleFileStream(fi), mockCopier.Object);
+            sut.SeekUnsafe(default, fi.Length, 0);
+
+            // Act
+            var result = sut.ReadUnsafe(default, default, 1);
+
+            // Assert
+            result.Should().Be(0);
+            mockCopier.Verify(
+                m => m.Copy(It.IsAny<byte[]>(), It.IsAny<IntPtr>(), It.IsAny<int>()),
+                Times.Never());
+        }
+
+        [Fact]
         public unsafe void SeekUnsafe_Oversize_ReturnsEOF()
         {
             // Arrange
