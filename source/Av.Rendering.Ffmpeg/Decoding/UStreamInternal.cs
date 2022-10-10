@@ -13,7 +13,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// Wraps <see cref="ISimpleReadStream"/>, exposing the interface to the
     /// internal workings of ffmpeg. This is an unmanaged instance.
     /// </summary>
-    public unsafe class UStreamInternal : IUStream
+    public unsafe sealed class UStreamInternal : IUStream
     {
         private const int SeekSize = ffmpeg.AVSEEK_SIZE;
         private static readonly int EOF = ffmpeg.AVERROR_EOF;
@@ -59,7 +59,6 @@ namespace Av.Rendering.Ffmpeg.Decoding
         public void Dispose()
         {
             this.source?.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         private T TryManipulateStream<T>(T fallback, Func<T> operation)

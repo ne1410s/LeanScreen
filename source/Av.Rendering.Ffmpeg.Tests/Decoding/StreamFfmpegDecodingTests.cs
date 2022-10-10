@@ -19,6 +19,19 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public void Ctor_WhenCalled_UriIsEmpty()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+
+            // Act
+            var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+
+            // Assert
+            sut.Url.Should().BeEmpty();
+        }
+
+        [Fact]
         public void Dispose_WhenCalled_DoesNotError()
         {
             // Arrange

@@ -54,7 +54,7 @@ jobs:
       run: |
         baseSha=${{ github.event.pull_request.base.sha }}
         if [ "$baseSha" ]; then
-          git fetch
+          git fetch &>/dev/null
           sinceArg="--since:$baseSha"
         fi
         returncode=0

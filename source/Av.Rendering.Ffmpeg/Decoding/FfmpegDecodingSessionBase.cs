@@ -13,7 +13,6 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <inheritdoc cref="IFfmpegDecodingSession"/>
     public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
-        private readonly string url;
         private readonly AVCodec* ptrCodec;
 
         /// <summary>
@@ -25,7 +24,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             FfmpegUtils.SetupBinaries();
             FfmpegUtils.SetupLogging();
 
-            this.url = url;
+            this.Url = url;
             this.ptrCodec = null;
             this.PtrCodecContext = ffmpeg.avcodec_alloc_context3(this.ptrCodec);
             this.PtrFormatContext = ffmpeg.avformat_alloc_context();
@@ -33,6 +32,11 @@ namespace Av.Rendering.Ffmpeg.Decoding
             this.PtrPacket = ffmpeg.av_packet_alloc();
             this.PtrFrame = ffmpeg.av_frame_alloc();
         }
+
+        /// <summary>
+        /// Gets the url.
+        /// </summary>
+        public string Url { get; }
 
         /// <inheritdoc/>
         public string CodecName { get; private set; }
@@ -188,7 +192,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         {
             var pFormatContext = this.PtrFormatContext;
             ////pFormatContext->seek2any = 1;
-            ffmpeg.avformat_open_input(&pFormatContext, this.url, null, null).ThrowExceptionIfError();
+            ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).ThrowExceptionIfError();
             ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
             ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).ThrowExceptionIfError();
             AVCodec* codec = null;
