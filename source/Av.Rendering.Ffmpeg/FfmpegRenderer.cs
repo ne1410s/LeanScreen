@@ -59,7 +59,7 @@ namespace Av.Rendering.Ffmpeg
             this.decoder.Seek(position.Clamp(this.decoder.Duration));
             this.decoder.TryDecodeNextFrame(out var frame);
             var rawFrame = this.converter.RenderRawFrame(frame);
-            var actualPosition = rawFrame.PresentationTime.ToTimeSpan(this.decoder.TimeBase);
+            var actualPosition = ((double)rawFrame.PresentationTime).ToTimeSpan(this.decoder.TimeBase);
             var inferredFrame = this.TotalFrames * (actualPosition.TotalSeconds / this.Duration.TotalSeconds);
 
             return new RenderedFrame

@@ -24,6 +24,7 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            ffmpeg.RootPath = null;
 
             // Act
             _ = new StreamFfmpegDecoding(new SimpleFileStream(fi));

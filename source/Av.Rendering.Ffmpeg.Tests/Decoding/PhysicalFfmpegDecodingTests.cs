@@ -17,6 +17,7 @@ public class PhysicalFfmpegDecodingTests
     {
         // Arrange
         const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        ffmpeg.RootPath = null;
 
         // Act
         _ = new PhysicalFfmpegDecoding(source);

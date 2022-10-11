@@ -206,8 +206,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
                     .avThrowIfError();
             ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
 
+            var avTimeRational = new AVRational { num = 1, den = ffmpeg.AV_TIME_BASE };
             this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
-            this.Duration = PtrFormatContext->duration.ToTimeSpan(ffmpeg.AV_TIME_BASE);
+            this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
             this.CodecName = ffmpeg.avcodec_get_name(codec->id);
             this.Dimensions = new Dimensions2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
             this.PixelFormat = PtrCodecContext->pix_fmt;

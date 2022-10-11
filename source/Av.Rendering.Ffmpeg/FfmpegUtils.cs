@@ -10,33 +10,6 @@ namespace Av.Rendering.Ffmpeg
     using FFmpeg.AutoGen;
 
     /// <summary>
-    /// Logging levels for ffmpeg.
-    /// </summary>
-    public enum FfmpegLogLevel
-    {
-        /// <summary>Events whose severity is at least fatal.</summary>
-        Fatal = 8,
-
-        /// <summary>Events whose severity is at least error.</summary>
-        Error = 16,
-
-        /// <summary>Events whose severity is at least warning.</summary>
-        Warning = 24,
-
-        /// <summary>Events whose severity is at least info.</summary>
-        Info = 32,
-
-        /// <summary>Events whose severity is at least verbose.</summary>
-        Verbose = 40,
-
-        /// <summary>Events whose severity is at least debug.</summary>
-        Debug = 48,
-
-        /// <summary>Events whose severity is at least trace.</summary>
-        Trace = 56,
-    }
-
-    /// <summary>
     /// Ffmpeg utilities.
     /// </summary>
     public static class FfmpegUtils
@@ -86,35 +59,16 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="pts">The presentation time.</param>
         /// <param name="timeBase">The timebase.</param>
         /// <returns>A timespan.</returns>
-        public static TimeSpan ToTimeSpan(this long pts, AVRational timeBase)
+        public static TimeSpan ToTimeSpan(this double pts, AVRational timeBase)
         {
-            var ptsd = (double)pts;
-            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
+            if (Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
             {
-                return TimeSpan.MinValue;
+                return TimeSpan.Zero;
             }
 
             return TimeSpan.FromTicks(timeBase.den == 0 ?
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd / ffmpeg.AV_TIME_BASE) :
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd * timeBase.num / timeBase.den));
-        }
-
-        /// <summary>
-        /// Maps a presentation to a timespan.
-        /// </summary>
-        /// <param name="pts">The presentation time.</param>
-        /// <param name="timeBase">The timebase.</param>
-        /// <returns>A timespan.</returns>
-        public static TimeSpan ToTimeSpan(this long pts, double timeBase)
-        {
-            var ptsd = (double)pts;
-            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
-            {
-                return TimeSpan.MinValue;
-            }
-
-            return TimeSpan.FromTicks(
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd / timeBase));
+                Convert.ToInt64(TimeSpan.TicksPerSecond * pts / ffmpeg.AV_TIME_BASE) :
+                Convert.ToInt64(TimeSpan.TicksPerSecond * pts * timeBase.num / timeBase.den));
         }
 
         /// <summary>
@@ -159,23 +113,17 @@ namespace Av.Rendering.Ffmpeg
         public static unsafe void SetupLogging()
         {
             ffmpeg.av_log_set_level(ffmpeg.AV_LOG_VERBOSE);
-
-            // do not convert to local function
             av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
             {
-                if (level > ffmpeg.av_log_get_level())
+                if (level <= ffmpeg.av_log_get_level())
                 {
-                    return;
+                    const int lineSize = 1024;
+                    var lineBuffer = stackalloc byte[lineSize];
+                    var printPrefix = 1;
+                    ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                    var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                    Console.Write(line);
                 }
-
-                const int lineSize = 1024;
-                var lineBuffer = stackalloc byte[lineSize];
-                var printPrefix = 1;
-                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-                var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write(line);
-                Console.ResetColor();
             };
 
             ffmpeg.av_log_set_callback(logCallback);
