@@ -9,4 +9,17 @@ namespace Av.Tests;
 /// </summary>
 public class ThumbingExtensionsTests
 {
+    [Fact]
+    public void DistributeEvenly_WithValue_ReturnsExpected()
+    {
+        // Arrange
+        var value = TimeSpan.FromSeconds(10);
+        var expected = new TimeSpan[] { TimeSpan.Zero, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10) };
+
+        // Act
+        var result = value.DistributeEvenly(3);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
+    }
 }

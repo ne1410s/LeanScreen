@@ -13,9 +13,13 @@ namespace Av.Tests;
 public class FormatExtensionsTests
 {
     [Theory]
+    [InlineData("1:0:0:0", "1.00:00:00")]
     [InlineData("1:1:1:1.2", "1.01:01:01")]
+    [InlineData("1:0:0", "1:00:00")]
     [InlineData("1:1:1.2", "1:01:01")]
+    [InlineData("0:1:0", "1:00")]
     [InlineData("0:1:1.2", "1:01")]
+    [InlineData("0:0:1", "1.0s")]
     [InlineData("0:0:1.2", "1.2s")]
     public void FormatConcise_VaryingInput_ReturnsExpected(string input, string expected)
     {
@@ -143,5 +147,18 @@ public class FormatExtensionsTests
 
         // Assert
         extensions.Count.Should().Be(expectedCount);
+    }
+
+    [Fact]
+    public void GetUpperBoundFormat_WithValue_ReturnsExpected()
+    {
+        // Arrange
+        const int input = 100000;
+
+        // Act
+        var result = input.GetUpperBoundFormat();
+
+        // Assert
+        result.Should().Be("D6");
     }
 }
