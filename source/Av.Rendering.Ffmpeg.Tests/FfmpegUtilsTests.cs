@@ -108,5 +108,22 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Assert
             ffmpeg.RootPath.Should().Be(expectedPath);
         }
+
+        ////[Theory]
+        ////[InlineData(FfmpegLogLevel.Verbose, ffmpeg.AV_LOG_VERBOSE)]
+        ////[InlineData(FfmpegLogLevel.Trace, ffmpeg.AV_LOG_TRACE)]
+        ////[InlineData(FfmpegLogLevel.Debug, ffmpeg.AV_LOG_DEBUG)]
+        ////[InlineData(FfmpegLogLevel.Warning, ffmpeg.AV_LOG_WARNING)]
+        ////[InlineData(FfmpegLogLevel.Error, ffmpeg.AV_LOG_ERROR)]
+        ////[InlineData(FfmpegLogLevel.Fatal, ffmpeg.AV_LOG_FATAL)]
+        ////[InlineData((FfmpegLogLevel)9999, ffmpeg.AV_LOG_WARNING)]
+        ////public void SetupLogging_VaryingLogLevel_MapsToExpectedValue(FfmpegLogLevel logLevel, int expectedInternalValue)
+        ////{
+        ////    // Arrange & Act
+        ////    var result = FfmpegUtils.SetupLogging(logLevel);
+
+        ////    // Assert
+        ////    result.Should().Be(expectedInternalValue);
+        ////}
     }
 }

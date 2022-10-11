@@ -10,6 +10,33 @@ namespace Av.Rendering.Ffmpeg
     using FFmpeg.AutoGen;
 
     /// <summary>
+    /// Logging levels for ffmpeg.
+    /// </summary>
+    public enum FfmpegLogLevel
+    {
+        /// <summary>Events whose severity is at least fatal.</summary>
+        Fatal = 8,
+
+        /// <summary>Events whose severity is at least error.</summary>
+        Error = 16,
+
+        /// <summary>Events whose severity is at least warning.</summary>
+        Warning = 24,
+
+        /// <summary>Events whose severity is at least info.</summary>
+        Info = 32,
+
+        /// <summary>Events whose severity is at least verbose.</summary>
+        Verbose = 40,
+
+        /// <summary>Events whose severity is at least debug.</summary>
+        Debug = 48,
+
+        /// <summary>Events whose severity is at least trace.</summary>
+        Trace = 56,
+    }
+
+    /// <summary>
     /// Ffmpeg utilities.
     /// </summary>
     public static class FfmpegUtils
@@ -36,9 +63,8 @@ namespace Av.Rendering.Ffmpeg
         /// <returns>The bounded result.</returns>
         public static TimeSpan Clamp(this TimeSpan input, TimeSpan duration)
         {
-            return input < TimeSpan.Zero ? TimeSpan.Zero
-                : input > duration ? duration
-                : input;
+            var boundedSeconds = Math.Max(0, Math.Min(duration.TotalSeconds, input.TotalSeconds));
+            return TimeSpan.FromSeconds(boundedSeconds);
         }
 
         /// <summary>
@@ -108,7 +134,10 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="status">The potential error code.</param>
         /// <returns>The code, if non-error.</returns>
         /// <exception cref="InvalidOperationException">Error.</exception>
-        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Mutation ignore glob")]
+        [SuppressMessage(
+            "StyleCop.CSharp.NamingRules",
+            "SA1300:Element should begin with upper-case letter",
+            Justification = "Conform to mutation rules ignore glob")]
         public static int avThrowIfError(this int status) => status >= 0
             ? status
             : throw new InvalidOperationException(AvStrError(status));
