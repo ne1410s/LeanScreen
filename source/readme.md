@@ -34,7 +34,6 @@ dotnet new globaljson --sdk-version 6.0.400
 dotnet new tool-manifest
 
 # add some tools
-dotnet tool install coverlet.console
 dotnet tool install dotnet-reportgenerator-globaltool
 dotnet tool install dotnet-stryker
 ```
