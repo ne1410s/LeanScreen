@@ -13,7 +13,7 @@ namespace Av.Tests.Services;
 public class ThumbnailGeneratorTests
 {
     [Fact]
-    public void Generate_NTimes_CallsRendererNTimes()
+    public void Generate_NPositions_CallsRendererNTimes()
     {
         // Arrange
         var mockRenderer = new Mock<IRenderingService>();
@@ -36,7 +36,7 @@ public class ThumbnailGeneratorTests
         var mockRenderer = new Mock<IRenderingService>();
         mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
         var sut = new ThumbnailGenerator(mockRenderer.Object);
-        var times = 3;
+        const int times = 3;
         var calls = 0;
 
         // Act
@@ -47,5 +47,39 @@ public class ThumbnailGeneratorTests
         mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(0)), Times.Once());
         mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(1)), Times.Once());
         mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(2)), Times.Once());
+    }
+
+    [Fact]
+    public void Generate_NPositionsIncludingNonDefault_HonoursSpecified()
+    {
+        // Arrange
+        var actualCallTimes = new List<TimeSpan>();
+        var mockRenderer = new Mock<IRenderingService>();
+        mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
+        mockRenderer.Setup(m => m.RenderAt(It.IsAny<TimeSpan>())).Callback((TimeSpan ts) => actualCallTimes.Add(ts));
+        var sut = new ThumbnailGenerator(mockRenderer.Object);
+        var times = new TimeSpan[] { default, default, TimeSpan.FromSeconds(1.3) };
+
+        // Act
+        sut.Generate((_, _) => { }, times);
+
+        // Assert
+        actualCallTimes.Should().BeEquivalentTo(times);
+    }
+
+    [Fact]
+    public void Generate_SinglePositionOfDefault_UsesPositionAtZero()
+    {
+        // Arrange
+        var mockRenderer = new Mock<IRenderingService>();
+        mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
+        var sut = new ThumbnailGenerator(mockRenderer.Object);
+        var times = new TimeSpan[1];
+
+        // Act
+        sut.Generate((_, _) => { }, times);
+
+        // Assert
+        mockRenderer.Verify(m => m.RenderAt(TimeSpan.Zero), Times.Once());
     }
 }

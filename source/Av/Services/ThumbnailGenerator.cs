@@ -45,7 +45,7 @@ namespace Av.Services
             Action<RenderedFrame, int> onRendered,
             params TimeSpan[] times)
         {
-            if (times.Length > 1 && times.All(t => t == default))
+            if (times.All(t => t == default))
             {
                 times = this.renderer.Duration.DistributeEvenly(times.Length);
             }

@@ -88,10 +88,8 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="status">The potential error code.</param>
         /// <returns>The code, if non-error.</returns>
         /// <exception cref="InvalidOperationException">Error.</exception>
-        [SuppressMessage(
-            "StyleCop.CSharp.NamingRules",
-            "SA1300:Element should begin with upper-case letter",
-            Justification = "Conform to mutation rules ignore glob")]
+        [SuppressMessage("StyleCop.*", "SA1300:*", Justification = "Conform to mutation rules ignore glob")]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Conform to mutation rules ignore glob")]
         public static int avThrowIfError(this int status) => status >= 0
             ? status
             : throw new InvalidOperationException(AvStrError(status));
