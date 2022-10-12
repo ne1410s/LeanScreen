@@ -2,6 +2,9 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Globalization;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;
@@ -30,6 +33,24 @@ namespace Av.Rendering.Ffmpeg.Tests
             BlockReads,
         }
 
+        [Fact]
+        public void RenderAt_WhenCalled_CallsSeek()
+        {
+            // Arrange
+            FfmpegUtils.SetupBinaries();
+            var mockDecoder = new Mock<IFfmpegDecodingSession>();
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            mockDecoder.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(100));
+            var sut = new FfmpegRenderer(mockDecoder.Object);
+            var ts = TimeSpan.FromSeconds(1.34);
+
+            // Act
+            sut.RenderAt(ts);
+
+            // Assert
+            mockDecoder.Verify(m => m.Seek(ts), Times.Once());
+        }
+
         [Theory]
         [InlineData("sample.avi", DecodeMode.PhysicalFm, 32768, 0)]
         [InlineData("sample.avi", DecodeMode.SimpleFile, 32768, 0)]
@@ -46,7 +67,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
             var decoder = Get(decodeMode, fi, bufferLength);
-            var sut = new FfmpegRenderer(decoder);
+            var sut = new FfmpegRenderer(decoder, new Dimensions2D { Width = 3, Height = 3 });
             var ts = decoder.Duration * position;
 
             // Act
@@ -76,17 +97,37 @@ namespace Av.Rendering.Ffmpeg.Tests
         }
 
         [Fact]
-        public void Dispose_WhenCalled_DoesNotError()
+        public void RenderAt_ForFile_ProducesFileApproxFrame()
         {
             // Arrange
-            var fi = new FileInfo(Path.Combine("Samples", "sample.avi"));
-            var sut = new FfmpegRenderer(fi.FullName);
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var decoder = Get(DecodeMode.BlockReads, fi);
+            var sut = new FfmpegRenderer(decoder);
+            const double relative = 0.5;
+            var ts = decoder.Duration * relative;
+            var expectedFrame = (int)(decoder.TotalFrames * relative);
 
             // Act
-            var act = () => sut.Dispose();
+            var result = sut.RenderAt(ts).FrameNumber;
 
             // Assert
-            act.Should().NotThrow();
+            result.Should().BeCloseTo(expectedFrame, 10);
+        }
+
+        [Fact]
+        public void Dispose_WhenCalled_DisposesDecoder()
+        {
+            // Arrange
+            FfmpegUtils.SetupBinaries();
+            var mockDecoder = new Mock<IFfmpegDecodingSession>();
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            var sut = new FfmpegRenderer(mockDecoder.Object);
+
+            // Act
+            sut.Dispose();
+
+            // Assert
+            mockDecoder.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]
@@ -98,6 +139,26 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("Required parameter is missing. (Parameter 'decoder')");
+        }
+
+        [Theory]
+        [InlineData("sample.mp4", true)]
+        [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", false)]
+        public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName, bool expectPhysicalDecoder)
+        {
+            // Arrange
+            var filePath = Path.Combine("Samples", fileName);
+            var expectedType = expectPhysicalDecoder
+                ? typeof(PhysicalFfmpegDecoding)
+                : typeof(StreamFfmpegDecoding);
+
+            // Act
+            var sut = new FfmpegRenderer(filePath, new byte[] { 9, 0, 2, 1, 0 });
+            var decoderInfo = sut.GetType().GetField("decoder", BindingFlags.Instance | BindingFlags.NonPublic);
+            var decoder = (IFfmpegDecodingSession)decoderInfo!.GetValue(sut)!;
+
+            // Assert
+            decoder.Should().BeOfType(expectedType);
         }
 
         [Fact]

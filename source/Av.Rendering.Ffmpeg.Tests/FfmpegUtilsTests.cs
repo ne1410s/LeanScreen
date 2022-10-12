@@ -38,7 +38,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             const int code = -3;
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var act = () => code.avThrowIfError();
 
             // Assert
             act.Should().ThrowExactly<InvalidOperationException>()
@@ -52,30 +52,57 @@ namespace Av.Rendering.Ffmpeg.Tests
             const int code = 0;
 
             // Act
-            var act = () => code.ThrowExceptionIfError();
+            var act = () => code.avThrowIfError();
 
             // Assert
             act.Should().NotThrow();
         }
 
         [Fact]
-        public void ToTimeSpan_WithNoOptsValueAndRational_ReturnsMin()
+        public void ToLong_WithValues_ReturnsExpected()
+        {
+            // Arrange
+            var value = TimeSpan.FromSeconds(10);
+            var timebase = new AVRational { num = 2, den = 5 };
+
+            // Act
+            var result = value.ToLong(timebase);
+
+            // Assert
+            result.Should().Be(25);
+        }
+
+        [Fact]
+        public void ToTimeSpan_WithValues_ReturnsExpected()
+        {
+            // Arrange
+            const double value = 10;
+
+            // Act
+            var result = value.ToTimeSpan(new AVRational { num = 2, den = 5 }).TotalSeconds;
+
+            // Assert
+            result.Should().Be(4);
+        }
+
+        [Fact]
+        public void ToTimeSpan_WithNoOptsValueAndRational_ReturnsZero()
         {
             // Arrange
             var noOptsValue = ffmpeg.AV_NOPTS_VALUE;
 
             // Act
-            var result = noOptsValue.ToTimeSpan(new AVRational { num = 1, den = 12 });
+            var result = ((double)noOptsValue).ToTimeSpan(new AVRational { num = 1, den = 12 });
 
             // Assert
-            result.Should().Be(TimeSpan.MinValue);
+            result.Should().Be(TimeSpan.Zero);
         }
 
         [Fact]
         public void ToTimeSpan_WithZeroDenominatorRational_DoesNotError()
         {
             // Arrange
-            const long pts = 1000000;
+            const double pts = 1000000;
 
             // Act
             var result = pts.ToTimeSpan(new AVRational { num = 1, den = 0 });
@@ -85,16 +112,16 @@ namespace Av.Rendering.Ffmpeg.Tests
         }
 
         [Fact]
-        public void ToTimeSpan_WithNoOptsValueAndDouble_ReturnsMin()
+        public void ToTimeSpan_WithNoOptsValueAndDouble_ReturnsZero()
         {
             // Arrange
-            var noOptsValue = ffmpeg.AV_NOPTS_VALUE;
+            var noOptsValue = (double)ffmpeg.AV_NOPTS_VALUE;
 
             // Act
-            var result = noOptsValue.ToTimeSpan(0.0124);
+            var result = noOptsValue.ToTimeSpan(new AVRational { num = 1, den = 25 });
 
             // Assert
-            result.Should().Be(TimeSpan.MinValue);
+            result.Should().Be(TimeSpan.Zero);
         }
 
         [Theory]
@@ -107,6 +134,9 @@ namespace Av.Rendering.Ffmpeg.Tests
 
             // Assert
             ffmpeg.RootPath.Should().Be(expectedPath);
+
+            // Reset
+            FfmpegUtils.SetupBinaries();
         }
     }
 }

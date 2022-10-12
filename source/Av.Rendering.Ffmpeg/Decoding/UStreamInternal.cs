@@ -13,21 +13,24 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// Wraps <see cref="ISimpleReadStream"/>, exposing the interface to the
     /// internal workings of ffmpeg. This is an unmanaged instance.
     /// </summary>
-    public unsafe class UStreamInternal : IUStream
+    public unsafe sealed class UStreamInternal : IUStream
     {
         private const int SeekSize = ffmpeg.AVSEEK_SIZE;
         private static readonly int EOF = ffmpeg.AVERROR_EOF;
 
         private readonly object readLock = new();
         private readonly ISimpleReadStream source;
+        private readonly IByteArrayCopier byteArrayCopier;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="UStreamInternal"/> class.
         /// </summary>
         /// <param name="source">The input stream.</param>
-        public UStreamInternal(ISimpleReadStream source)
+        /// <param name="byteArrayCopier">A byte array copier.</param>
+        public UStreamInternal(ISimpleReadStream source, IByteArrayCopier byteArrayCopier = null)
         {
             this.source = source;
+            this.byteArrayCopier = byteArrayCopier ?? new ByteArrayCopier();
         }
 
         /// <inheritdoc/>
@@ -43,7 +46,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
                 var read = this.source.Read();
                 if (read.Length > 0)
                 {
-                    Marshal.Copy(read, 0, (IntPtr)buffer, read.Length);
+                    this.byteArrayCopier.Copy(read, (IntPtr)buffer, read.Length);
                 }
 
                 return read.Length;
@@ -59,7 +62,6 @@ namespace Av.Rendering.Ffmpeg.Decoding
         public void Dispose()
         {
             this.source?.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         private T TryManipulateStream<T>(T fallback, Func<T> operation)

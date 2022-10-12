@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using Av.Abstractions.Shared;
 
 namespace Av.Rendering.Ffmpeg.Tests;
@@ -62,5 +63,23 @@ public class FfmpegConverterTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Dispose_WhenCalled_CanNoLongerRender()
+    {
+        // Arrange
+        FfmpegUtils.SetupBinaries();
+        var size = new Dimensions2D { Width = 1, Height = 1 };
+        var sut = new FfmpegConverter(size, default, size);
+        var dispInfo = sut.GetType().GetField(
+            "convertedFrameBufferPtr", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        // Act
+        sut.Dispose();
+        var result = (IntPtr)dispInfo!.GetValue(sut)!;
+
+        // Assert
+        result.Should().Be(IntPtr.Zero);
     }
 }

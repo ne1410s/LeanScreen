@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using System.Reflection;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Streams;
 using FFmpeg.AutoGen;
@@ -19,17 +20,63 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
-        public void Dispose_WhenCalled_DoesNotError()
+        public void Ctor_WhenCalled_SetsBinariesPath()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            ffmpeg.RootPath = null;
+
+            // Act
+            _ = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+
+            // Assert
+            ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public void Ctor_WhenCalled_UriIsEmpty()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+
+            // Act
+            var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+
+            // Assert
+            sut.Url.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void Dispose_WhenCalled_SetsNegativeStreamIndex()
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
             var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+            var indexInfo = sut.GetType().GetProperty("StreamIndex", BindingFlags.Instance | BindingFlags.NonPublic);
 
             // Act
-            var act = () => sut.Dispose();
+            sut.Dispose();
+            var index = (int?)indexInfo!.GetValue(sut);
 
             // Assert
-            act.Should().NotThrow();
+            index.Should().Be(-1);
+        }
+
+        [Fact]
+        public void Dispose_WhenCalled_NullsTheStreamReadFunction()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var sut = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+            const BindingFlags fieldFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            // Act
+            sut.Dispose();
+
+            // Assert
+            var fnInfo = sut.GetType().GetField("readFn", fieldFlags);
+            var fnValue = fnInfo!.GetValue(sut);
+            fnValue.Should().BeNull();
         }
 
         [Fact]
@@ -44,6 +91,20 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
 
             // Assert
             info.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void TryDecodeNextFrame_AtStart_ReturnsTrue()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            var sut = new TestDecoding(fi.FullName);
+
+            // Act
+            var result = sut.TryDecodeNextFrame(out _);
+
+            // Assert
+            result.Should().BeTrue();
         }
 
         [Fact]

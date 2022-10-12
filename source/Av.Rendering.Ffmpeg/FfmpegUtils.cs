@@ -5,6 +5,7 @@
 namespace Av.Rendering.Ffmpeg
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using FFmpeg.AutoGen;
 
@@ -35,9 +36,8 @@ namespace Av.Rendering.Ffmpeg
         /// <returns>The bounded result.</returns>
         public static TimeSpan Clamp(this TimeSpan input, TimeSpan duration)
         {
-            return input < TimeSpan.Zero ? TimeSpan.Zero
-                : input > duration ? duration
-                : input;
+            var boundedSeconds = Math.Max(0, Math.Min(duration.TotalSeconds, input.TotalSeconds));
+            return TimeSpan.FromSeconds(boundedSeconds);
         }
 
         /// <summary>
@@ -59,35 +59,16 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="pts">The presentation time.</param>
         /// <param name="timeBase">The timebase.</param>
         /// <returns>A timespan.</returns>
-        public static TimeSpan ToTimeSpan(this long pts, AVRational timeBase)
+        public static TimeSpan ToTimeSpan(this double pts, AVRational timeBase)
         {
-            var ptsd = (double)pts;
-            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
+            if (Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
             {
-                return TimeSpan.MinValue;
+                return TimeSpan.Zero;
             }
 
             return TimeSpan.FromTicks(timeBase.den == 0 ?
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd / ffmpeg.AV_TIME_BASE) :
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd * timeBase.num / timeBase.den));
-        }
-
-        /// <summary>
-        /// Maps a presentation to a timespan.
-        /// </summary>
-        /// <param name="pts">The presentation time.</param>
-        /// <param name="timeBase">The timebase.</param>
-        /// <returns>A timespan.</returns>
-        public static TimeSpan ToTimeSpan(this long pts, double timeBase)
-        {
-            var ptsd = (double)pts;
-            if (Math.Abs(ptsd - ffmpeg.AV_NOPTS_VALUE) <= double.Epsilon)
-            {
-                return TimeSpan.MinValue;
-            }
-
-            return TimeSpan.FromTicks(
-                Convert.ToInt64(TimeSpan.TicksPerSecond * ptsd / timeBase));
+                Convert.ToInt64(TimeSpan.TicksPerSecond * pts / ffmpeg.AV_TIME_BASE) :
+                Convert.ToInt64(TimeSpan.TicksPerSecond * pts * timeBase.num / timeBase.den));
         }
 
         /// <summary>
@@ -107,7 +88,9 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="status">The potential error code.</param>
         /// <returns>The code, if non-error.</returns>
         /// <exception cref="InvalidOperationException">Error.</exception>
-        public static int ThrowExceptionIfError(this int status) => status >= 0
+        [SuppressMessage("StyleCop.*", "SA1300:*", Justification = "Conform to mutation rules ignore glob")]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Conform to mutation rules ignore glob")]
+        public static int avThrowIfError(this int status) => status >= 0
             ? status
             : throw new InvalidOperationException(AvStrError(status));
 
@@ -128,23 +111,17 @@ namespace Av.Rendering.Ffmpeg
         public static unsafe void SetupLogging()
         {
             ffmpeg.av_log_set_level(ffmpeg.AV_LOG_VERBOSE);
-
-            // do not convert to local function
             av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
             {
-                if (level > ffmpeg.av_log_get_level())
+                if (level <= ffmpeg.av_log_get_level())
                 {
-                    return;
+                    const int lineSize = 1024;
+                    var lineBuffer = stackalloc byte[lineSize];
+                    var printPrefix = 1;
+                    ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                    var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                    Console.Write(line);
                 }
-
-                const int lineSize = 1024;
-                var lineBuffer = stackalloc byte[lineSize];
-                var printPrefix = 1;
-                ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-                var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write(line);
-                Console.ResetColor();
             };
 
             ffmpeg.av_log_set_callback(logCallback);
