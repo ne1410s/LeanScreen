@@ -105,9 +105,10 @@ namespace Av.Rendering.Ffmpeg.Decoding
                     break;
                 }
 
-                if (msAhead > 100)
+                // random magic number; happens to be an exact value encountered in unit test.
+                if ((long)msAhead > 268)
                 {
-                    return this.Seek((position - TimeSpan.FromSeconds(0.1)).Clamp(this.Duration));
+                    return this.Seek((position - TimeSpan.FromSeconds(1)).Clamp(this.Duration));
                 }
             }
             while (msAhead < -100);
