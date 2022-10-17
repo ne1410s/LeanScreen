@@ -82,7 +82,7 @@ namespace Av.Rendering.Ffmpeg
             var fi = new FileInfo(source);
             return fi.IsSecure()
                 ? new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key))
-                : (IFfmpegDecodingSession)new PhysicalFfmpegDecoding(source);
+                : new PhysicalFfmpegDecoding(source);
         }
     }
 }
