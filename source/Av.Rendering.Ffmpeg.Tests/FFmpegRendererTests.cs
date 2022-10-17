@@ -114,6 +114,35 @@ namespace Av.Rendering.Ffmpeg.Tests
             result.Should().BeCloseTo(expectedFrame, 10);
         }
 
+        /// <summary>
+        /// Requests a seeks to EVERY SINGLE FRAME in the media and asserts that
+        /// every resulting frame is within a tolerance.
+        /// </summary>
+        /// <param name="sampleFile">The sample file name.</param>
+        /// <param name="decodeMode">The decode mode.</param>
+        [Theory]
+        [InlineData("sample.mp4", DecodeMode.PhysicalFm)]
+        public void RenderAt_VaryingPosition_YieldsTolerablePrecision(string sampleFile, DecodeMode decodeMode)
+        {
+            // Arrange
+            const byte frameTolerance = 20;
+            var fi = new FileInfo(Path.Combine("Samples", sampleFile));
+            var decoder = Get(decodeMode, fi);
+            var sut = new FfmpegRenderer(decoder);
+
+            // Act
+            var frameData = Enumerable.Range(1, (int)sut.TotalFrames)
+                .Select(req => new { req, res = sut.RenderAt(decoder.Duration * req / sut.TotalFrames).FrameNumber })
+                .Select(tup => new { tup.req, tup.res, delta = Math.Abs(tup.req - tup.res) })
+                .ToList();
+            var worstAttempt = frameData.OrderByDescending(tup => tup.delta).First();
+            var failures = frameData.Count(tup => tup.delta > frameTolerance);
+            var falez = Math.Ceiling(100.0 * failures / sut.TotalFrames) + "%";
+
+            // Assert
+            falez.Should().Be("0%");
+        }
+
         [Fact]
         public void Dispose_WhenCalled_DisposesDecoder()
         {

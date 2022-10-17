@@ -45,17 +45,11 @@ namespace Av.Rendering.Ffmpeg.Decoding
         long TotalFrames { get; }
 
         /// <summary>
-        /// Seeks to the specified position.
+        /// Seeks to the specified position, returning the nearest key frame.
         /// </summary>
         /// <param name="position">The position.</param>
-        void Seek(TimeSpan position);
-
-        /// <summary>
-        /// Obtains the next frame.
-        /// </summary>
-        /// <param name="frame">The frame.</param>
-        /// <returns>Whether successful.</returns>
-        bool TryDecodeNextFrame(out AVFrame frame);
+        /// <returns>The nearest key frame.</returns>
+        AVFrame Seek(TimeSpan position);
 
         /// <summary>
         /// Gets context information.

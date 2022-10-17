@@ -56,8 +56,7 @@ namespace Av.Rendering.Ffmpeg
         /// <inheritdoc/>
         public RenderedFrame RenderAt(TimeSpan position)
         {
-            this.decoder.Seek(position.Clamp(this.decoder.Duration));
-            this.decoder.TryDecodeNextFrame(out var frame);
+            var frame = this.decoder.Seek(position.Clamp(this.decoder.Duration));
             var rawFrame = this.converter.RenderRawFrame(frame);
             var actualPosition = ((double)rawFrame.PresentationTime).ToTimeSpan(this.decoder.TimeBase);
             var inferredFrame = this.TotalFrames * (actualPosition.TotalSeconds / this.Duration.TotalSeconds);
