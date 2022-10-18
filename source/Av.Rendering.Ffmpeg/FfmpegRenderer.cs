@@ -38,7 +38,7 @@ namespace Av.Rendering.Ffmpeg
         public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
         {
             this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
-            this.FrameSize = frameSize ?? decoder.Dimensions;
+            this.FrameSize = frameSize == null ? decoder.Dimensions : decoder.Dimensions.ResizeTo(frameSize.Value);
             this.Duration = decoder.Duration;
             this.TotalFrames = decoder.TotalFrames;
             this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, this.FrameSize);

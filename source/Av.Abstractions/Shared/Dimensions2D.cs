@@ -10,6 +10,17 @@ namespace Av.Abstractions.Shared
     public struct Dimensions2D
     {
         /// <summary>
+        /// Initialises a new instance of the <see cref="Dimensions2D"/> struct.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public Dimensions2D(int width, int height)
+        {
+            this.Width = width;
+            this.Height = height;
+        }
+
+        /// <summary>
         /// Gets or sets the height.
         /// </summary>
         public int Height { get; set; }

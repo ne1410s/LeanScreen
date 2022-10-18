@@ -81,6 +81,7 @@ namespace Av.Rendering.Ffmpeg.Tests
         [InlineData(1, 1, "d46e041b07eea036492b33315f9bbe1d")]
         [InlineData(500, 100, "3b1b21c9cf626ae54c2840c32a5b3ad6")]
         [InlineData(100, 500, "126d8039f3d4ac0282fa0ec9e9e24a4b")]
+        [InlineData(0, 72, "2dd40cdc29f03f09523dfcd2185d396d")]
         public void RenderAt_VaryingSize_ReturnsExpected(int width, int height, string expectedMd5Hex)
         {
             // Arrange
@@ -90,8 +91,9 @@ namespace Av.Rendering.Ffmpeg.Tests
             var ts = decoder.Duration / 7;
 
             // Act
-            var md5Hex = sut.RenderAt(ts).Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
-
+            var result = sut.RenderAt(ts);
+            var md5Hex = result.Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
+            
             // Assert
             md5Hex.Should().Be(expectedMd5Hex);
         }
@@ -185,6 +187,22 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Assert
             act.Should().ThrowExactly<ArgumentException>()
                 .WithMessage("Required parameter is missing. (Parameter 'decoder')");
+        }
+
+        [Fact]
+        public void Ctor_Resized_SetsExpectedFrameSize()
+        {
+            // Arrange
+            var mockDecoder = new Mock<IFfmpegDecodingSession>();
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D(7, 11));
+            var resizeTo = new Dimensions2D { Width = 70 };
+            var expected = new Dimensions2D(70, 110);
+
+            // Act
+            var sut = new FfmpegRenderer(mockDecoder.Object, resizeTo);
+
+            // Assert
+            sut.FrameSize.Should().Be(expected);
         }
 
         [Theory]
