@@ -120,27 +120,44 @@ namespace Av.Rendering.Ffmpeg.Tests
         /// </summary>
         /// <param name="sampleFile">The sample file name.</param>
         /// <param name="decodeMode">The decode mode.</param>
+        /// <param name="frameCount">The count.</param>
+        /// <param name="expectedTotalFrames">Expected total frames.</param>
+        /// <param name="frameCsv">Expected frames.</param>
         [Theory]
-        [InlineData("sample.mp4", DecodeMode.PhysicalFm)]
-        public void RenderAt_VaryingPosition_YieldsTolerablePrecision(string sampleFile, DecodeMode decodeMode)
+        [InlineData("sample.avi", DecodeMode.PhysicalFm, 10, 345, "2,37,74,113,151,190,228,266,305,0")]
+        [InlineData("sample.mkv", DecodeMode.PhysicalFm, 10, 658, "153,153,153,217,291,364,437,510,583,656")]
+        [InlineData("sample.mp4", DecodeMode.PhysicalFm, 10, 973, "0,107,215,323,432,540,648,756,864,972")]
+        public void RenderAt_FrameSweep_YieldsGoodFrameStats(
+            string sampleFile,
+            DecodeMode decodeMode,
+            int frameCount,
+            long expectedTotalFrames,
+            string frameCsv)
         {
             // Arrange
-            const byte frameTolerance = 20;
             var fi = new FileInfo(Path.Combine("Samples", sampleFile));
             var decoder = Get(decodeMode, fi);
             var sut = new FfmpegRenderer(decoder);
+            var expectedFrames = frameCsv.Split(',').Select(n => long.Parse(n, CultureInfo.InvariantCulture));
 
             // Act
-            var frameData = Enumerable.Range(1, (int)sut.TotalFrames)
-                .Select(req => new { req, res = sut.RenderAt(decoder.Duration * req / sut.TotalFrames).FrameNumber })
-                .Select(tup => new { tup.req, tup.res, delta = Math.Abs(tup.req - tup.res) })
-                .ToList();
-            var worstAttempt = frameData.OrderByDescending(tup => tup.delta).First();
-            var failures = frameData.Count(tup => tup.delta > frameTolerance);
-            var falez = Math.Ceiling(100.0 * failures / sut.TotalFrames) + "%";
+            var frameData = decoder.Duration.DistributeEvenly(frameCount)
+                .Select(req => new { req, rend = sut.RenderAt(req) })
+                .Select(tup => new
+                {
+                    tup.req,
+                    tup.rend,
+                    delta = Math.Abs((tup.req - tup.rend.Position).TotalMilliseconds),
+                }).ToList();
+            ////var worst = frameData.OrderByDescending(tup => tup.delta).First();
+            ////var mean = frameData.Average(tup => tup.delta);
+            var actualFrames = frameData.ConvertAll(tup => tup.rend.FrameNumber);
 
             // Assert
-            falez.Should().Be("0%");
+            ////mean.Should().BeLessThanOrEqualTo(75);
+            ////worst.delta.Should().BeLessThanOrEqualTo(100);
+            decoder.TotalFrames.Should().Be(expectedTotalFrames);
+            actualFrames.Should().BeEquivalentTo(expectedFrames);
         }
 
         [Fact]

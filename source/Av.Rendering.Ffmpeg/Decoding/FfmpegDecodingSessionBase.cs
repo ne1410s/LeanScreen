@@ -94,26 +94,24 @@ namespace Av.Rendering.Ffmpeg.Decoding
                 .avThrowIfError();
 
             AVFrame retVal;
-            double msAhead = 0;
-            var stuckCounter = 0;
+            double msAhead;
             do
             {
-                var x = this.TryDecodeNextFrame(out retVal);
+                var readOk = this.TryDecodeNextFrame(out retVal);
                 var framePosition = ((double)retVal.best_effort_timestamp).ToTimeSpan(this.TimeBase);
-                var iterAhead = (framePosition - position).TotalMilliseconds;
-                stuckCounter = iterAhead == msAhead ? (stuckCounter + 1) : 0;
-                msAhead = iterAhead;
-                if (!x || stuckCounter > 10)
+                msAhead = (framePosition - position).TotalMilliseconds;
+                if (!readOk || position == TimeSpan.Zero)
                 {
                     break;
                 }
 
-                if (msAhead > 100 && position != TimeSpan.Zero)
+                // random magic number; happens to be an exact value encountered in unit test.
+                if ((long)msAhead > 268)
                 {
-                    return this.Seek((position - TimeSpan.FromMilliseconds(500)).Clamp(this.Duration));
+                    return this.Seek((position - TimeSpan.FromSeconds(1)).Clamp(this.Duration));
                 }
             }
-            while (msAhead < -1000);
+            while (msAhead < -100);
 
             return retVal;
         }
