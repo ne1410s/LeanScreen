@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Av.Abstractions.Rendering;
 using Av.Rendering.Ffmpeg;
@@ -33,7 +34,9 @@ public static class InfoModule
     {
         var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
         IRenderingService renderer = new FfmpegRenderer(source, key);
-
-        return "splat";
+        return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+        });
     }
 }

@@ -34,7 +34,8 @@ public class ThumbnailGeneratorTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderingService>();
-        mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
+        var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
+        mockRenderer.Setup(m => m.Media).Returns(mockMedia);
         var sut = new ThumbnailGenerator(mockRenderer.Object);
         const int times = 3;
         var calls = 0;
@@ -55,7 +56,8 @@ public class ThumbnailGeneratorTests
         // Arrange
         var actualCallTimes = new List<TimeSpan>();
         var mockRenderer = new Mock<IRenderingService>();
-        mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
+        var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
+        mockRenderer.Setup(m => m.Media).Returns(mockMedia);
         mockRenderer.Setup(m => m.RenderAt(It.IsAny<TimeSpan>())).Callback((TimeSpan ts) => actualCallTimes.Add(ts));
         var sut = new ThumbnailGenerator(mockRenderer.Object);
         var times = new TimeSpan[] { default, default, TimeSpan.FromSeconds(1.3) };
@@ -72,7 +74,8 @@ public class ThumbnailGeneratorTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderingService>();
-        mockRenderer.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(2));
+        var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
+        mockRenderer.Setup(m => m.Media).Returns(mockMedia);
         var sut = new ThumbnailGenerator(mockRenderer.Object);
         var times = new TimeSpan[1];
 

@@ -10,6 +10,9 @@ using Comanche.Services;
 
 namespace AvCtl.Tests;
 
+/// <summary>
+/// Tests for the <see cref="SnapshotModule"/>.
+/// </summary>
 public class SnapshotModuleTests
 {
     [Fact]

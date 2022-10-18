@@ -48,7 +48,7 @@ public static class SnapshotModule
         {
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
             var itemNo = (index + 1L).FormatToUpperBound(itemCount);
-            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.TotalFrames);
+            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
             var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
             File.WriteAllBytes(path, memStr.ToArray());
         };
@@ -86,12 +86,12 @@ public static class SnapshotModule
         var onFrameReceived = (RenderedFrame frame, int _) =>
         {
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.TotalFrames);
+            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
             var path = Path.Combine(di.FullName, $"p{relative}_f{frameNo}.jpg");
             File.WriteAllBytes(path, memStr.ToArray());
         };
 
-        snapper.Generate(onFrameReceived, renderer.Duration * relative);
+        snapper.Generate(onFrameReceived, renderer.Media.Duration * relative);
         return di.FullName;
     }
 }

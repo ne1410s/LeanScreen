@@ -24,7 +24,7 @@ namespace Av.Abstractions.Rendering
             this.Duration = duration;
             this.Dimensions = dimensions;
             this.TotalFrames = totalFrames;
-            this.FrameRate = frameRate;
+            this.FrameRate = Math.Round(frameRate, 4);
         }
 
         /// <summary>

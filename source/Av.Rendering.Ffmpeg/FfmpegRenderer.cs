@@ -40,15 +40,15 @@ namespace Av.Rendering.Ffmpeg
             this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
             var finalFrameSize = frameSize == null ? decoder.Dimensions : decoder.Dimensions.ResizeTo(frameSize.Value);
             this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, finalFrameSize);
-            this.SourceInfo = new(decoder.Duration, decoder.Dimensions, decoder.TotalFrames, decoder.FrameRate);
-            this.SessionInfo = new(finalFrameSize);
+            this.Media = new(decoder.Duration, decoder.Dimensions, decoder.TotalFrames, decoder.FrameRate);
+            this.Session = new(finalFrameSize);
         }
 
         /// <inheritdoc/>
-        public MediaInfo SourceInfo { get; }
+        public MediaInfo Media { get; }
 
         /// <inheritdoc/>
-        public RenderSessionInfo SessionInfo { get; }
+        public RenderSessionInfo Session { get; }
 
         /// <inheritdoc/>
         public RenderedFrame RenderAt(TimeSpan position)
@@ -56,13 +56,13 @@ namespace Av.Rendering.Ffmpeg
             var frame = this.decoder.Seek(position.Clamp(this.decoder.Duration));
             var rawFrame = this.converter.RenderRawFrame(frame);
             var actualPosition = ((double)rawFrame.PresentationTime).ToTimeSpan(this.decoder.TimeBase);
-            var inferredFrame = this.SourceInfo.TotalFrames
-                * (actualPosition.TotalSeconds / this.SourceInfo.Duration.TotalSeconds);
+            var inferredFrame = this.Media.TotalFrames
+                * (actualPosition.TotalSeconds / this.Media.Duration.TotalSeconds);
 
             return new RenderedFrame
             {
                 Rgb24Bytes = rawFrame.Rgb24Bytes,
-                Dimensions = this.SessionInfo.FrameSize,
+                Dimensions = this.Session.FrameSize,
                 Position = actualPosition,
                 FrameNumber = (long)Math.Round(inferredFrame),
             };

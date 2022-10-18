@@ -13,14 +13,14 @@ namespace Av.Abstractions.Rendering
     public interface IRenderingService
     {
         /// <summary>
-        /// Gets source info.
+        /// Gets source media info.
         /// </summary>
-        MediaInfo SourceInfo { get; }
+        MediaInfo Media { get; }
 
         /// <summary>
         /// Gets render session info.
         /// </summary>
-        RenderSessionInfo SessionInfo { get; }
+        RenderSessionInfo Session { get; }
 
         /// <summary>
         /// Renders a frame at the position specified.

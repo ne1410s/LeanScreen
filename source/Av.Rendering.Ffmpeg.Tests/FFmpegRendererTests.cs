@@ -93,7 +93,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Act
             var result = sut.RenderAt(ts);
             var md5Hex = result.Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
-            
+
             // Assert
             md5Hex.Should().Be(expectedMd5Hex);
         }
@@ -202,7 +202,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             var sut = new FfmpegRenderer(mockDecoder.Object, resizeTo);
 
             // Assert
-            sut.FrameSize.Should().Be(expected);
+            sut.Session.FrameSize.Should().Be(expected);
         }
 
         [Theory]
