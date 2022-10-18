@@ -56,6 +56,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <inheritdoc/>
         public long TotalFrames { get; private set; }
 
+        /// <inheritdoc/>
+        public double FrameRate { get; private set; }
+
         /// <summary>
         /// Gets a pointer to the codec context.
         /// </summary>
@@ -174,6 +177,8 @@ namespace Av.Rendering.Ffmpeg.Decoding
             ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
 
             var avTimeRational = new AVRational { num = 1, den = ffmpeg.AV_TIME_BASE };
+            var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
+            this.FrameRate = (double)frameRate.num / frameRate.den;
             this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
             this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
             this.CodecName = ffmpeg.avcodec_get_name(codec->id);
@@ -182,8 +187,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             this.TotalFrames = PtrFormatContext->streams[this.StreamIndex]->nb_frames;
             if (this.TotalFrames == 0)
             {
-                var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
-                this.TotalFrames = (long)Math.Round(this.Duration.TotalSeconds * frameRate.num / frameRate.den);
+                this.TotalFrames = (long)Math.Round(this.Duration.TotalSeconds * this.FrameRate);
             }
         }
 

@@ -45,6 +45,11 @@ namespace Av.Rendering.Ffmpeg.Decoding
         long TotalFrames { get; }
 
         /// <summary>
+        /// Gets the average frame rate.
+        /// </summary>
+        double FrameRate { get; }
+
+        /// <summary>
         /// Seeks to the specified position, returning the nearest key frame.
         /// </summary>
         /// <param name="position">The position.</param>
