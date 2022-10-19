@@ -13,19 +13,14 @@ namespace Av.Abstractions.Rendering
     public interface IRenderingService
     {
         /// <summary>
-        /// Gets the duration.
+        /// Gets source media info.
         /// </summary>
-        TimeSpan Duration { get; }
+        MediaInfo Media { get; }
 
         /// <summary>
-        /// Gets the target frame size.
+        /// Gets render session info.
         /// </summary>
-        Dimensions2D FrameSize { get; }
-
-        /// <summary>
-        /// Gets the total number of frames.
-        /// </summary>
-        long TotalFrames { get; }
+        RenderSessionInfo Session { get; }
 
         /// <summary>
         /// Renders a frame at the position specified.

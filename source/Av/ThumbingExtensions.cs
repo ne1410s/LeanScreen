@@ -6,6 +6,7 @@ namespace Av
 {
     using System;
     using System.Linq;
+    using Av.Abstractions.Shared;
 
     /// <summary>
     /// Extensions to assist with the production of thumbnails.
@@ -24,6 +25,36 @@ namespace Av
             return Enumerable.Range(0, count)
                 .Select(n => TimeSpan.FromMilliseconds(deltaMs * n))
                 .ToArray();
+        }
+
+        /// <summary>
+        /// Obtains a new size, scaled in accordance to the target dimensions,
+        /// optionally preserving the aspect ratio (whether either non-zero
+        /// height or width are supplied).
+        /// </summary>
+        /// <param name="source">The original dimensions.</param>
+        /// <param name="target">The target dimensions, containing a new height,
+        /// a new width, or indeed both (which forces the aspect ratio).</param>
+        /// <returns>The new size.</returns>
+        /// <exception cref="ArgumentException">Invalid argument.</exception>
+        public static Dimensions2D ResizeTo(this Dimensions2D source, Dimensions2D target)
+        {
+            if (source.Width <= 0 || source.Height <= 0)
+            {
+                throw new ArgumentException("Dimensions invalid.", nameof(source));
+            }
+
+            if ((target.Width == 0 && target.Height == 0) || target.Width < 0 || target.Height < 0)
+            {
+                throw new ArgumentException("Dimensions invalid.", nameof(target));
+            }
+
+            var aspectRatio = (double)source.Width / source.Height;
+            return new Dimensions2D
+            {
+                Width = target.Width > 0 ? target.Width : (int)Math.Round(target.Height * aspectRatio),
+                Height = target.Height > 0 ? target.Height : (int)Math.Round(target.Width / aspectRatio),
+            };
         }
     }
 }

@@ -47,6 +47,21 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public void Ctor_FractionalFrameRate_ConvertsToDouble()
+        {
+            // Arrange
+            const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+            var fi = new FileInfo(Path.Combine("Samples", fileName));
+            var key = new byte[] { 9, 0, 2, 1, 0 };
+
+            // Act
+            var sut = new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key));
+
+            // Assert
+            sut.FrameRate.Should().BeApproximately(23.962, 0.001);
+        }
+
+        [Fact]
         public void Dispose_WhenCalled_SetsNegativeStreamIndex()
         {
             // Arrange
@@ -94,32 +109,31 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
-        public void TryDecodeNextFrame_AtStart_ReturnsTrue()
+        public void TryDecodeNextFrame_AtStart_ReturnsValidPosition()
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
             var sut = new TestDecoding(fi.FullName);
 
             // Act
-            var result = sut.TryDecodeNextFrame(out _);
+            var result = sut.Seek(default);
 
             // Assert
-            result.Should().BeTrue();
+            result.pkt_pos.Should().BeGreaterThanOrEqualTo(0);
         }
 
         [Fact]
-        public void TryDecodeNextFrame_AtEnd_ReturnsFalse()
+        public void TryDecodeNextFrame_AfterEnd_ReturnsInvalidPosition()
         {
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
             var sut = new TestDecoding(fi.FullName);
-            sut.Seek(TimeSpan.FromDays(21));
 
             // Act
-            var result = sut.TryDecodeNextFrame(out _);
+            var result = sut.Seek(TimeSpan.FromDays(21));
 
             // Assert
-            result.Should().BeFalse();
+            result.pkt_pos.Should().BeLessThan(0);
         }
 
         private unsafe class TestDecoding : FfmpegDecodingSessionBase
@@ -130,13 +144,6 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
                 this.OpenInputContext();
                 var pFormatContext = this.PtrFormatContext;
                 pFormatContext->seek2any = 1;
-            }
-
-            public override void Seek(TimeSpan position)
-            {
-                const long max_ts = long.MaxValue;
-                var ts = position.ToLong(this.TimeBase);
-                ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, max_ts, 0);
             }
         }
     }

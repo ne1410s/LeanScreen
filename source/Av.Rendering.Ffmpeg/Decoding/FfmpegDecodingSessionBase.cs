@@ -13,6 +13,8 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <inheritdoc cref="IFfmpegDecodingSession"/>
     public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
+        private const byte SeekThresholdMs = 150;
+
         private readonly AVCodec* ptrCodec;
 
         /// <summary>
@@ -56,6 +58,9 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <inheritdoc/>
         public long TotalFrames { get; private set; }
 
+        /// <inheritdoc/>
+        public double FrameRate { get; private set; }
+
         /// <summary>
         /// Gets a pointer to the codec context.
         /// </summary>
@@ -87,11 +92,45 @@ namespace Av.Rendering.Ffmpeg.Decoding
         protected int StreamIndex { get; private set; }
 
         /// <inheritdoc/>
-        public virtual void Seek(TimeSpan position)
+        public AVFrame Seek(TimeSpan position)
         {
             var ts = position.ToLong(this.TimeBase);
             ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0)
                 .avThrowIfError();
+
+            AVFrame retVal;
+            double msAhead;
+            double previousMsAhead = double.MinValue;
+            while(true)
+            {
+                var readOk = this.TryDecodeNextFrame(out retVal);
+                var framePosition = ((double)retVal.best_effort_timestamp).ToTimeSpan(this.TimeBase);
+                msAhead = (framePosition - position).TotalMilliseconds;
+
+                // bail out if error, or bullseye
+                if (!readOk || msAhead == previousMsAhead || position == TimeSpan.Zero
+                    || Math.Abs(msAhead) <= SeekThresholdMs)
+                {
+                    break;
+                }
+
+                // rewind if we've overshot the mark
+                if (msAhead > SeekThresholdMs)
+                {
+                    previousMsAhead = msAhead;
+                    var seekPos = (position - TimeSpan.FromSeconds(1)).Clamp(this.Duration);
+                    var newTs = seekPos.ToLong(this.TimeBase);
+                    ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, newTs, newTs, 0)
+                        .avThrowIfError();
+                }
+                else
+                {
+                    // keep reading 'em frames
+                    previousMsAhead = double.MinValue;
+                }
+            }
+
+            return retVal;
         }
 
         /// <inheritdoc/>
@@ -115,7 +154,63 @@ namespace Av.Rendering.Ffmpeg.Decoding
         }
 
         /// <inheritdoc/>
-        public virtual bool TryDecodeNextFrame(out AVFrame frame)
+        public IReadOnlyDictionary<string, string> GetContextInfo()
+        {
+            AVDictionaryEntry* tag = null;
+            var result = new Dictionary<string, string>();
+
+            while ((tag = ffmpeg.av_dict_get(
+                PtrFormatContext->metadata, string.Empty, tag, ffmpeg.AV_DICT_IGNORE_SUFFIX)) != null)
+            {
+                var key = Marshal.PtrToStringAnsi((IntPtr)tag->key);
+                var value = Marshal.PtrToStringAnsi((IntPtr)tag->value);
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Opens the input format context.
+        /// </summary>
+        protected void OpenInputContext()
+        {
+            var pFormatContext = this.PtrFormatContext;
+            ////pFormatContext->seek2any = 1;
+            ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
+            ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
+            ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
+            AVCodec* codec = null;
+
+            this.StreamIndex = ffmpeg
+                .av_find_best_stream(this.PtrFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
+                .avThrowIfError();
+            ffmpeg.avcodec_parameters_to_context(
+                this.PtrCodecContext, PtrFormatContext->streams[this.StreamIndex]->codecpar)
+                    .avThrowIfError();
+            ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
+
+            var avTimeRational = new AVRational { num = 1, den = ffmpeg.AV_TIME_BASE };
+            var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
+            this.FrameRate = (double)frameRate.num / frameRate.den;
+            this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
+            this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
+            this.CodecName = ffmpeg.avcodec_get_name(codec->id);
+            this.Dimensions = new Dimensions2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
+            this.PixelFormat = PtrCodecContext->pix_fmt;
+            this.TotalFrames = PtrFormatContext->streams[this.StreamIndex]->nb_frames;
+            if (this.TotalFrames == 0)
+            {
+                this.TotalFrames = (long)Math.Round(this.Duration.TotalSeconds * this.FrameRate);
+            }
+        }
+
+        /// <summary>
+        /// Decodes the next frame.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        /// <returns>Whether successful.</returns>
+        private bool TryDecodeNextFrame(out AVFrame frame)
         {
             ffmpeg.av_frame_unref(this.PtrFrame);
             ffmpeg.av_frame_unref(this.PtrReceivedFrame);
@@ -167,52 +262,6 @@ namespace Av.Rendering.Ffmpeg.Decoding
             ////}
 
             return true;
-        }
-
-        /// <inheritdoc/>
-        public IReadOnlyDictionary<string, string> GetContextInfo()
-        {
-            AVDictionaryEntry* tag = null;
-            var result = new Dictionary<string, string>();
-
-            while ((tag = ffmpeg.av_dict_get(
-                PtrFormatContext->metadata, string.Empty, tag, ffmpeg.AV_DICT_IGNORE_SUFFIX)) != null)
-            {
-                var key = Marshal.PtrToStringAnsi((IntPtr)tag->key);
-                var value = Marshal.PtrToStringAnsi((IntPtr)tag->value);
-                result.Add(key, value);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Opens the input format context.
-        /// </summary>
-        protected void OpenInputContext()
-        {
-            var pFormatContext = this.PtrFormatContext;
-            ////pFormatContext->seek2any = 1;
-            ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
-            ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
-            ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
-            AVCodec* codec = null;
-
-            this.StreamIndex = ffmpeg
-                .av_find_best_stream(this.PtrFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
-                .avThrowIfError();
-            ffmpeg.avcodec_parameters_to_context(
-                this.PtrCodecContext, PtrFormatContext->streams[this.StreamIndex]->codecpar)
-                    .avThrowIfError();
-            ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
-
-            var avTimeRational = new AVRational { num = 1, den = ffmpeg.AV_TIME_BASE };
-            this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
-            this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
-            this.CodecName = ffmpeg.avcodec_get_name(codec->id);
-            this.Dimensions = new Dimensions2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
-            this.PixelFormat = PtrCodecContext->pix_fmt;
-            this.TotalFrames = PtrFormatContext->streams[this.StreamIndex]->nb_frames;
         }
     }
 }

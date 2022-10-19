@@ -38,34 +38,31 @@ namespace Av.Rendering.Ffmpeg
         public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
         {
             this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
-            this.FrameSize = frameSize ?? decoder.Dimensions;
-            this.Duration = decoder.Duration;
-            this.TotalFrames = decoder.TotalFrames;
-            this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, this.FrameSize);
+            var finalFrameSize = frameSize == null ? decoder.Dimensions : decoder.Dimensions.ResizeTo(frameSize.Value);
+            this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, finalFrameSize);
+            this.Media = new(decoder.Duration, decoder.Dimensions, decoder.TotalFrames, decoder.FrameRate);
+            this.Session = new(finalFrameSize);
         }
 
         /// <inheritdoc/>
-        public TimeSpan Duration { get; }
+        public MediaInfo Media { get; }
 
         /// <inheritdoc/>
-        public Dimensions2D FrameSize { get; }
-
-        /// <inheritdoc/>
-        public long TotalFrames { get; }
+        public RenderSessionInfo Session { get; }
 
         /// <inheritdoc/>
         public RenderedFrame RenderAt(TimeSpan position)
         {
-            this.decoder.Seek(position.Clamp(this.decoder.Duration));
-            this.decoder.TryDecodeNextFrame(out var frame);
+            var frame = this.decoder.Seek(position.Clamp(this.decoder.Duration));
             var rawFrame = this.converter.RenderRawFrame(frame);
             var actualPosition = ((double)rawFrame.PresentationTime).ToTimeSpan(this.decoder.TimeBase);
-            var inferredFrame = this.TotalFrames * (actualPosition.TotalSeconds / this.Duration.TotalSeconds);
+            var inferredFrame = this.Media.TotalFrames
+                * (actualPosition.TotalSeconds / this.Media.Duration.TotalSeconds);
 
             return new RenderedFrame
             {
                 Rgb24Bytes = rawFrame.Rgb24Bytes,
-                Dimensions = this.FrameSize,
+                Dimensions = this.Session.FrameSize,
                 Position = actualPosition,
                 FrameNumber = (long)Math.Round(inferredFrame),
             };
@@ -83,7 +80,7 @@ namespace Av.Rendering.Ffmpeg
             var fi = new FileInfo(source);
             return fi.IsSecure()
                 ? new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key))
-                : (IFfmpegDecodingSession)new PhysicalFfmpegDecoding(source);
+                : new PhysicalFfmpegDecoding(source);
         }
     }
 }

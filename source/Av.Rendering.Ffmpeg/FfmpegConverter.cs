@@ -92,6 +92,8 @@ namespace Av.Rendering.Ffmpeg
 
             var data = default(byte_ptrArray8);
             data.UpdateFrom(this.dstData);
+
+            // Removed: survives stryker mutation, despite resize hash-tests...?
             ////var linesize = default(int_array8);
             ////linesize.UpdateFrom(this.dstLinesize);
 

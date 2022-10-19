@@ -47,7 +47,7 @@ namespace Av.Services
         {
             if (times.All(t => t == default))
             {
-                times = this.renderer.Duration.DistributeEvenly(times.Length);
+                times = this.renderer.Media.Duration.DistributeEvenly(times.Length);
             }
 
             for (var i = 0; i < times.Length; i++)
