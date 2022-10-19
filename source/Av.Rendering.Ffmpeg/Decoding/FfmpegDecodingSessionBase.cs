@@ -13,6 +13,8 @@ namespace Av.Rendering.Ffmpeg.Decoding
     /// <inheritdoc cref="IFfmpegDecodingSession"/>
     public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     {
+        private const byte SeekThresholdMs = 150;
+
         private readonly AVCodec* ptrCodec;
 
         /// <summary>
@@ -98,23 +100,35 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
             AVFrame retVal;
             double msAhead;
-            do
+            double previousMsAhead = double.MinValue;
+            while(true)
             {
                 var readOk = this.TryDecodeNextFrame(out retVal);
                 var framePosition = ((double)retVal.best_effort_timestamp).ToTimeSpan(this.TimeBase);
                 msAhead = (framePosition - position).TotalMilliseconds;
-                if (!readOk || position == TimeSpan.Zero)
+
+                // bail out if error, or bullseye
+                if (!readOk || msAhead == previousMsAhead || position == TimeSpan.Zero
+                    || Math.Abs(msAhead) <= SeekThresholdMs)
                 {
                     break;
                 }
 
-                // random magic number; happens to be an exact value encountered in unit test.
-                if ((long)msAhead > 268)
+                // rewind if we've overshot the mark
+                if (msAhead > SeekThresholdMs)
                 {
-                    return this.Seek((position - TimeSpan.FromSeconds(1)).Clamp(this.Duration));
+                    previousMsAhead = msAhead;
+                    var seekPos = (position - TimeSpan.FromSeconds(1)).Clamp(this.Duration);
+                    var newTs = seekPos.ToLong(this.TimeBase);
+                    ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, newTs, newTs, 0)
+                        .avThrowIfError();
+                }
+                else
+                {
+                    // keep reading 'em frames
+                    previousMsAhead = double.MinValue;
                 }
             }
-            while (msAhead < -100);
 
             return retVal;
         }

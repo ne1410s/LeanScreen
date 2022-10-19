@@ -47,6 +47,21 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public void Ctor_FractionalFrameRate_ConvertsToDouble()
+        {
+            // Arrange
+            const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+            var fi = new FileInfo(Path.Combine("Samples", fileName));
+            var key = new byte[] { 9, 0, 2, 1, 0 };
+
+            // Act
+            var sut = new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key));
+
+            // Assert
+            sut.FrameRate.Should().BeApproximately(23.962, 0.001);
+        }
+
+        [Fact]
         public void Dispose_WhenCalled_SetsNegativeStreamIndex()
         {
             // Arrange
