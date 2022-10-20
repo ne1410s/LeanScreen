@@ -10,9 +10,10 @@ namespace Av.Imaging.SixLabors
     using System.Linq;
     using Av.Abstractions.Imaging;
     using Av.Abstractions.Rendering;
-    using Av.Abstractions.Shared;
     using global::SixLabors.ImageSharp;
+    using global::SixLabors.ImageSharp.Formats.Jpeg;
     using global::SixLabors.ImageSharp.PixelFormats;
+    using global::SixLabors.ImageSharp.Processing;
 
     /// <inheritdoc cref="ICollatingService"/>
     public class SixLaborsCollatingService : ICollatingService
@@ -21,20 +22,21 @@ namespace Av.Imaging.SixLabors
         public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
         {
             opts ??= new CollationOptions();
-            IEnumerable<RenderedFrame> orderedFrames = opts.ForceChronology
-                ? frames.OrderBy(f => f.FrameNumber)
-                : frames;
-
-            var map = opts.GetMap(orderedFrames.First().Dimensions, frames.Count());
+            var map = opts.GetMap(frames.First().Dimensions, frames.Count());
             var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height);
             var iterIndex = 0;
-            foreach (var frame in orderedFrames)
+            foreach (var frame in frames)
             {
+                var inSize = frame.Dimensions;
+                var item = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, inSize.Width, inSize.Height);
                 var coords = map.Coordinates[iterIndex++];
-                Console.WriteLine($"TODO: Frame {frame.FrameNumber} at coords ({coords.X}, {coords.Y})");
+                item.Resize(map.ItemSize);
+                canvas.Mutate(o => o.DrawImage(item, new Point(coords.X, coords.Y), 1));
             }
 
-            throw new NotImplementedException();
+            var retVal = new MemoryStream();
+            canvas.Save(retVal, new JpegEncoder());
+            return retVal;
         }
     }
 }

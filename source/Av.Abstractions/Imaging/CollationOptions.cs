@@ -14,12 +14,6 @@ namespace Av.Abstractions.Imaging
     public class CollationOptions
     {
         /// <summary>
-        /// Gets or sets a value indicating whether to override the order as
-        /// present in the frames list according to frame chronology.
-        /// </summary>
-        public bool ForceChronology { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets the total number of columns in the collation.
         /// </summary>
         public int Columns { get; set; } = 4;
