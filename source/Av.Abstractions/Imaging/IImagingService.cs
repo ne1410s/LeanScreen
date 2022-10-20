@@ -4,7 +4,9 @@
 
 namespace Av.Abstractions.Imaging
 {
+    using System.Collections.Generic;
     using System.IO;
+    using Av.Abstractions.Rendering;
     using Av.Abstractions.Shared;
 
     /// <summary>
@@ -17,7 +19,7 @@ namespace Av.Abstractions.Imaging
         /// </summary>
         /// <param name="rgb24Bytes">The image bytes as 24-bit rgb.</param>
         /// <param name="size">The image dimensions.</param>
-        /// <returns>A stream of encoded bytes.</returns>
+        /// <returns>A stream of encoded image bytes.</returns>
         MemoryStream Encode(byte[] rgb24Bytes, Dimensions2D size);
     }
 }

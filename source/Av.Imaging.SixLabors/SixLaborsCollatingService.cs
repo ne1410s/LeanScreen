@@ -11,47 +11,27 @@ namespace Av.Imaging.SixLabors
     using Av.Abstractions.Imaging;
     using Av.Abstractions.Rendering;
     using Av.Abstractions.Shared;
+    using global::SixLabors.ImageSharp;
+    using global::SixLabors.ImageSharp.PixelFormats;
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="ICollatingService"/>
     public class SixLaborsCollatingService : ICollatingService
     {
         /// <inheritdoc/>
-        public List<RenderedFrame> Frames { get; } = new();
-
-        /// <inheritdoc/>
-        public MemoryStream RenderCollation(CollationOptions opts = null)
+        public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
         {
-            // TODO!!
-            // All the following logic can and should be centralised!! 
-            // Somehow put in Av library (e.g. extension method(s) or single service, etc)?
-            // It is core logic, nothing to do with SixLabors, and should be available for reuse!
-
             opts ??= new CollationOptions();
+            IEnumerable<RenderedFrame> orderedFrames = opts.ForceChronology
+                ? frames.OrderBy(f => f.FrameNumber)
+                : frames;
 
-            var count = this.Frames.Count;
-            IEnumerable<RenderedFrame> frames = opts.ForceChronology
-                ? this.Frames.OrderBy(f => f.FrameNumber)
-                : this.Frames;
-            var itemWidth = frames.First().Dimensions.Width;
-            var itemHeight = frames.First().Dimensions.Height;
-            var rows = (int)Math.Ceiling((double)count / opts.Columns);
-            var canvasDimensions = new Dimensions2D
+            var map = opts.GetMap(orderedFrames.First().Dimensions, frames.Count());
+            var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height);
+            var iterIndex = 0;
+            foreach (var frame in orderedFrames)
             {
-                Width = (2 * opts.Sides) + (opts.Columns * itemWidth) + ((opts.Columns - 1) * opts.SpaceX),
-                Height = opts.Top + (rows * itemHeight) + ((rows - 1) * opts.SpaceY) + opts.Bottom,
-            };
-
-            // x, y
-            var test = new List<Tuple<int, int>>();
-            var iterNo = 0;
-            foreach (var f in frames)
-            {
-                var gridCol = iterNo % opts.Columns;
-                var gridRow = (int)Math.Floor((double)iterNo / opts.Columns);
-                var x = opts.Sides + (gridCol * itemWidth) + (gridCol * opts.SpaceX);
-                var y = opts.Top + (gridRow * itemHeight) + (gridRow * opts.SpaceY);
-                test.Add(new(x, y));
-                iterNo++;
+                var coords = map.Coordinates[iterIndex++];
+                Console.WriteLine($"TODO: Frame {frame.FrameNumber} at coords ({coords.Width}, {coords.Height})");
             }
 
             throw new NotImplementedException();

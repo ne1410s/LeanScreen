@@ -11,22 +11,16 @@ namespace Av.Abstractions.Imaging
     using Av.Abstractions.Rendering;
 
     /// <summary>
-    /// Implementation for collating service.
+    /// Implementation for collation services.
     /// </summary>
     public interface ICollatingService
     {
         /// <summary>
-        /// Gets the frame list. This can be added to, inserted, cleared and
-        /// otherwise manipulated prior to rendering. The ordering in this list
-        /// is used for collation rendering (unless otherwise specified).
+        /// Collates a sequence of frames.
         /// </summary>
-        List<RenderedFrame> Frames { get; }
-
-        /// <summary>
-        /// Renders the collation.
-        /// </summary>
-        /// <param name="opts">The collation options.</param>
-        /// <returns>An image rendered to memory.</returns>
-        MemoryStream RenderCollation(CollationOptions opts = null);
+        /// <param name="frames">The frames.</param>
+        /// <param name="opts">Collation options.</param>
+        /// <returns>A stream of encoded image bytes.</returns>
+        MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null);
     }
 }
