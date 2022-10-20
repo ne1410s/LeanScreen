@@ -56,10 +56,10 @@ namespace Av.Abstractions.Imaging
         /// <param name="itemSize">The dimensions of each item.</param>
         /// <param name="itemCount">The total number of items.</param>
         /// <returns>A collation map.</returns>
-        public CollationMap GetMap(Dimensions2D itemSize, int itemCount)
+        public CollationMap GetMap(Size2D itemSize, int itemCount)
         {
             var rows = (int)Math.Ceiling((double)itemCount / this.Columns);
-            var canvasSize = new Dimensions2D
+            var canvasSize = new Size2D
             {
                 Width = (2 * this.Sides) + (this.Columns * itemSize.Width) + ((this.Columns - 1) * this.SpaceX),
                 Height = this.Top + (rows * itemSize.Height) + ((rows - 1) * this.SpaceY) + this.Bottom,
@@ -71,7 +71,7 @@ namespace Av.Abstractions.Imaging
                 var gridRow = (int)Math.Floor((double)index / this.Columns);
                 var x = this.Sides + (gridCol * itemSize.Width) + (gridCol * this.SpaceX);
                 var y = this.Top + (gridRow * itemSize.Height) + (gridRow * this.SpaceY);
-                return new Dimensions2D(x, y);
+                return new Point2D(x, y);
             });
 
             return new(canvasSize, itemSize, positions.ToList());

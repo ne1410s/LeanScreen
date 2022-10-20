@@ -20,8 +20,8 @@ public class FfmpegConverterTests
     public void Ctor_BadSourceSize_ThrowsArgumentException(int width, int height)
     {
         // Arrange
-        var sourceSize = new Dimensions2D { Width = width, Height = height };
-        var validDestSize = new Dimensions2D { Width = 1, Height = 1 };
+        var sourceSize = new Size2D { Width = width, Height = height };
+        var validDestSize = new Size2D { Width = 1, Height = 1 };
 
         // Act
         var act = () => new FfmpegConverter(sourceSize, default, validDestSize);
@@ -39,8 +39,8 @@ public class FfmpegConverterTests
     public void Ctor_BadDestinationSize_ThrowsArgumentException(int width, int height)
     {
         // Arrange
-        var validSourceSize = new Dimensions2D { Width = 1, Height = 1 };
-        var destSize = new Dimensions2D { Width = width, Height = height };
+        var validSourceSize = new Size2D { Width = 1, Height = 1 };
+        var destSize = new Size2D { Width = width, Height = height };
 
         // Act
         var act = () => new FfmpegConverter(validSourceSize, default, destSize);
@@ -55,7 +55,7 @@ public class FfmpegConverterTests
     {
         // Arrange
         FfmpegUtils.SetupBinaries();
-        var size = new Dimensions2D { Width = 1, Height = 1 };
+        var size = new Size2D(1, 1);
         var sut = new FfmpegConverter(size, default, size);
 
         // Act
@@ -70,7 +70,7 @@ public class FfmpegConverterTests
     {
         // Arrange
         FfmpegUtils.SetupBinaries();
-        var size = new Dimensions2D { Width = 1, Height = 1 };
+        var size = new Size2D { Width = 1, Height = 1 };
         var sut = new FfmpegConverter(size, default, size);
         var dispInfo = sut.GetType().GetField(
             "convertedFrameBufferPtr", BindingFlags.Instance | BindingFlags.NonPublic);

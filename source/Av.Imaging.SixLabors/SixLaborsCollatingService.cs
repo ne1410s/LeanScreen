@@ -31,7 +31,7 @@ namespace Av.Imaging.SixLabors
             foreach (var frame in orderedFrames)
             {
                 var coords = map.Coordinates[iterIndex++];
-                Console.WriteLine($"TODO: Frame {frame.FrameNumber} at coords ({coords.Width}, {coords.Height})");
+                Console.WriteLine($"TODO: Frame {frame.FrameNumber} at coords ({coords.X}, {coords.Y})");
             }
 
             throw new NotImplementedException();

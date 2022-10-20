@@ -20,6 +20,6 @@ namespace Av.Abstractions.Imaging
         /// <param name="rgb24Bytes">The image bytes as 24-bit rgb.</param>
         /// <param name="size">The image dimensions.</param>
         /// <returns>A stream of encoded image bytes.</returns>
-        MemoryStream Encode(byte[] rgb24Bytes, Dimensions2D size);
+        MemoryStream Encode(byte[] rgb24Bytes, Size2D size);
     }
 }

@@ -21,9 +21,9 @@ namespace Av.Abstractions.Imaging
         /// <param name="itemSize">The item size.</param>
         /// <param name="coordinates">The (x, y) positions.</param>
         public CollationMap(
-            Dimensions2D canvasSize,
-            Dimensions2D itemSize,
-            IList<Dimensions2D> coordinates)
+            Size2D canvasSize,
+            Size2D itemSize,
+            IList<Point2D> coordinates)
         {
             this.CanvasSize = canvasSize;
             this.ItemSize = itemSize;
@@ -33,16 +33,16 @@ namespace Av.Abstractions.Imaging
         /// <summary>
         /// Gets the canvas size.
         /// </summary>
-        public Dimensions2D CanvasSize { get; }
+        public Size2D CanvasSize { get; }
 
         /// <summary>
         /// Gets the canvas size.
         /// </summary>
-        public Dimensions2D ItemSize { get; }
+        public Size2D ItemSize { get; }
 
         /// <summary>
         /// Gets the placeholder positions.
         /// </summary>
-        public IList<Dimensions2D> Coordinates { get; }
+        public IList<Point2D> Coordinates { get; }
     }
 }

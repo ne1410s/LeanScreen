@@ -42,7 +42,7 @@ namespace Av
         /// a new width, or indeed both (which forces the aspect ratio).</param>
         /// <returns>The new size.</returns>
         /// <exception cref="ArgumentException">Invalid argument.</exception>
-        public static Dimensions2D ResizeTo(this Dimensions2D source, Dimensions2D target)
+        public static Size2D ResizeTo(this Size2D source, Size2D target)
         {
             if (source.Width <= 0 || source.Height <= 0)
             {
@@ -55,7 +55,7 @@ namespace Av
             }
 
             var aspectRatio = (double)source.Width / source.Height;
-            return new Dimensions2D
+            return new Size2D
             {
                 Width = target.Width > 0 ? target.Width : (int)Math.Round(target.Height * aspectRatio),
                 Height = target.Height > 0 ? target.Height : (int)Math.Round(target.Width / aspectRatio),

@@ -44,7 +44,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         public string CodecName { get; private set; }
 
         /// <inheritdoc/>
-        public Dimensions2D Dimensions { get; private set; }
+        public Size2D Dimensions { get; private set; }
 
         /// <inheritdoc/>
         public TimeSpan Duration { get; private set; }
@@ -196,7 +196,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
             this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
             this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
             this.CodecName = ffmpeg.avcodec_get_name(codec->id);
-            this.Dimensions = new Dimensions2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
+            this.Dimensions = new Size2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
             this.PixelFormat = PtrCodecContext->pix_fmt;
             this.TotalFrames = PtrFormatContext->streams[this.StreamIndex]->nb_frames;
             if (this.TotalFrames == 0)

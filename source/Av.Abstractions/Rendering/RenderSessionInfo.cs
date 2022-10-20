@@ -16,7 +16,7 @@ namespace Av.Abstractions.Rendering
         /// Initialises a new instance of the <see cref="RenderSessionInfo"/> class.
         /// </summary>
         /// <param name="frameSize">The frame size.</param>
-        public RenderSessionInfo(Dimensions2D frameSize)
+        public RenderSessionInfo(Size2D frameSize)
         {
             this.FrameSize = frameSize;
         }
@@ -24,6 +24,6 @@ namespace Av.Abstractions.Rendering
         /// <summary>
         /// Gets the target frame size.
         /// </summary>
-        public Dimensions2D FrameSize { get; }
+        public Size2D FrameSize { get; }
     }
 }

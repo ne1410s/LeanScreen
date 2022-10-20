@@ -33,8 +33,8 @@ public class ThumbingExtensionsTests
     public void ResizeTo_InvalidSource_ThrowsException(int width, int height)
     {
         // Arrange
-        var source = new Dimensions2D(width, height);
-        var target = new Dimensions2D(100, 50);
+        var source = new Size2D(width, height);
+        var target = new Size2D(100, 50);
 
         // Act
         var act = () => source.ResizeTo(target);
@@ -51,8 +51,8 @@ public class ThumbingExtensionsTests
     public void ResizeTo_InvalidTarget_ThrowsException(int width, int height)
     {
         // Arrange
-        var source = new Dimensions2D(100, 50);
-        var target = new Dimensions2D(width, height);
+        var source = new Size2D(100, 50);
+        var target = new Size2D(width, height);
 
         // Act
         var act = () => source.ResizeTo(target);
@@ -69,9 +69,9 @@ public class ThumbingExtensionsTests
     public void ResizeTo_WithDimensions_ResultExpected(int pWidth, int pHeight, int expWidth, int expHeight)
     {
         // Arrange
-        var source = new Dimensions2D(100, 55);
-        var target = new Dimensions2D(pWidth, pHeight);
-        var expected = new Dimensions2D(expWidth, expHeight);
+        var source = new Size2D(100, 55);
+        var target = new Size2D(pWidth, pHeight);
+        var expected = new Size2D(expWidth, expHeight);
 
         // Act
         var result = source.ResizeTo(target);

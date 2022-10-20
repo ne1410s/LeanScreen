@@ -17,9 +17,9 @@ public class CollationOptionsTests
     {
         // Arrange
         var sut = new CollationOptions { Columns = 4 };
-        var itemSize = new Dimensions2D(200, 150);
+        var itemSize = new Size2D(200, 150);
         var itemCount = (sut.Columns * 2) + 1;
-        var expectedCoords = new Dimensions2D[]
+        var expectedCoords = new Point2D[]
         {
             new(10, 50),
             new(220, 50),

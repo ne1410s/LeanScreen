@@ -26,7 +26,7 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="source">The source.</param>
         /// <param name="key">The key (for cryptographic sources).</param>
         /// <param name="frameSize">The target frame size.</param>
-        public FfmpegRenderer(string source, byte[] key = null, Dimensions2D? frameSize = null)
+        public FfmpegRenderer(string source, byte[] key = null, Size2D? frameSize = null)
             : this(GetDecoder(source, key), frameSize)
         { }
 
@@ -35,7 +35,7 @@ namespace Av.Rendering.Ffmpeg
         /// </summary>
         /// <param name="decoder">The decoder.</param>
         /// <param name="frameSize">The target frame size.</param>
-        public FfmpegRenderer(IFfmpegDecodingSession decoder, Dimensions2D? frameSize = null)
+        public FfmpegRenderer(IFfmpegDecodingSession decoder, Size2D? frameSize = null)
         {
             this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
             var finalFrameSize = frameSize == null ? decoder.Dimensions : decoder.Dimensions.ResizeTo(frameSize.Value);
