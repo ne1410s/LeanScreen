@@ -1,8 +1,8 @@
 ﻿{
   "Duration": "00:01:00.0950000",
   "Dimensions": {
-    "Height": 360,
-    "Width": 640
+    "Width": 640,
+    "Height": 360
   },
   "TotalFrames": 1440,
   "FrameRate": 23.9621

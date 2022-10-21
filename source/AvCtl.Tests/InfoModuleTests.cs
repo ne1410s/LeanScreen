@@ -15,7 +15,6 @@ namespace AvCtl.Tests;
 public class InfoModuleTests
 {
     [Theory]
-
     [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", "9,0,2,1,0")]
     [InlineData("sample.avi")]
     [InlineData("sample.flv")]

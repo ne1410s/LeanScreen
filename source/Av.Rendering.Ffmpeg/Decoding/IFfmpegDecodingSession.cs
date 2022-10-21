@@ -22,7 +22,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         /// <summary>
         /// Gets the dimensions.
         /// </summary>
-        Dimensions2D Dimensions { get; }
+        Size2D Dimensions { get; }
 
         /// <summary>
         /// Gets the duration.

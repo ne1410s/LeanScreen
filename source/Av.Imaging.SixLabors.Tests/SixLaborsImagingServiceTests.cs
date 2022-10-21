@@ -23,7 +23,7 @@ public class SixLaborsImagingServiceTests
         };
 
         // Act
-        var result = sut.Encode(rgb24, new Dimensions2D { Width = 3, Height = 3 });
+        var result = sut.Encode(rgb24, new Size2D { Width = 3, Height = 3 });
         var encoded = result.ToArray();
 
         // Assert

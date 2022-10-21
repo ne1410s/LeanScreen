@@ -39,7 +39,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             FfmpegUtils.SetupBinaries();
             var mockDecoder = new Mock<IFfmpegDecodingSession>();
-            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Size2D { Width = 1, Height = 1 });
             mockDecoder.Setup(m => m.Duration).Returns(TimeSpan.FromSeconds(100));
             var sut = new FfmpegRenderer(mockDecoder.Object);
             var ts = TimeSpan.FromSeconds(1.34);
@@ -67,7 +67,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
             var decoder = Get(decodeMode, fi, bufferLength);
-            var sut = new FfmpegRenderer(decoder, new Dimensions2D { Width = 3, Height = 3 });
+            var sut = new FfmpegRenderer(decoder, new Size2D(3, 3));
             var ts = decoder.Duration * position;
 
             // Act
@@ -87,7 +87,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             var fi = new FileInfo(Path.Combine("Samples", "sample.mkv"));
             var decoder = Get(DecodeMode.BlockReads, fi);
-            var sut = new FfmpegRenderer(decoder, new Dimensions2D { Width = width, Height = height });
+            var sut = new FfmpegRenderer(decoder, new Size2D { Width = width, Height = height });
             var ts = decoder.Duration / 7;
 
             // Act
@@ -186,7 +186,7 @@ namespace Av.Rendering.Ffmpeg.Tests
             // Arrange
             FfmpegUtils.SetupBinaries();
             var mockDecoder = new Mock<IFfmpegDecodingSession>();
-            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D { Width = 1, Height = 1 });
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Size2D { Width = 1, Height = 1 });
             var sut = new FfmpegRenderer(mockDecoder.Object);
 
             // Act
@@ -212,9 +212,9 @@ namespace Av.Rendering.Ffmpeg.Tests
         {
             // Arrange
             var mockDecoder = new Mock<IFfmpegDecodingSession>();
-            mockDecoder.Setup(m => m.Dimensions).Returns(new Dimensions2D(7, 11));
-            var resizeTo = new Dimensions2D { Width = 70 };
-            var expected = new Dimensions2D(70, 110);
+            mockDecoder.Setup(m => m.Dimensions).Returns(new Size2D(7, 11));
+            var resizeTo = new Size2D { Width = 70 };
+            var expected = new Size2D(70, 110);
 
             // Act
             var sut = new FfmpegRenderer(mockDecoder.Object, resizeTo);

@@ -19,7 +19,7 @@ namespace Av.Abstractions.Rendering
         /// <param name="dimensions">The dimensions.</param>
         /// <param name="totalFrames">The total number of frames.</param>
         /// <param name="frameRate">The average frame rate.</param>
-        public MediaInfo(TimeSpan duration, Dimensions2D dimensions, long totalFrames, double frameRate)
+        public MediaInfo(TimeSpan duration, Size2D dimensions, long totalFrames, double frameRate)
         {
             this.Duration = duration;
             this.Dimensions = dimensions;
@@ -35,7 +35,7 @@ namespace Av.Abstractions.Rendering
         /// <summary>
         /// Gets the frame size.
         /// </summary>
-        public Dimensions2D Dimensions { get; }
+        public Size2D Dimensions { get; }
 
         /// <summary>
         /// Gets the total number of frames.

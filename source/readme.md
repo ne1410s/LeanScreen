@@ -9,9 +9,10 @@ gci **/TestResults/ | ri -r; dotnet test -c Release -s .runsettings; dotnet repo
 
 # Run mutation tests and show report (per project)
 gci **/StrykerOutput/ | ri -r;
+$tp="Av.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
+$tp="Av.Abstractions.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
 $tp="Av.Imaging.SixLabors.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
 $tp="Av.Rendering.Ffmpeg.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
-$tp="Av.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
 $tp="AvCtl.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
 
 # Bundle up executable

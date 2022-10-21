@@ -15,11 +15,12 @@ namespace Av.Imaging.SixLabors
     public class SixLaborsImagingService : IImagingService
     {
         /// <inheritdoc/>
-        public MemoryStream Encode(byte[] rgb24Bytes, Dimensions2D size)
+        public MemoryStream Encode(byte[] rgb24Bytes, Size2D size)
         {
             var image = Image.LoadPixelData<Rgb24>(rgb24Bytes, size.Width, size.Height);
             var retVal = new MemoryStream();
             image.Save(retVal, new JpegEncoder());
+            retVal.Position = 0;
             return retVal;
         }
     }

@@ -20,7 +20,7 @@ namespace Av.Abstractions.Rendering
         /// <summary>
         /// Gets or sets the frame dimensions.
         /// </summary>
-        public Dimensions2D Dimensions { get; set; }
+        public Size2D Dimensions { get; set; }
 
         /// <summary>
         /// Gets or sets the chronological frame number.

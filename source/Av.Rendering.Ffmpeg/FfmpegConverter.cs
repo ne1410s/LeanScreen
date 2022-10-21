@@ -29,7 +29,7 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="sourcePixelFormat">The source pixel format.</param>
         /// <param name="destinationSize">The destination size.</param>
         /// <exception cref="ArgumentException">Invalid data.</exception>
-        public FfmpegConverter(Dimensions2D sourceSize, AVPixelFormat sourcePixelFormat, Dimensions2D destinationSize)
+        public FfmpegConverter(Size2D sourceSize, AVPixelFormat sourcePixelFormat, Size2D destinationSize)
         {
             AssertValid(sourceSize, nameof(sourceSize));
             AssertValid(destinationSize, nameof(destinationSize));
@@ -111,7 +111,7 @@ namespace Av.Rendering.Ffmpeg
         /// <param name="size">The size to check.</param>
         /// <param name="paramName">The original parameter name.</param>
         /// <exception cref="ArgumentException">Invalid data.</exception>
-        private static void AssertValid(Dimensions2D size, string paramName)
+        private static void AssertValid(Size2D size, string paramName)
         {
             if (size.Width <= 0 || size.Height <= 0)
             {
