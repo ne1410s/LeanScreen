@@ -1,4 +1,4 @@
-﻿// <copyright file="GenerateModule.cs" company="ne1410s">
+﻿// <copyright file="SnapshotModule.cs" company="ne1410s">
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
@@ -50,8 +50,7 @@ public static class SnapshotModule
             var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
             var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            using var fs = File.OpenWrite(path);
-            memStr.WriteTo(fs);
+            File.WriteAllBytes(path, memStr.ToArray());
         };
 
         snapper.Generate(onFrameReceived, itemCount);
@@ -89,8 +88,7 @@ public static class SnapshotModule
             var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
             var path = Path.Combine(di.FullName, $"p{relative}_f{frameNo}.jpg");
             using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            using var fs = File.OpenWrite(path);
-            memStr.WriteTo(fs);
+            File.WriteAllBytes(path, memStr.ToArray());
         };
 
         snapper.Generate(onFrameReceived, renderer.Media.Duration * relative);

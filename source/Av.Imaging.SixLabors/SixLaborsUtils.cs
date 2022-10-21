@@ -21,14 +21,11 @@ namespace Av.Imaging.SixLabors
         public static void Resize(this Image image, Size2D targetSize)
         {
             var currentSize = new Size2D(image.Width, image.Height);
-            if (!currentSize.Equals(targetSize))
+            image.Mutate(x => x.Resize(new ResizeOptions
             {
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max,
-                    Size = new Size(targetSize.Width, targetSize.Height),
-                }));
-            }
+                Mode = ResizeMode.Max,
+                Size = new Size(targetSize.Width, targetSize.Height),
+            }));
         }
     }
 }
