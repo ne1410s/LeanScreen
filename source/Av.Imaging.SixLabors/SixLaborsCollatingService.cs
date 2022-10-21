@@ -36,6 +36,7 @@ namespace Av.Imaging.SixLabors
 
             var retVal = new MemoryStream();
             canvas.Save(retVal, new JpegEncoder());
+            retVal.Position = 0;
             return retVal;
         }
     }

@@ -26,13 +26,14 @@ public class SixLaborsCollatingServiceTests
             36, 28, 237, 36, 28, 237, 36, 28, 237,
         };
         var frame = new RenderedFrame { Rgb24Bytes = rgb24Bytes, Dimensions = new(18, 1) };
-        var bytes4x = rgb24Bytes.Concat(rgb24Bytes).Concat(rgb24Bytes).Concat(rgb24Bytes).ToArray();
-        var bigFrame = new RenderedFrame { Rgb24Bytes = bytes4x, Dimensions = new(36, 2) };
+        var bytes3x = rgb24Bytes.Concat(rgb24Bytes).Concat(rgb24Bytes).ToArray();
+        var bigFrame = new RenderedFrame { Rgb24Bytes = bytes3x, Dimensions = new(9, 6) };
         var sut = new SixLaborsCollatingService();
         var expectedSha256 = new byte[]
         {
-            227, 176, 196, 66, 152, 252, 28, 20, 154, 251, 244, 200, 153, 111, 185, 36,
-            39, 174, 65, 228, 100, 155, 147, 76, 164, 149, 153, 27, 120, 82, 184, 85,
+            156, 100, 149, 201, 102, 108, 24, 6, 125, 156, 198,
+            34, 109, 24, 57, 239, 88, 6, 9, 211, 143, 160, 74,
+            252, 226, 158, 53, 215, 218, 80, 216, 212,
         };
 
         // Act
