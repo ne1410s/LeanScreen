@@ -13,7 +13,7 @@ using Av.Services;
 using Comanche;
 
 /// <summary>
-/// Generate module.
+/// Snapshot module.
 /// </summary>
 [Alias("snap")]
 public static class SnapshotModule
