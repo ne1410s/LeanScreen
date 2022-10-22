@@ -48,8 +48,9 @@ public static class CollateModule
         var frameList = new List<RenderedFrame>();
         var onFrameReceived = (RenderedFrame frame, int _) => frameList.Add(frame);
         snapper.Generate(onFrameReceived, itemCount);
+        var sourceName = new FileInfo(source).Name;
         var memStr = collator.Collate(frameList);
-        var path = Path.Combine(di.FullName, $"collation_x{itemCount}.jpg");
+        var path = Path.Combine(di.FullName, $"{sourceName}_collation_x{itemCount}.jpg");
         File.WriteAllBytes(path, memStr.ToArray());
         return path;
     }
