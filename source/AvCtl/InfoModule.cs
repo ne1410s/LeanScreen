@@ -4,15 +4,7 @@
 
 namespace AvCtl;
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Av.Abstractions.Rendering;
-using Av.Rendering.Ffmpeg;
 using Comanche;
 
 /// <summary>
@@ -32,8 +24,7 @@ public static class InfoModule
         [Alias("s")] string source,
         [Alias("k")] string? keyCsv = null)
     {
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
-        IRenderingService renderer = new FfmpegRenderer(source, key);
+        var renderer = CommonUtils.GetRenderer(source, keyCsv);
         return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions
         {
             WriteIndented = true,

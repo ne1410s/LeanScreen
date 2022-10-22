@@ -2,11 +2,6 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Comanche;
-using Comanche.Services;
-
 namespace AvCtl.Tests;
 
 /// <summary>
@@ -28,18 +23,9 @@ public class InfoModuleTests
         var expected = File.ReadAllText(Path.Combine("Samples", "Info", fileName + ".json"));
 
         // Act
-        var result = Route($"info basic -s {source} {keyArg}");
+        var result = TestHelper.Route($"info basic -s {source} {keyArg}");
 
         // Assert
         result.Should().Be(expected);
-    }
-
-    private static object? Route(string consoleInput, IOutputWriter? writer = null)
-    {
-        Environment.ExitCode = 0;
-        return Session.Route(
-            Regex.Split(consoleInput, "\\s+"),
-            Assembly.GetAssembly(typeof(InfoModule)),
-            writer);
     }
 }

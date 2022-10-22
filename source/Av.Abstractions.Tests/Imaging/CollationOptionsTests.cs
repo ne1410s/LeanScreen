@@ -16,7 +16,7 @@ public class CollationOptionsTests
     public void GetMap_MultipleRows_ReturnsExpected()
     {
         // Arrange
-        var sut = new CollationOptions { Columns = 4 };
+        var sut = new CollationOptions { Columns = 4, Top = 50 };
         var itemSize = new Size2D(200, 150);
         var itemCount = (sut.Columns * 2) + 1;
         var expectedCoords = new Point2D[]

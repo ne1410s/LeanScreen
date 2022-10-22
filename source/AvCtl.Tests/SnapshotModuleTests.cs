@@ -3,10 +3,7 @@
 // </copyright>
 
 using System.Globalization;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using Comanche;
-using Comanche.Services;
 
 namespace AvCtl.Tests;
 
@@ -24,7 +21,7 @@ public class SnapshotModuleTests
         const int total = 10;
 
         // Act
-        var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name} -t {total}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -t {total}");
 
         // Assert
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().Be(total);
@@ -40,7 +37,7 @@ public class SnapshotModuleTests
         var expectedPrefixes = Enumerable.Range(1, total).Select(i => $"n{i}_f");
 
         // Act
-        var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name} -t {total}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -t {total}");
         var actualPrefixes = Directory.GetFiles((string)returnDest!, "*.jpg")
             .Select(name => new FileInfo(name).Name[..4]);
 
@@ -56,7 +53,7 @@ public class SnapshotModuleTests
         var expectedDest = new FileInfo(source).DirectoryName;
 
         // Act
-        var returnDest = Route($"snap evenly -s {source}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source}");
 
         // Assert
         returnDest.Should().Be(expectedDest);
@@ -71,7 +68,7 @@ public class SnapshotModuleTests
         var expectedDest = Directory.GetCurrentDirectory();
 
         // Act
-        var returnDest = Route($"snap evenly -s {source}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source}");
 
         // Assert
         returnDest.Should().Be(expectedDest);
@@ -87,7 +84,7 @@ public class SnapshotModuleTests
         var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
-        var returnDest = Route($"snap evenly -s {source} -d {destInfo.Name} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -k {keyCsv}");
 
         // Assert
         returnDest.Should().Be(destInfo.FullName);
@@ -107,7 +104,7 @@ public class SnapshotModuleTests
         var destInfo = Directory.CreateDirectory(folder);
 
         // Act
-        Route($"snap evenly -s {source} -d {destInfo.Name}");
+        TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name}");
 
         // Assert
         // e.g. check a list of hashes perhaps?
@@ -124,7 +121,7 @@ public class SnapshotModuleTests
         const int expectedFrame = (int)(mediaFrames * position);
 
         // Act
-        var returnDest = Route($"snap single -s {source} -d {destInfo.Name} -r {position}");
+        var returnDest = TestHelper.Route($"snap single -s {source} -d {destInfo.Name} -r {position}");
         var filePath = Directory.GetFiles((string)returnDest!, "*.jpg").Single();
         var fileName = new FileInfo(filePath).Name;
         var frameNo = int.Parse(
@@ -144,7 +141,7 @@ public class SnapshotModuleTests
         const string keyCsv = "9,0,2,1,0";
 
         // Act
-        var returnDest = Route($"snap single -s {source} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap single -s {source} -k {keyCsv}");
 
         // Assert
         returnDest.Should().Be(expectedDest);
@@ -159,19 +156,10 @@ public class SnapshotModuleTests
         var expectedDest = Directory.GetCurrentDirectory();
 
         // Act
-        var returnDest = Route($"snap single -s {source} -r 0.75");
+        var returnDest = TestHelper.Route($"snap single -s {source} -r 0.75");
 
         // Assert
         returnDest.Should().Be(expectedDest);
         Directory.GetFiles((string)returnDest!, "p0.75*.jpg").Length.Should().BeGreaterThan(0);
-    }
-
-    private static object? Route(string consoleInput, IOutputWriter? writer = null)
-    {
-        Environment.ExitCode = 0;
-        return Session.Route(
-            Regex.Split(consoleInput, "\\s+"),
-            Assembly.GetAssembly(typeof(SnapshotModule)),
-            writer);
     }
 }
