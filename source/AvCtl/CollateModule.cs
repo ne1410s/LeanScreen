@@ -4,13 +4,10 @@
 
 namespace AvCtl;
 
-using System.Globalization;
 using System.IO;
-using Av;
+using Av.Abstractions.Imaging;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
-using Av.Rendering.Ffmpeg;
-using Av.Services;
 using Comanche;
 
 /// <summary>
@@ -25,6 +22,7 @@ public static class CollateModule
     /// <param name="source">The source file.</param>
     /// <param name="destination">The output folder.</param>
     /// <param name="itemCount">The total number of items.</param>
+    /// <param name="columns">The number of columns to use.</param>
     /// <param name="keyCsv">Key (if source is encrypted).</param>
     /// <returns>The output path.</returns>
     [Alias("evenly")]
@@ -32,25 +30,18 @@ public static class CollateModule
         [Alias("s")] string source,
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
+        [Alias("c")] int columns = 4,
         [Alias("k")] string? keyCsv = null)
     {
-        var fi = new FileInfo(source);
-        if (destination == null && fi.Exists)
-        {
-            destination = fi.DirectoryName;
-        }
-
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
-        IRenderingService renderer = new FfmpegRenderer(source, key);
-        var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
-        var snapper = new ThumbnailGenerator(renderer);
-        var collator = new SixLaborsCollatingService();
-        var frameList = new List<RenderedFrame>();
-        var onFrameReceived = (RenderedFrame frame, int _) => frameList.Add(frame);
-        snapper.Generate(onFrameReceived, itemCount);
+        var di = CommonUtils.QualifyDestination(source, destination);
         var sourceName = new FileInfo(source).Name;
-        var memStr = collator.Collate(frameList);
         var path = Path.Combine(di.FullName, $"{sourceName}_collation_x{itemCount}.jpg");
+        var snapper = CommonUtils.GetSnapper(source, keyCsv, out _);
+        var frameList = new List<RenderedFrame>();
+        snapper.Generate((f, _) => frameList.Add(f), itemCount);
+
+        var opts = new CollationOptions { Columns = columns };
+        var memStr = new SixLaborsCollatingService().Collate(frameList, opts);
         File.WriteAllBytes(path, memStr.ToArray());
         return path;
     }

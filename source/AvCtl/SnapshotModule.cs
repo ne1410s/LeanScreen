@@ -4,12 +4,9 @@
 
 namespace AvCtl;
 
-using System.Globalization;
 using Av;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
-using Av.Rendering.Ffmpeg;
-using Av.Services;
 using Comanche;
 
 /// <summary>
@@ -33,16 +30,8 @@ public static class SnapshotModule
         [Alias("t")]int itemCount = 24,
         [Alias("k")]string? keyCsv = null)
     {
-        var fi = new FileInfo(source);
-        if (destination == null && fi.Exists)
-        {
-            destination = fi.DirectoryName;
-        }
-
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
-        IRenderingService renderer = new FfmpegRenderer(source, key);
-        var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
-        var snapper = new ThumbnailGenerator(renderer);
+        var di = CommonUtils.QualifyDestination(source, destination);
+        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer);
         var imager = new SixLaborsImagingService();
         var onFrameReceived = (RenderedFrame frame, int index) =>
         {
@@ -72,16 +61,8 @@ public static class SnapshotModule
         [Alias("r")] double relative = .3,
         [Alias("k")] string? keyCsv = null)
     {
-        var fi = new FileInfo(source);
-        if (destination == null && fi.Exists)
-        {
-            destination = fi.DirectoryName;
-        }
-
-        var key = keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
-        IRenderingService renderer = new FfmpegRenderer(source, key);
-        var di = new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
-        var snapper = new ThumbnailGenerator(renderer);
+        var di = CommonUtils.QualifyDestination(source, destination);
+        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer);
         var imager = new SixLaborsImagingService();
         var onFrameReceived = (RenderedFrame frame, int _) =>
         {
