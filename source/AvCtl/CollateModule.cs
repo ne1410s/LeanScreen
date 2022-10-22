@@ -23,6 +23,7 @@ public static class CollateModule
     /// <param name="destination">The output folder.</param>
     /// <param name="itemCount">The total number of items.</param>
     /// <param name="columns">The number of columns to use.</param>
+    /// <param name="itemHeight">The item height to set.</param>
     /// <param name="keyCsv">Key (if source is encrypted).</param>
     /// <returns>The output path.</returns>
     [Alias("evenly")]
@@ -31,6 +32,7 @@ public static class CollateModule
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
         [Alias("c")] int columns = 4,
+        [Alias("h")] int itemHeight = 300,
         [Alias("k")] string? keyCsv = null)
     {
         var di = CommonUtils.QualifyDestination(source, destination);
@@ -40,7 +42,7 @@ public static class CollateModule
         var frameList = new List<RenderedFrame>();
         snapper.Generate((f, _) => frameList.Add(f), itemCount);
 
-        var opts = new CollationOptions { Columns = columns };
+        var opts = new CollationOptions { Columns = columns, ItemSize = new(0, itemHeight) };
         var memStr = new SixLaborsCollatingService().Collate(frameList, opts);
         File.WriteAllBytes(path, memStr.ToArray());
         return path;

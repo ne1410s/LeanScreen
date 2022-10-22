@@ -45,6 +45,13 @@ namespace Av.Abstractions.Imaging
         public int Sides { get; set; } = 10;
 
         /// <summary>
+        /// Gets or sets the item size. If not supplied, the dimensions of the
+        /// first frame is used. A single dimension is suggested, as this shall
+        /// result in the original aspect ratio being preserved.
+        /// </summary>
+        public Size2D? ItemSize { get; set; }
+
+        /// <summary>
         /// Generates a map to serve as instructions for how frames can be collated.
         /// </summary>
         /// <param name="itemSize">The dimensions of each item.</param>
