@@ -47,4 +47,19 @@ public static class CollateModule
         File.WriteAllBytes(path, memStr.ToArray());
         return path;
     }
+
+    /// <summary>
+    /// Collates all video files in source.
+    /// </summary>
+    /// <param name="source">The source directory.</param>
+    /// <param name="destination">The output folder.</param>
+    /// <param name="keyCsv">The encryption key.</param>
+    [Alias("bulk")]
+    public static void CollateMany(
+        [Alias("s")] string source,
+        [Alias("d")] string? destination = null,
+        [Alias("k")] string? keyCsv = null)
+    {
+        // TODO!
+    }
 }

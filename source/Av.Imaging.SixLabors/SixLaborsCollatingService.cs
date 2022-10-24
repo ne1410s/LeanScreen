@@ -18,9 +18,9 @@ namespace Av.Imaging.SixLabors
     /// <inheritdoc cref="ICollatingService"/>
     public class SixLaborsCollatingService : ICollatingService
     {
+        private const int BorderThickness = 1;
         private static readonly Rgb24 Background = new(255, 255, 255);
         private static readonly Rgb24 BorderColour = new(0, 0, 0);
-        private const int BorderThickness = 1;
 
         /// <inheritdoc/>
         public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
