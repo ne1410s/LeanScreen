@@ -18,6 +18,10 @@ namespace Av.Imaging.SixLabors
     /// <inheritdoc cref="ICollatingService"/>
     public class SixLaborsCollatingService : ICollatingService
     {
+        private static readonly Rgb24 Background = new(255, 255, 255);
+        private static readonly Rgb24 BorderColour = new(0, 0, 0);
+        private const int BorderThickness = 1;
+
         /// <inheritdoc/>
         public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
         {
@@ -25,7 +29,11 @@ namespace Av.Imaging.SixLabors
             var firstItemSize = frames.First().Dimensions;
             var itemSize = opts.ItemSize == null ? firstItemSize : firstItemSize.ResizeTo(opts.ItemSize.Value);
             var map = opts.GetMap(itemSize, frames.Count());
-            var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height);
+            var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height, Background);
+            var border = new Image<Rgb24>(
+                itemSize.Width + (BorderThickness * 2),
+                itemSize.Height + (BorderThickness * 2),
+                BorderColour);
             var iterIndex = 0;
             foreach (var frame in frames)
             {
@@ -33,7 +41,9 @@ namespace Av.Imaging.SixLabors
                 var item = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, inSize.Width, inSize.Height);
                 var coords = map.Coordinates[iterIndex++];
                 item.Resize(map.ItemSize);
-                canvas.Mutate(o => o.DrawImage(item, new Point(coords.X, coords.Y), 1));
+                canvas.Mutate(o => o
+                    .DrawImage(border, new Point(coords.X - BorderThickness, coords.Y - BorderThickness), 1)
+                    .DrawImage(item, new Point(coords.X, coords.Y), 1));
             }
 
             var retVal = new MemoryStream();
