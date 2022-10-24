@@ -13,7 +13,7 @@ using Av.Services;
 /// <summary>
 /// Common utilities.
 /// </summary>
-public static class CommonUtils
+internal static class CommonUtils
 {
     /// <summary>
     /// Gets a directory based on user-supplied parameters.
