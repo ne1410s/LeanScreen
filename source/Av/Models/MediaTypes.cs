@@ -13,11 +13,6 @@ namespace Av.Models
     public enum MediaTypes
     {
         /// <summary>
-        /// Media and non-media types.
-        /// </summary>
-        Anything = 0b0000,
-
-        /// <summary>
         /// Recognised as non-media.
         /// </summary>
         NonMedia = 0b00001,

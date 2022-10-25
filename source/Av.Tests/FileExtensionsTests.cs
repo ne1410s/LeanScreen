@@ -3,6 +3,7 @@
 // </copyright>
 
 using Av.Models;
+using Crypt.IO;
 
 namespace Av.Tests;
 
@@ -26,17 +27,34 @@ public class FileExtensionsTests
     }
 
     [Theory]
-    [InlineData(MediaTypes.Image, 1)]
+    [InlineData(MediaTypes.Audio, 0)]
+    [InlineData(MediaTypes.Image, 2)]
     [InlineData(MediaTypes.Video, 1)]
-    [InlineData(MediaTypes.AnyMedia, 2)]
+    [InlineData(MediaTypes.AnyMedia, 3)]
     [InlineData(MediaTypes.NonMedia, 1)]
-    public void EnumerateMedia_WithFiles_ReturnsExpected(MediaTypes types, int expectedCount)
+    public void EnumerateMedia_VaryingMediaType_CountExpected(MediaTypes types, int expectedCount)
     {
         // Arrange
         var di = new DirectoryInfo("Samples");
 
         // Act
         var media = di.EnumerateMedia(types);
+
+        // Assert
+        media.Count().Should().Be(expectedCount);
+    }
+
+    [Theory]
+    [InlineData(null, 3)]
+    [InlineData(false, 2)]
+    [InlineData(true, 1)]
+    public void EnumerateMedia_VaryingSecureFlag_CountExpected(bool? secure, int expectedCount)
+    {
+        // Arrange
+        var di = new DirectoryInfo("Samples");
+
+        // Act
+        var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure);
 
         // Assert
         media.Count().Should().Be(expectedCount);
