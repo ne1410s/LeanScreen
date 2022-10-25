@@ -24,7 +24,7 @@ public static class InfoModule
         [Alias("s")] string source,
         [Alias("k")] string? keyCsv = null)
     {
-        var renderer = CommonUtils.GetRenderer(source, keyCsv);
+        var renderer = CommonUtils.GetRenderer(source, keyCsv, out _);
         return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions
         {
             WriteIndented = true,

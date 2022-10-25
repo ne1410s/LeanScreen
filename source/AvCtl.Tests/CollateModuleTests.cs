@@ -14,12 +14,14 @@ namespace AvCtl.Tests;
 public class CollateModuleTests
 {
     [Fact]
-    public void CollateEvenly_ForCryptFile_ProducesResult()
+    public void CollateEvenly_ForCryptFile_ProducesSecureResult()
     {
         // Arrange
-        var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
+        const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+        var source = Path.Combine("Samples", fileName);
         const int total = 10;
         const string keyCsv = "9,0,2,1,0";
+        const string expectedName = "b5f852c247434f5e677bb11d61b9626de2279fcd109b2cdbbf25573136474ebb.jpg";
         var destInfo = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
         // Act
@@ -27,7 +29,7 @@ public class CollateModuleTests
             $"collate evenly -s {source} -d {destInfo.Name} -t {total} -k {keyCsv}")!;
 
         // Assert
-        returnPath.Should().Match($"*_collation_x{total}.jpg");
+        returnPath.Should().Match($"*{fileName[..12]}.{expectedName}");
         File.Exists(returnPath).Should().BeTrue();
     }
 

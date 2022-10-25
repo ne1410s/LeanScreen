@@ -31,7 +31,7 @@ public static class SnapshotModule
         [Alias("k")]string? keyCsv = null)
     {
         var di = CommonUtils.QualifyDestination(source, destination);
-        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer);
+        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer, out _);
         var imager = new SixLaborsImagingService();
         var onFrameReceived = (RenderedFrame frame, int index) =>
         {
@@ -62,7 +62,7 @@ public static class SnapshotModule
         [Alias("k")] string? keyCsv = null)
     {
         var di = CommonUtils.QualifyDestination(source, destination);
-        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer);
+        var snapper = CommonUtils.GetSnapper(source, keyCsv, out var renderer, out _);
         var imager = new SixLaborsImagingService();
         var onFrameReceived = (RenderedFrame frame, int _) =>
         {

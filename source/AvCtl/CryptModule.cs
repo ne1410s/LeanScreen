@@ -4,12 +4,10 @@
 
 namespace AvCtl;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Av;
+using Av.Models;
 using Comanche;
+using Crypt.IO;
 
 /// <summary>
 /// Crypt module.
@@ -18,17 +16,34 @@ using Comanche;
 public static class CryptModule
 {
     /// <summary>
-    /// Encrypts all hitherto-unencrypted media files in source.
+    /// Encrypts all hitherto-unencrypted media files in source. The files are
+    /// secured "in situ"; overwriting the original bytes with new ones.
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="keyCsv">The encryption key.</param>
-    /// <param name="destination">The output folder.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
         [Alias("s")] string source,
-        [Alias("k")] string keyCsv,
-        [Alias("d")] string? destination = null)
+        [Alias("k")] string keyCsv)
     {
-        // TODO!
+        var di = new DirectoryInfo(source);
+        var key = CommonUtils.GetKey(keyCsv);
+        var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
+        var writer = new Comanche.Services.ConsoleWriter();
+        var total = items.Count();
+        var done = 0;
+
+        writer.WriteLine($"Encryption: Start - Files: {total}");
+        foreach (var item in items)
+        {
+            item.EncryptInSitu(key);
+            writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
+        }
+
+        writer.WriteLine("Encryption: End");
+        foreach (var notDone in di.EnumerateMedia(MediaTypes.NonMedia, false))
+        {
+            writer.WriteLine($" - Not secured: {notDone.FullName}");
+        }
     }
 }
