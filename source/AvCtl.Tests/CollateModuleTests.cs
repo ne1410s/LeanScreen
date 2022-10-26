@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.Hashing;
 using Crypt.IO;
@@ -47,5 +48,23 @@ public class CollateModuleTests
 
         // Assert
         md5Hex.Should().Be(expectedMd5Hex);
+    }
+
+    [Fact]
+    public void CollateManyEvenly_WithFiles_ReportsProgress()
+    {
+        // Arrange
+        var root = TestHelper.CloneSamples();
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        CollateModule.CollateManyEvenly(root, writer: mockWriter.Object);
+
+        // Assert
+        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 3", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 33.33%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 66.67%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
     }
 }

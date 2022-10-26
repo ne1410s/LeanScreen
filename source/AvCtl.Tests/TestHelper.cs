@@ -19,4 +19,18 @@ public static class TestHelper
             Assembly.GetAssembly(typeof(InfoModule)),
             writer);
     }
+
+    public static string CloneSamples()
+    {
+        var targetRoot = Guid.NewGuid().ToString();
+        var di = new DirectoryInfo("Samples");
+        foreach (var file in di.EnumerateFiles("sample.*v*", SearchOption.AllDirectories))
+        {
+            var target = file!.DirectoryName!.Replace("Samples", targetRoot, StringComparison.OrdinalIgnoreCase);
+            Directory.CreateDirectory(target);
+            File.Copy(file.FullName, Path.Combine(target, file.Name));
+        }
+
+        return targetRoot;
+    }
 }

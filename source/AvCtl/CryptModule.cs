@@ -7,6 +7,7 @@ namespace AvCtl;
 using Av;
 using Av.Models;
 using Comanche;
+using Comanche.Services;
 using Crypt.IO;
 
 /// <summary>
@@ -21,15 +22,17 @@ public static class CryptModule
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="keyCsv">The encryption key.</param>
+    /// <param name="writer">Output writer.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
         [Alias("s")] string source,
-        [Alias("k")] string keyCsv)
+        [Alias("k")] string keyCsv,
+        IOutputWriter? writer = null)
     {
         var di = new DirectoryInfo(source);
         var key = CommonUtils.GetKey(keyCsv);
         var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
-        var writer = new Comanche.Services.ConsoleWriter();
+        writer ??= new ConsoleWriter();
         var total = items.Count();
         var done = 0;
 

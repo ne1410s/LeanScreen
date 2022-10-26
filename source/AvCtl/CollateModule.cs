@@ -11,6 +11,7 @@ using Av.Abstractions.Imaging;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
 using Comanche;
+using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.IO;
 using Crypt.Transform;
@@ -73,18 +74,20 @@ public static class CollateModule
     /// <param name="columns">The number of columns to use.</param>
     /// <param name="itemHeight">The item height to set.</param>
     /// <param name="keyCsv">Key (if source is encrypted).</param>
+    /// <param name="writer">Output writer.</param>
     [Alias("bulk")]
-    public static void CollateMany(
+    public static void CollateManyEvenly(
         [Alias("s")] string source,
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
         [Alias("c")] int columns = 4,
         [Alias("h")] int itemHeight = 300,
-        [Alias("k")] string? keyCsv = null)
+        [Alias("k")] string? keyCsv = null,
+        IOutputWriter? writer = null)
     {
         var diSource = new DirectoryInfo(source);
         var items = diSource.EnumerateMedia(Av.Models.MediaTypes.Video);
-        var writer = new Comanche.Services.ConsoleWriter();
+        writer ??= new ConsoleWriter();
         var total = items.Count();
         var done = 0;
 
