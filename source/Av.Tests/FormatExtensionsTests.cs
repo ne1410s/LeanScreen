@@ -139,7 +139,6 @@ public class FormatExtensionsTests
     [InlineData(MediaTypes.Video, 19)]
     [InlineData(MediaTypes.Visible, 28)]
     [InlineData(MediaTypes.AnyMedia, 34)]
-    [InlineData(MediaTypes.Anything, 0)]
     public void GetExtensions_VaryingType_GetsExpectedCount(MediaTypes mediaType, int expectedCount)
     {
         // Arrange & Act

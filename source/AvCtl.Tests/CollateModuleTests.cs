@@ -2,6 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.Hashing;
 using Crypt.IO;
@@ -14,12 +15,14 @@ namespace AvCtl.Tests;
 public class CollateModuleTests
 {
     [Fact]
-    public void CollateEvenly_ForCryptFile_ProducesResult()
+    public void CollateEvenly_ForCryptFile_ProducesSecureResult()
     {
         // Arrange
-        var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
+        const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+        var source = Path.Combine("Samples", fileName);
         const int total = 10;
         const string keyCsv = "9,0,2,1,0";
+        const string expectedName = "b5f852c247434f5e677bb11d61b9626de2279fcd109b2cdbbf25573136474ebb.jpg";
         var destInfo = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
         // Act
@@ -27,7 +30,7 @@ public class CollateModuleTests
             $"collate evenly -s {source} -d {destInfo.Name} -t {total} -k {keyCsv}")!;
 
         // Assert
-        returnPath.Should().Match($"*_collation_x{total}.jpg");
+        returnPath.Should().Match($"*{fileName[..12]}.{expectedName}");
         File.Exists(returnPath).Should().BeTrue();
     }
 
@@ -37,7 +40,7 @@ public class CollateModuleTests
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
         var destInfo = Directory.CreateDirectory("col_6cols");
-        const string expectedMd5Hex = "3fb84e1e2f17470364617b09418dc075";
+        const string expectedMd5Hex = "9d4483d67c4af8ffba8f9dba26144059";
 
         // Act
         var returnPath = (string)TestHelper.Route($"collate evenly -s {source} -d {destInfo.Name} -c 6")!;
@@ -45,5 +48,40 @@ public class CollateModuleTests
 
         // Assert
         md5Hex.Should().Be(expectedMd5Hex);
+    }
+
+    [Fact]
+    public void CollateManyEvenly_WithFiles_ReportsProgress()
+    {
+        // Arrange
+        var root = TestHelper.CloneSamples();
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        CollateModule.CollateManyEvenly(root, writer: mockWriter.Object);
+
+        // Assert
+        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 3", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 33.33%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 66.67%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
+        var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
+        generated.Length.Should().Be(3);
+    }
+
+    [Fact]
+    public void CollateManyEvenly_WithNoWriter_WritesToConsole()
+    {
+        // Arrange
+        var root = TestHelper.CloneSamples();
+        var writer = new StringWriter();
+        Console.SetOut(writer);
+
+        // Act
+        CollateModule.CollateManyEvenly(root);
+
+        // Assert
+        writer.ToString().Should().Contain("Collation: Start");
     }
 }

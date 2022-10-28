@@ -31,7 +31,7 @@ namespace Av.Abstractions.Imaging
         /// <summary>
         /// Gets or sets the number of pixels before the first column.
         /// </summary>
-        public int Top { get; set; } = 200;
+        public int Top { get; set; } = 120;
 
         /// <summary>
         /// Gets or sets the number of pixels after the last column.
