@@ -2,6 +2,8 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+using Av;
+using Av.Models;
 using Comanche.Services;
 
 namespace AvCtl.Tests;
@@ -31,5 +33,24 @@ public class CryptModuleTests
         mockWriter.Verify(
             m => m.WriteLine(It.Is<string>(s => s.StartsWith(" - Not secured: ")), false),
             Times.Exactly(3));
+
+        var remains = new DirectoryInfo(root).EnumerateMedia(MediaTypes.AnyMedia, false);
+        remains.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void EncryptMedia_WithNoWriter_WritesToConsole()
+    {
+        // Arrange
+        const string keyCsv = "9,0,2,1,0";
+        var root = TestHelper.CloneSamples();
+        var writer = new StringWriter();
+        Console.SetOut(writer);
+
+        // Act
+        CryptModule.EncryptMedia(root, keyCsv);
+
+        // Assert
+        writer.ToString().Should().Contain("Encryption: Start");
     }
 }

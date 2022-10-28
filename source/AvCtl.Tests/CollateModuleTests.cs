@@ -66,5 +66,22 @@ public class CollateModuleTests
         mockWriter.Verify(m => m.WriteLine("Done: 66.67%", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
+        var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
+        generated.Length.Should().Be(3);
+    }
+
+    [Fact]
+    public void CollateManyEvenly_WithNoWriter_WritesToConsole()
+    {
+        // Arrange
+        var root = TestHelper.CloneSamples();
+        var writer = new StringWriter();
+        Console.SetOut(writer);
+
+        // Act
+        CollateModule.CollateManyEvenly(root);
+
+        // Assert
+        writer.ToString().Should().Contain("Collation: Start");
     }
 }
