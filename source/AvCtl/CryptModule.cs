@@ -6,14 +6,14 @@ namespace AvCtl;
 
 using Av;
 using Av.Models;
-using Comanche;
+using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.IO;
 
 /// <summary>
 /// Crypt module.
 /// </summary>
-[Alias("crypt")]
+[Module("crypt")]
 public static class CryptModule
 {
     /// <summary>

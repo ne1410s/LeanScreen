@@ -2,21 +2,22 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace AvCtl.Tests;
+
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Comanche;
 using Comanche.Services;
-
-namespace AvCtl.Tests;
 
 public static class TestHelper
 {
     public static object? Route(string consoleInput, IOutputWriter? writer = null)
     {
         Environment.ExitCode = 0;
-        return Session.Route(
-            Regex.Split(consoleInput, "\\s+"),
+        return Discover.Go(
+            true,
             Assembly.GetAssembly(typeof(InfoModule)),
+            Regex.Split(consoleInput, "\\s+"),
             writer);
     }
 

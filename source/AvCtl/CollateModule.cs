@@ -10,7 +10,7 @@ using Av;
 using Av.Abstractions.Imaging;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
-using Comanche;
+using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.IO;
@@ -19,7 +19,7 @@ using Crypt.Transform;
 /// <summary>
 /// Collate module.
 /// </summary>
-[Alias("collate")]
+[Module("collate")]
 public static class CollateModule
 {
     /// <summary>

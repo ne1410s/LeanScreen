@@ -5,12 +5,12 @@
 namespace AvCtl;
 
 using System.Text.Json;
-using Comanche;
+using Comanche.Attributes;
 
 /// <summary>
 /// Info module.
 /// </summary>
-[Alias("info")]
+[Module("info")]
 public static class InfoModule
 {
     /// <summary>
