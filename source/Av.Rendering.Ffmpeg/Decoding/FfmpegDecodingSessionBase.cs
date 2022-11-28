@@ -18,7 +18,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         private readonly AVCodec* ptrCodec;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="FfmpegDecodingSessionBase"/> class.
+        /// Initializes a new instance of the <see cref="FfmpegDecodingSessionBase"/> class.
         /// </summary>
         /// <param name="url">The url (for physical media).</param>
         protected FfmpegDecodingSessionBase(string url)

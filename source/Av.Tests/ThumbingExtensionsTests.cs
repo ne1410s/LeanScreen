@@ -2,8 +2,6 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-using Av.Abstractions.Shared;
-
 namespace Av.Tests;
 
 /// <summary>

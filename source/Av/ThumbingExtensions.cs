@@ -5,13 +5,7 @@
 namespace Av
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Linq;
-    using Av.Abstractions.Imaging;
-    using Av.Abstractions.Rendering;
-    using Av.Abstractions.Shared;
-    using Av.Models;
 
     /// <summary>
     /// Extensions to assist with the production of thumbnails.

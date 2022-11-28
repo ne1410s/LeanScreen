@@ -13,7 +13,7 @@ namespace Av.Abstractions.Rendering
     public class MediaInfo
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="MediaInfo"/> class.
+        /// Initializes a new instance of the <see cref="MediaInfo"/> class.
         /// </summary>
         /// <param name="duration">The duration.</param>
         /// <param name="dimensions">The dimensions.</param>

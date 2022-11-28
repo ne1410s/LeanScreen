@@ -21,7 +21,7 @@ namespace Av.Rendering.Ffmpeg
         private readonly FfmpegConverter converter;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="FfmpegRenderer"/> class.
+        /// Initializes a new instance of the <see cref="FfmpegRenderer"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="key">The key (for cryptographic sources).</param>
@@ -31,7 +31,7 @@ namespace Av.Rendering.Ffmpeg
         { }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="FfmpegRenderer"/> class.
+        /// Initializes a new instance of the <see cref="FfmpegRenderer"/> class.
         /// </summary>
         /// <param name="decoder">The decoder.</param>
         /// <param name="frameSize">The target frame size.</param>

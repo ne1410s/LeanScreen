@@ -12,7 +12,7 @@ namespace Av.Abstractions.Shared
     public struct Size2D
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Size2D"/> struct.
+        /// Initializes a new instance of the <see cref="Size2D"/> struct.
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>

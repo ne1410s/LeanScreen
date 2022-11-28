@@ -5,8 +5,6 @@
 namespace Av.Abstractions.Imaging
 {
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using Av.Abstractions.Rendering;
     using Av.Abstractions.Shared;
 
     /// <summary>
@@ -15,7 +13,7 @@ namespace Av.Abstractions.Imaging
     public class CollationMap
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="CollationMap"/> class.
+        /// Initializes a new instance of the <see cref="CollationMap"/> class.
         /// </summary>
         /// <param name="canvasSize">The canvas size.</param>
         /// <param name="itemSize">The item size.</param>

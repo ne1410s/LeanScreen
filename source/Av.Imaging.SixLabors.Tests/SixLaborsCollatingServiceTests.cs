@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Imaging.SixLabors.Tests;
+
 using System.Security.Cryptography;
 using Av.Abstractions.Rendering;
-
-namespace Av.Imaging.SixLabors.Tests;
 
 /// <summary>
 /// Tests for the <see cref="SixLaborsCollatingService"/>.

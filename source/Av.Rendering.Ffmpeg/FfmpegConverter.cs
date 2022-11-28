@@ -23,7 +23,7 @@ namespace Av.Rendering.Ffmpeg
         private IntPtr convertedFrameBufferPtr;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="FfmpegConverter"/> class.
+        /// Initializes a new instance of the <see cref="FfmpegConverter"/> class.
         /// </summary>
         /// <param name="sourceSize">The source size.</param>
         /// <param name="sourcePixelFormat">The source pixel format.</param>

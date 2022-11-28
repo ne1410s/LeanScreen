@@ -5,7 +5,6 @@
 namespace Av.Rendering.Ffmpeg.Decoding
 {
     using System;
-    using System.Runtime.InteropServices;
     using Crypt.Streams;
     using FFmpeg.AutoGen;
 
@@ -23,7 +22,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         private readonly IByteArrayCopier byteArrayCopier;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UStreamInternal"/> class.
+        /// Initializes a new instance of the <see cref="UStreamInternal"/> class.
         /// </summary>
         /// <param name="source">The input stream.</param>
         /// <param name="byteArrayCopier">A byte array copier.</param>

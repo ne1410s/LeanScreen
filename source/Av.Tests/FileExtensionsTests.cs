@@ -3,7 +3,6 @@
 // </copyright>
 
 using Av.Models;
-using Crypt.IO;
 
 namespace Av.Tests;
 

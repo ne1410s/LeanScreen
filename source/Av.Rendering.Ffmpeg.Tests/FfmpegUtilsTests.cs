@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using FFmpeg.AutoGen;
-using Newtonsoft.Json.Bson;
 
 namespace Av.Rendering.Ffmpeg.Tests
 {

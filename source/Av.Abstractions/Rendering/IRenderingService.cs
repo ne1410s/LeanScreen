@@ -5,7 +5,6 @@
 namespace Av.Abstractions.Rendering
 {
     using System;
-    using Av.Abstractions.Shared;
 
     /// <summary>
     /// Obtains image stills from a video.

@@ -19,7 +19,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
         private AVIOContext* streamIc;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="StreamFfmpegDecoding"/> class.
+        /// Initializes a new instance of the <see cref="StreamFfmpegDecoding"/> class.
         /// </summary>
         /// <param name="stream">A stream.</param>
         public StreamFfmpegDecoding(ISimpleReadStream stream)

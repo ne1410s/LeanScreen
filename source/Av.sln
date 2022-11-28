@@ -5,6 +5,7 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A72557B3-75E6-4DBF-8C7F-3E84F52126DE}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		.runsettings = .runsettings
 		.config\dotnet-tools.json = .config\dotnet-tools.json
@@ -35,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvCtl", "AvCtl\AvCtl.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvCtl.Tests", "AvCtl.Tests\AvCtl.Tests.csproj", "{3EE84B76-3459-4B8C-B7E7-7F8E40444DE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Av.Abstractions.Tests", "Av.Abstractions.Tests\Av.Abstractions.Tests.csproj", "{1F82C6F2-8A3C-4C5B-BBA7-E0E0E8EC422B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Av.Abstractions.Tests", "Av.Abstractions.Tests\Av.Abstractions.Tests.csproj", "{1F82C6F2-8A3C-4C5B-BBA7-E0E0E8EC422B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
