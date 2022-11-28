@@ -25,6 +25,32 @@ public class FileExtensionsTests
         result.Should().Be(expected);
     }
 
+    [Fact]
+    public void GetMediaTypeInfo_NullFile_ThrowsExpected()
+    {
+        // Arrange
+        var fi = (FileInfo)null!;
+
+        // Act
+        var act = fi.GetMediaTypeInfo;
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void EnumerateMedia_NullDirectory_ThrowsExpected()
+    {
+        // Arrange
+        var fi = (DirectoryInfo)null!;
+
+        // Act
+        var act = () => fi.EnumerateMedia(MediaTypes.AnyMedia);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
     [Theory]
     [InlineData(MediaTypes.Audio, 0)]
     [InlineData(MediaTypes.Image, 2)]
