@@ -190,11 +190,10 @@ namespace Av.Rendering.Ffmpeg.Decoding
                     .avThrowIfError();
             ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
 
-            var avTimeRational = new AVRational();
             var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
             this.FrameRate = (double)frameRate.num / frameRate.den;
             this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
-            this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(avTimeRational);
+            this.Duration = ((double)PtrFormatContext->duration).ToTimeSpan(new());
             this.CodecName = ffmpeg.avcodec_get_name(codec->id);
             this.Dimensions = new Size2D { Width = PtrCodecContext->width, Height = PtrCodecContext->height };
             this.PixelFormat = PtrCodecContext->pix_fmt;
