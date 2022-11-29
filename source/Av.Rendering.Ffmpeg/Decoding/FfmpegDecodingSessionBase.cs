@@ -190,7 +190,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
                     .avThrowIfError();
             ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
 
-            var avTimeRational = new AVRational { num = 1, den = ffmpeg.AV_TIME_BASE };
+            var avTimeRational = new AVRational();
             var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
             this.FrameRate = (double)frameRate.num / frameRate.den;
             this.TimeBase = PtrFormatContext->streams[this.StreamIndex]->time_base;
