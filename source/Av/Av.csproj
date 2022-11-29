@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.11" />
+    <PackageReference Include="Analyse" Version="1.0.12-pre.27" />
     <PackageReference Include="Crypt" Version="1.1.5" />
   </ItemGroup>
 

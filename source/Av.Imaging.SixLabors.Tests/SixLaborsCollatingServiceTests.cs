@@ -13,6 +13,19 @@ using Av.Abstractions.Rendering;
 public class SixLaborsCollatingServiceTests
 {
     [Fact]
+    public void Collate_NullFrames_ThrowsException()
+    {
+        // Arrange
+        var sut = new SixLaborsCollatingService();
+
+        // Act
+        var act = () => sut.Collate(null);
+
+        // Act
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void RenderCollation_WithMultipleRows_ProducesExpected()
     {
         // Arrange

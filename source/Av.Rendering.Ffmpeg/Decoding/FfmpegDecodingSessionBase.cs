@@ -248,7 +248,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
 
             error.avThrowIfError();
 
-            // TODO: Can we select a hw device automatically?
+            // Can we select a hw device automatically?
             // ... and does it improve frame capture??
 
             ////if (PtrCodecContext->hw_device_ctx != null)
