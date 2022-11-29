@@ -7,12 +7,12 @@ namespace AvCtl;
 using Av;
 using Av.Abstractions.Rendering;
 using Av.Imaging.SixLabors;
-using Comanche;
+using Comanche.Attributes;
 
 /// <summary>
 /// Snapshot module.
 /// </summary>
-[Alias("snap")]
+[Module("snap")]
 public static class SnapshotModule
 {
     /// <summary>

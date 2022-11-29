@@ -4,7 +4,6 @@
 
 namespace Av.Abstractions.Rendering
 {
-    using System;
     using Av.Abstractions.Shared;
 
     /// <summary>
@@ -13,7 +12,7 @@ namespace Av.Abstractions.Rendering
     public class RenderSessionInfo
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="RenderSessionInfo"/> class.
+        /// Initializes a new instance of the <see cref="RenderSessionInfo"/> class.
         /// </summary>
         /// <param name="frameSize">The frame size.</param>
         public RenderSessionInfo(Size2D frameSize)

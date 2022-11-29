@@ -2,12 +2,12 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace AvCtl.Tests;
+
 using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.Hashing;
 using Crypt.IO;
-
-namespace AvCtl.Tests;
 
 /// <summary>
 /// Tests for the <see cref="CollateModule"/>.

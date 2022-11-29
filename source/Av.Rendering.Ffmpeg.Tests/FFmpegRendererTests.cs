@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;

@@ -62,6 +62,20 @@ namespace Av.Rendering.Ffmpeg.Tests.Decoding
         }
 
         [Fact]
+        public void Ctor_WhenCalled_PopulatesDuration()
+        {
+            // Arrange
+            var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+            ffmpeg.RootPath = null;
+
+            // Act
+            var decoding = new StreamFfmpegDecoding(new SimpleFileStream(fi));
+
+            // Assert
+            decoding.Duration.Ticks.Should().Be(648960000);
+        }
+
+        [Fact]
         public void Dispose_WhenCalled_SetsNegativeStreamIndex()
         {
             // Arrange

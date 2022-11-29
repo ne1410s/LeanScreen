@@ -16,7 +16,7 @@ namespace Av.Services
         private readonly IRenderingService renderer;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="ThumbnailGenerator"/> class.
+        /// Initializes a new instance of the <see cref="ThumbnailGenerator"/> class.
         /// </summary>
         /// <param name="renderer">A video renderer.</param>
         public ThumbnailGenerator(IRenderingService renderer)
@@ -45,6 +45,9 @@ namespace Av.Services
             Action<RenderedFrame, int> onRendered,
             params TimeSpan[] times)
         {
+            onRendered = onRendered ?? throw new ArgumentNullException(nameof(onRendered));
+            times = times ?? throw new ArgumentNullException(nameof(times));
+
             if (times.All(t => t == default))
             {
                 times = this.renderer.Media.Duration.DistributeEvenly(times.Length);

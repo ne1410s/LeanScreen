@@ -12,6 +12,10 @@ namespace Av
     /// <summary>
     /// Extensions for formatting.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S3358:Ternary operators should not be nested",
+        Justification = "Sorry, Mom")]
     public static class FormatExtensions
     {
         private const double Kilobyte = 1024;

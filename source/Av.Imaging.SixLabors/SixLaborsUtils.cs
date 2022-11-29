@@ -20,7 +20,6 @@ namespace Av.Imaging.SixLabors
         /// <param name="targetSize">The target size.</param>
         public static void Resize(this Image image, Size2D targetSize)
         {
-            var currentSize = new Size2D(image.Width, image.Height);
             image.Mutate(x => x.Resize(new ResizeOptions
             {
                 Mode = ResizeMode.Max,

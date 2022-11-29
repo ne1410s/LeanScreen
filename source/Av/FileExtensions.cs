@@ -4,6 +4,7 @@
 
 namespace Av
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -23,7 +24,7 @@ namespace Av
         /// <param name="fi">The file.</param>
         /// <returns>Media type information.</returns>
         public static MediaTypeInfo GetMediaTypeInfo(this FileInfo fi)
-            => fi.Extension.GetMediaTypeInfo();
+            => (fi ?? throw new ArgumentNullException(nameof(fi))).Extension.GetMediaTypeInfo();
 
         /// <summary>
         /// Enumerates all media files recursively, according to the specified
@@ -37,7 +38,7 @@ namespace Av
         public static IEnumerable<FileInfo> EnumerateMedia(
             this DirectoryInfo di,
             MediaTypes mediaTypes,
-            bool? secure = null) => di
+            bool? secure = null) => (di ?? throw new ArgumentNullException(nameof(di)))
                 .EnumerateFiles(AllFilesWildcard, SearchOption.AllDirectories)
                 .Where(fi => (secure == null || fi.IsSecure() == secure)
                     && mediaTypes.HasFlag(fi.GetMediaTypeInfo().MediaType));

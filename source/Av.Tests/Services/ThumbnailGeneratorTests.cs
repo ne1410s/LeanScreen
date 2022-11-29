@@ -85,4 +85,33 @@ public class ThumbnailGeneratorTests
         // Assert
         mockRenderer.Verify(m => m.RenderAt(TimeSpan.Zero), Times.Once());
     }
+
+    [Fact]
+    public void Generate_NullCallback_ThrowsException()
+    {
+        // Arrange
+        var mockRenderer = new Mock<IRenderingService>();
+        var sut = new ThumbnailGenerator(mockRenderer.Object);
+        var times = new TimeSpan[1];
+
+        // Act
+        var act = () => sut.Generate(null!, times);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("onRendered");
+    }
+
+    [Fact]
+    public void Generate_NullTimings_ThrowsException()
+    {
+        // Arrange
+        var mockRenderer = new Mock<IRenderingService>();
+        var sut = new ThumbnailGenerator(mockRenderer.Object);
+
+        // Act
+        var act = () => sut.Generate((_, _) => { }, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("times");
+    }
 }

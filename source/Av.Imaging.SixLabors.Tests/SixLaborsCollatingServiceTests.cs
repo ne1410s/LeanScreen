@@ -2,16 +2,29 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Imaging.SixLabors.Tests;
+
 using System.Security.Cryptography;
 using Av.Abstractions.Rendering;
-
-namespace Av.Imaging.SixLabors.Tests;
 
 /// <summary>
 /// Tests for the <see cref="SixLaborsCollatingService"/>.
 /// </summary>
 public class SixLaborsCollatingServiceTests
 {
+    [Fact]
+    public void Collate_NullFrames_ThrowsException()
+    {
+        // Arrange
+        var sut = new SixLaborsCollatingService();
+
+        // Act
+        var act = () => sut.Collate(null);
+
+        // Act
+        act.Should().Throw<ArgumentNullException>();
+    }
+
     [Fact]
     public void RenderCollation_WithMultipleRows_ProducesExpected()
     {

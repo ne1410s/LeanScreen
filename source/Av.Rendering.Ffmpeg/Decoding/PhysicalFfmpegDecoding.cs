@@ -10,7 +10,7 @@ namespace Av.Rendering.Ffmpeg.Decoding
     public sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="PhysicalFfmpegDecoding"/> class.
+        /// Initializes a new instance of the <see cref="PhysicalFfmpegDecoding"/> class.
         /// </summary>
         /// <param name="url">The url to the physical media.</param>
         public PhysicalFfmpegDecoding(string url)

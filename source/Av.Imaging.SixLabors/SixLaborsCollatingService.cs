@@ -26,11 +26,11 @@ namespace Av.Imaging.SixLabors
         public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
         {
             opts ??= new CollationOptions();
-            var firstItemSize = frames.First().Dimensions;
+            var firstItemSize = (frames ?? throw new ArgumentNullException(nameof(frames))).First().Dimensions;
             var itemSize = opts.ItemSize == null ? firstItemSize : firstItemSize.ResizeTo(opts.ItemSize.Value);
             var map = opts.GetMap(itemSize, frames.Count());
-            var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height, Background);
-            var border = new Image<Rgb24>(
+            using var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height, Background);
+            using var border = new Image<Rgb24>(
                 itemSize.Width + (BorderThickness * 2),
                 itemSize.Height + (BorderThickness * 2),
                 BorderColour);

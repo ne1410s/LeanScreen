@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace AvCtl.Tests;
+
 using System.Globalization;
 using System.Text.RegularExpressions;
-
-namespace AvCtl.Tests;
 
 /// <summary>
 /// Tests for the <see cref="SnapshotModule"/>.
@@ -104,10 +104,10 @@ public class SnapshotModuleTests
         var destInfo = Directory.CreateDirectory(folder);
 
         // Act
-        TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name}");
+        var act = () => TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name}");
 
         // Assert
-        // e.g. check a list of hashes perhaps?
+        act.Should().NotThrow();
     }
 
     [Fact]

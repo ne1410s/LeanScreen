@@ -4,10 +4,8 @@
 
 namespace Av.Abstractions.Imaging
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
     using Av.Abstractions.Rendering;
 
     /// <summary>

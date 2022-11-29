@@ -10,7 +10,7 @@ namespace Av.Models
     public struct MediaTypeInfo
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="MediaTypeInfo"/> struct.
+        /// Initializes a new instance of the <see cref="MediaTypeInfo"/> struct.
         /// </summary>
         /// <param name="mediaType">The media type.</param>
         /// <param name="mimeType">The mime type.</param>

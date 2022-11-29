@@ -4,9 +4,7 @@
 
 namespace Av.Abstractions.Imaging
 {
-    using System.Collections.Generic;
     using System.IO;
-    using Av.Abstractions.Rendering;
     using Av.Abstractions.Shared;
 
     /// <summary>

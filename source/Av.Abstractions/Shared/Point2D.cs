@@ -10,7 +10,7 @@ namespace Av.Abstractions.Shared
     public struct Point2D
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Point2D"/> struct.
+        /// Initializes a new instance of the <see cref="Point2D"/> struct.
         /// </summary>
         /// <param name="x">The horizontal coordinate.</param>
         /// <param name="y">The vertical coordinate.</param>
