@@ -1,5 +1,4 @@
 ﻿[*.cs]
 
 dotnet_diagnostic.CA1031.severity = suggestion
-dotnet_diagnostic.S1450.severity = suggestion
-dotnet_diagnostic.S3881.severity = suggestion
+dotnet_diagnostic.CA1819.severity = suggestion
