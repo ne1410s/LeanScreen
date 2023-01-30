@@ -25,7 +25,7 @@ public static class TestHelper
     {
         var targetRoot = Guid.NewGuid().ToString();
         var di = new DirectoryInfo("Samples");
-        foreach (var file in di.EnumerateFiles("sample.*v*", SearchOption.AllDirectories))
+        foreach (var file in di.EnumerateFiles("*sample.*v*", SearchOption.AllDirectories))
         {
             var target = file!.DirectoryName!.Replace("Samples", targetRoot, StringComparison.OrdinalIgnoreCase);
             Directory.CreateDirectory(target);

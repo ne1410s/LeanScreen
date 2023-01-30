@@ -18,15 +18,18 @@ public static class CryptModule
 {
     /// <summary>
     /// Encrypts all hitherto-unencrypted media files in source. The files are
-    /// secured "in situ"; overwriting the original bytes with new ones.
+    /// secured "in situ"; overwriting the original bytes with new ones. Files
+    /// are then grouped under the source; to the specified label length.
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="keyCsv">The encryption key.</param>
+    /// <param name="groupLabelLength">The grouping label length.</param>
     /// <param name="writer">Output writer.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
         [Alias("s")] string source,
         [Alias("k")] string keyCsv,
+        [Alias("g")] int groupLabelLength = 2,
         IOutputWriter? writer = null)
     {
         var di = new DirectoryInfo(source);
@@ -40,6 +43,7 @@ public static class CryptModule
         foreach (var item in items)
         {
             item.EncryptInSitu(key);
+            item.GroupByLabel(di, groupLabelLength);
             writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
         }
 
@@ -48,5 +52,15 @@ public static class CryptModule
         {
             writer.WriteLine($" - Not secured: {notDone.FullName}");
         }
+    }
+
+    private static void GroupByLabel(
+        this FileInfo fi,
+        DirectoryInfo root,
+        int length)
+    {
+        var folderName = fi.Name[..length];
+        var folder = root.CreateSubdirectory(folderName);
+        fi.MoveTo(Path.Combine(folder.FullName, fi.Name), true);
     }
 }
