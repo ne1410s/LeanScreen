@@ -61,9 +61,10 @@ public class CollateModuleTests
         CollateModule.CollateManyEvenly(root, writer: mockWriter.Object);
 
         // Assert
-        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 3", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 33.33%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 66.67%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
         var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
