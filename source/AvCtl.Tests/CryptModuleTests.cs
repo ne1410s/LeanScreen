@@ -17,12 +17,12 @@ public class CryptModuleTests
     public void EncryptMedia_WithFiles_ReportsProgress()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
+        const string empty = "";
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv, 2, mockWriter.Object);
+        CryptModule.EncryptMedia(root, empty, empty, writer: mockWriter.Object);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
@@ -43,33 +43,34 @@ public class CryptModuleTests
     public void EncryptMedia_WithNoWriter_WritesToConsole()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
+        const string empty = "";
         var root = TestHelper.CloneSamples();
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv);
+        CryptModule.EncryptMedia(root, empty, empty, writer: mockWriter.Object);
 
         // Assert
-        writer.ToString().Should().Contain("Encryption: Start");
+        mockWriter.Verify(
+            m => m.WriteLine(
+                It.Is<string>(s => s.StartsWith("Encryption: Start")),
+                false));
     }
 
     [Fact]
     public void EncryptMedia_WithDepth_MovesFile()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
         const int groupLength = 3;
         const string fileName = "44e339204806870505a2a448115b2e554080cee37ddfb46949e47f1c586b011f.mkv";
+        const string empty = "";
         var root = TestHelper.CloneSamples();
         var expectedLocation = Path.Combine(root, fileName[..groupLength], fileName);
         var expectedRemoval = Path.Combine(root, fileName);
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var consoleWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv, 3);
+        CryptModule.EncryptMedia(root, empty, empty, groupLength, consoleWriter.Object);
         var creationCheck = File.Exists(expectedLocation);
         var removalCheck = !File.Exists(expectedRemoval);
 

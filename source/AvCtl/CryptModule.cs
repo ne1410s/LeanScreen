@@ -9,6 +9,7 @@ using Av.Models;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.IO;
+using Crypt.Keying;
 
 /// <summary>
 /// Crypt module.
@@ -35,14 +36,14 @@ public static class CryptModule
         IOutputWriter? writer = null)
     {
         var di = new DirectoryInfo(source);
-        var key = CommonUtils.GetKey(keyCsv);
         var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
         writer ??= new ConsoleWriter();
         var total = items.Count();
         var done = 0;
 
         var blendedInput = writer.CaptureStrings().Blend();
-        var 
+        var hashes = CommonUtils.GetHashes(keySource, keyRegex);
+        var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)

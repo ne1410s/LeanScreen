@@ -54,11 +54,12 @@ public class CollateModuleTests
     public void CollateManyEvenly_WithFiles_ReportsProgress()
     {
         // Arrange
+        const string empty = "";
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CollateModule.CollateManyEvenly(root, writer: mockWriter.Object);
+        CollateModule.CollateManyEvenly(root, empty, empty, writer: mockWriter.Object);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", false), Times.Once());
@@ -75,14 +76,17 @@ public class CollateModuleTests
     public void CollateManyEvenly_WithNoWriter_WritesToConsole()
     {
         // Arrange
+        const string empty = "";
         var root = TestHelper.CloneSamples();
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CollateModule.CollateManyEvenly(root);
+        CollateModule.CollateManyEvenly(root, empty, empty, writer: mockWriter.Object);
 
         // Assert
-        writer.ToString().Should().Contain("Collation: Start");
+        mockWriter.Verify(
+            m => m.WriteLine(
+                It.Is<string>(s => s.StartsWith("Collation: Start")),
+                false));
     }
 }
