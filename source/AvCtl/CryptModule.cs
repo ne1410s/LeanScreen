@@ -22,13 +22,15 @@ public static class CryptModule
     /// are then grouped under the source; to the specified label length.
     /// </summary>
     /// <param name="source">The source directory.</param>
-    /// <param name="keyCsv">The encryption key.</param>
+    /// <param name="keySource">The key source directory.</param>
+    /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="groupLabelLength">The grouping label length.</param>
     /// <param name="writer">Output writer.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
         [Alias("s")] string source,
-        [Alias("k")] string keyCsv,
+        [Alias("ks")] string keySource,
+        [Alias("kr")] string keyRegex,
         [Alias("g")] int groupLabelLength = 2,
         IOutputWriter? writer = null)
     {
@@ -40,6 +42,8 @@ public static class CryptModule
         var done = 0;
 
         var blendedInput = writer.CaptureStrings().Blend();
+        var 
+
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)
         {

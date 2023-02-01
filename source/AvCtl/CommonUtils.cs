@@ -4,12 +4,14 @@
 
 namespace AvCtl;
 
-using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Av.Abstractions.Rendering;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
+using Crypt.Hashing;
+using Crypt.IO;
 
 /// <summary>
 /// Common utilities.
@@ -37,14 +39,13 @@ internal static class CommonUtils
     /// Gets a thumbnail generator.
     /// </summary>
     /// <param name="source">The video source path.</param>
-    /// <param name="keyCsv">The key csv, if a secure file.</param>
+    /// <param name="key">The key, if a secure file.</param>
     /// <param name="renderer">The chosen renderer.</param>
-    /// <param name="key">The key.</param>
     /// <returns>A thumbnail generator.</returns>
     public static ThumbnailGenerator GetSnapper(
-        string source, string? keyCsv, out IRenderingService renderer, out byte[]? key)
+        string source, byte[] key, out IRenderingService renderer)
     {
-        renderer = GetRenderer(source, keyCsv, out key);
+        renderer = GetRenderer(source, key);
         return new ThumbnailGenerator(renderer);
     }
 
@@ -52,22 +53,12 @@ internal static class CommonUtils
     /// Gets a renderer.
     /// </summary>
     /// <param name="source">The video source path.</param>
-    /// <param name="keyCsv">The key csv, if a secure file.</param>
-    /// <param name="key">The key.</param>
+    /// <param name="key">The key, if a secure file.</param>
     /// <returns>A renderer.</returns>
-    public static IRenderingService GetRenderer(string source, string? keyCsv, out byte[]? key)
+    public static IRenderingService GetRenderer(string source, byte[] key)
     {
-        key = GetKey(keyCsv);
         return new FfmpegRenderer(source, key);
     }
-
-    /// <summary>
-    /// Gets a key.
-    /// </summary>
-    /// <param name="keyCsv">The key csv, or null if no key.</param>
-    /// <returns>The key bytes.</returns>
-    public static byte[]? GetKey(string? keyCsv)
-        => keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
 
     /// <summary>
     /// Blends strings.
@@ -89,5 +80,27 @@ internal static class CommonUtils
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets Sha1 file hashes from a directory.
+    /// </summary>
+    /// <param name="sourceDir">Source directory.</param>
+    /// <param name="sourceRegex">Source file regex.</param>
+    /// <returns>A sequence of hashes.</returns>
+    /// <exception cref="ArgumentException">Directory not found.</exception>
+    public static byte[][] GetHashes(string sourceDir, string sourceRegex)
+    {
+        var di = new DirectoryInfo(sourceDir);
+        if (!di.Exists)
+        {
+            throw new ArgumentException($"Directory not found: {sourceDir}", nameof(sourceDir));
+        }
+
+        var regex = new Regex(sourceRegex, RegexOptions.Compiled);
+        return di.EnumerateFiles()
+            .Where(f => regex.IsMatch(f.Name))
+            .Select(f => f.Hash(HashType.Sha1))
+            .ToArray();
     }
 }
