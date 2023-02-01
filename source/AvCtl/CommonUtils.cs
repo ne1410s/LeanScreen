@@ -6,6 +6,7 @@ namespace AvCtl;
 
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Av.Abstractions.Rendering;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
@@ -67,4 +68,26 @@ internal static class CommonUtils
     /// <returns>The key bytes.</returns>
     public static byte[]? GetKey(string? keyCsv)
         => keyCsv?.Split(',').Select(b => byte.Parse(b, CultureInfo.InvariantCulture)).ToArray();
+
+    /// <summary>
+    /// Blends strings.
+    /// </summary>
+    /// <param name="strings">The strings to blend.</param>
+    /// <returns>A blended string.</returns>
+    public static string Blend(this IEnumerable<string> strings)
+    {
+        var primary = strings.FirstOrDefault() ?? string.Empty;
+        var remaining = string.Concat(strings.Skip(1));
+        var sb = new StringBuilder();
+        for (var r = 0; r < Math.Max(primary.Length, remaining.Length); r++)
+        {
+            sb.Append(primary[r % primary.Length]);
+            if (remaining.Length > 0)
+            {
+                sb.Append(remaining[r % remaining.Length]);
+            }
+        }
+
+        return sb.ToString();
+    }
 }

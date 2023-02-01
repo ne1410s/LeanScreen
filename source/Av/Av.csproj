@@ -32,4 +32,11 @@
     <ProjectReference Include="..\Av.Abstractions\Av.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="SonarAnalyzer.CSharp" Version="8.52.0.60960">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

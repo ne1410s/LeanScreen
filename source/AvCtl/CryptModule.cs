@@ -39,6 +39,7 @@ public static class CryptModule
         var total = items.Count();
         var done = 0;
 
+        var blendedInput = writer.CaptureStrings().Blend();
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)
         {
