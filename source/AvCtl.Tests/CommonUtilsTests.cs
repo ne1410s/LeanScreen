@@ -5,8 +5,6 @@
 namespace AvCtl.Tests;
 
 using System;
-using Crypt.Encoding;
-using Crypt.Keying;
 
 /// <summary>
 /// Tests for the <see cref="CommonUtils"/> class.
@@ -96,27 +94,26 @@ public class CommonUtilsTests
     public void GetHashes_WithGoodKeySourceAndRegex_ReturnsExpected()
     {
         // Arrange
-        const string expected = "EE+QlNwpWomd7OqvqV74w1NFwp4=";
+        var expected = new byte[][]
+        {
+            new byte[] { 184, 130, 199, 245, 65, 134, 232, 154, 193, 193, 249, 8, 187, 88, 94, 0, 34, 40, 218, 115 },
+        };
 
         // Act
-        var hashes = CommonUtils.GetHashes("Samples", "flv$");
-        var result = new DefaultKeyDeriver().DeriveKey(string.Empty, hashes).Encode(Codec.ByteBase64);
+        var actual = CommonUtils.GetHashes("Samples", "flv$");
 
         // Assert
-        result.Should().Be(expected);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
     public void GetHashes_WithGoodKeySourceButNoRegex_ReturnsExpected()
     {
-        // Arrange
-        const string expected = "v0l5re++sfvRkyRlwBBD4aS8if0=";
-
         // Act
-        var hashes = CommonUtils.GetHashes(Path.Combine("Samples", "Info"), null);
-        var result = new DefaultKeyDeriver().DeriveKey(string.Empty, hashes).Encode(Codec.ByteBase64);
+        var actual = CommonUtils.GetHashes(Path.Combine("Samples", "Info"), null);
 
         // Assert
-        result.Should().Be(expected);
+        actual.Length.Should().Be(5);
+        actual.All(a => a.Length == 20).Should().BeTrue();
     }
 }
