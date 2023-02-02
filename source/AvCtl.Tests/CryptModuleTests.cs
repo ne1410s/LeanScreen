@@ -14,15 +14,27 @@ using Comanche.Services;
 public class CryptModuleTests
 {
     [Fact]
+    public void EncryptMedia_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => CryptModule.EncryptMedia(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
     public void EncryptMedia_WithFiles_ReportsProgress()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv, 2, mockWriter.Object);
+        CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
@@ -43,33 +55,32 @@ public class CryptModuleTests
     public void EncryptMedia_WithNoWriter_WritesToConsole()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
         var root = TestHelper.CloneSamples();
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv);
+        CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
-        writer.ToString().Should().Contain("Encryption: Start");
+        mockWriter.Verify(
+            m => m.WriteLine(
+                It.Is<string>(s => s.StartsWith("Encryption: Start")),
+                false));
     }
 
     [Fact]
     public void EncryptMedia_WithDepth_MovesFile()
     {
         // Arrange
-        const string keyCsv = "9,0,2,1,0";
         const int groupLength = 3;
         const string fileName = "44e339204806870505a2a448115b2e554080cee37ddfb46949e47f1c586b011f.mkv";
         var root = TestHelper.CloneSamples();
         var expectedLocation = Path.Combine(root, fileName[..groupLength], fileName);
         var expectedRemoval = Path.Combine(root, fileName);
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var consoleWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, keyCsv, 3);
+        CryptModule.EncryptMedia(consoleWriter.Object, root, groupLabelLength: groupLength);
         var creationCheck = File.Exists(expectedLocation);
         var removalCheck = !File.Exists(expectedRemoval);
 

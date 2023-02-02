@@ -4,26 +4,40 @@
 
 namespace AvCtl.Tests;
 
+using Comanche.Services;
+
 /// <summary>
 /// Tests for the <see cref="InfoModule"/>.
 /// </summary>
 public class InfoModuleTests
 {
+    [Fact]
+    public void GetBasicInfo_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => InfoModule.GetBasicInfo(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
     [Theory]
-    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", "9,0,2,1,0")]
+    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
     [InlineData("sample.avi")]
     [InlineData("sample.flv")]
     [InlineData("sample.mkv")]
     [InlineData("sample.mp4")]
-    public void GetBasicInfo_SecureFile_ReturnsMessage(string fileName, string? keyCsv = null)
+    public void GetBasicInfo_SecureFile_ReturnsMessage(string fileName)
     {
         // Arrange
         var source = Path.Combine("Samples", fileName);
-        var keyArg = keyCsv == null ? null : $"-k {keyCsv}";
         var expected = File.ReadAllText(Path.Combine("Samples", "Info", fileName + ".json"));
 
         // Act
-        var result = TestHelper.Route($"info basic -s {source} {keyArg}");
+        var result = TestHelper.Route($"info basic -s {source} -ks Samples -kr xyz");
 
         // Assert
         result.Should().Be(expected);

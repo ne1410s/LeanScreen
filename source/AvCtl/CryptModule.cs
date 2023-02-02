@@ -9,6 +9,7 @@ using Av.Models;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.IO;
+using Crypt.Keying;
 
 /// <summary>
 /// Crypt module.
@@ -21,23 +22,28 @@ public static class CryptModule
     /// secured "in situ"; overwriting the original bytes with new ones. Files
     /// are then grouped under the source; to the specified label length.
     /// </summary>
-    /// <param name="source">The source directory.</param>
-    /// <param name="keyCsv">The encryption key.</param>
-    /// <param name="groupLabelLength">The grouping label length.</param>
     /// <param name="writer">Output writer.</param>
+    /// <param name="source">The source directory.</param>
+    /// <param name="keySource">The key source directory.</param>
+    /// <param name="keyRegex">The key source regular expression.</param>
+    /// <param name="groupLabelLength">The grouping label length.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
+        IOutputWriter writer,
         [Alias("s")] string source,
-        [Alias("k")] string keyCsv,
-        [Alias("g")] int groupLabelLength = 2,
-        IOutputWriter? writer = null)
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
+        [Alias("g")] int groupLabelLength = 2)
     {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var di = new DirectoryInfo(source);
-        var key = CommonUtils.GetKey(keyCsv);
         var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
-        writer ??= new ConsoleWriter();
         var total = items.Count();
         var done = 0;
+
+        var blendedInput = writer.CaptureStrings().Blend();
+        var hashes = CommonUtils.GetHashes(keySource, keyRegex);
+        var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)

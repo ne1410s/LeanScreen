@@ -15,19 +15,31 @@ using Crypt.IO;
 public class CollateModuleTests
 {
     [Fact]
+    public void CollateEvenly_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => CollateModule.CollateEvenly(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
     public void CollateEvenly_ForCryptFile_ProducesSecureResult()
     {
         // Arrange
         const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
         var source = Path.Combine("Samples", fileName);
         const int total = 10;
-        const string keyCsv = "9,0,2,1,0";
         const string expectedName = "b5f852c247434f5e677bb11d61b9626de2279fcd109b2cdbbf25573136474ebb.jpg";
         var destInfo = Directory.CreateDirectory(Guid.NewGuid().ToString());
 
         // Act
         var returnPath = (string)TestHelper.Route(
-            $"collate evenly -s {source} -d {destInfo.Name} -t {total} -k {keyCsv}")!;
+            $"collate evenly -s {source} -d {destInfo.Name} -t {total} -ks Samples -kr xyz")!;
 
         // Assert
         returnPath.Should().Match($"*{fileName[..12]}.{expectedName}");
@@ -51,6 +63,19 @@ public class CollateModuleTests
     }
 
     [Fact]
+    public void CollateManyEvenly_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => CollateModule.CollateManyEvenly(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
     public void CollateManyEvenly_WithFiles_ReportsProgress()
     {
         // Arrange
@@ -58,7 +83,7 @@ public class CollateModuleTests
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CollateModule.CollateManyEvenly(root, writer: mockWriter.Object);
+        CollateModule.CollateManyEvenly(mockWriter.Object, root);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", false), Times.Once());
@@ -72,17 +97,19 @@ public class CollateModuleTests
     }
 
     [Fact]
-    public void CollateManyEvenly_WithNoWriter_WritesToConsole()
+    public void CollateManyEvenly_WithMockWriter_WritesToWriter()
     {
         // Arrange
         var root = TestHelper.CloneSamples();
-        var writer = new StringWriter();
-        Console.SetOut(writer);
+        var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CollateModule.CollateManyEvenly(root);
+        CollateModule.CollateManyEvenly(mockWriter.Object, root);
 
         // Assert
-        writer.ToString().Should().Contain("Collation: Start");
+        mockWriter.Verify(
+            m => m.WriteLine(
+                It.Is<string>(s => s.StartsWith("Collation: Start")),
+                false));
     }
 }

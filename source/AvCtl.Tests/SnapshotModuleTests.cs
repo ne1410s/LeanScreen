@@ -6,12 +6,26 @@ namespace AvCtl.Tests;
 
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Comanche.Services;
 
 /// <summary>
 /// Tests for the <see cref="SnapshotModule"/>.
 /// </summary>
 public class SnapshotModuleTests
 {
+    [Fact]
+    public void SnapEvenly_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => SnapshotModule.SnapEvenly(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
     [Fact]
     public void SnapEvenly_ForFileWithCustomTotal_ProducesSameTotal()
     {
@@ -80,11 +94,10 @@ public class SnapshotModuleTests
     {
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
-        const string keyCsv = "9,0,2,1,0";
         var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
-        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz");
 
         // Assert
         returnDest.Should().Be(destInfo.FullName);
@@ -108,6 +121,19 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void SnapSingle_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => SnapshotModule.SnapSingle(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
     }
 
     [Fact]
@@ -138,10 +164,9 @@ public class SnapshotModuleTests
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
         var expectedDest = new FileInfo(source).DirectoryName;
-        const string keyCsv = "9,0,2,1,0";
 
         // Act
-        var returnDest = TestHelper.Route($"snap single -s {source} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap single -s {source} -ks Samples -kr xyz");
 
         // Assert
         returnDest.Should().Be(expectedDest);

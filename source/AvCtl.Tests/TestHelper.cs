@@ -4,6 +4,7 @@
 
 namespace AvCtl.Tests;
 
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Comanche;
@@ -14,6 +15,16 @@ public static class TestHelper
     public static object? Route(string consoleInput, IOutputWriter? writer = null)
     {
         Environment.ExitCode = 0;
+
+        if (writer == null)
+        {
+            var mockWriter = new Mock<IOutputWriter>();
+            mockWriter
+                .Setup(m => m.CaptureStrings(It.IsAny<string>()))
+                .Returns(new Collection<string>(new[] { "123", "abc" }));
+            writer = mockWriter.Object;
+        }
+
         return Discover.Go(
             true,
             Assembly.GetAssembly(typeof(InfoModule)),
