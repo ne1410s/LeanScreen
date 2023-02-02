@@ -22,22 +22,22 @@ public static class CryptModule
     /// secured "in situ"; overwriting the original bytes with new ones. Files
     /// are then grouped under the source; to the specified label length.
     /// </summary>
+    /// <param name="writer">Output writer.</param>
     /// <param name="source">The source directory.</param>
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="groupLabelLength">The grouping label length.</param>
-    /// <param name="writer">Output writer.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
+        IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
-        [Alias("g")] int groupLabelLength = 2,
-        IOutputWriter? writer = null)
+        [Alias("g")] int groupLabelLength = 2)
     {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var di = new DirectoryInfo(source);
         var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
-        writer ??= new ConsoleWriter();
         var total = items.Count();
         var done = 0;
 

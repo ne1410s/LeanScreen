@@ -20,23 +20,23 @@ public static class SnapshotModule
     /// <summary>
     /// Generates frames from a video source.
     /// </summary>
+    /// <param name="writer">Output writer.</param>
     /// <param name="source">The source file.</param>
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="destination">The output folder.</param>
     /// <param name="itemCount">The total number of items.</param>
-    /// <param name="writer">Output writer.</param>
     /// <returns>The output path.</returns>
     [Alias("evenly")]
     public static string SnapEvenly(
+        IOutputWriter writer,
         [Alias("s")]string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
         [Alias("d")]string? destination = null,
-        [Alias("t")]int itemCount = 24,
-        IOutputWriter? writer = null)
+        [Alias("t")]int itemCount = 24)
     {
-        writer ??= new ConsoleWriter();
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
@@ -60,23 +60,23 @@ public static class SnapshotModule
     /// <summary>
     /// Generates a single frame from a video source.
     /// </summary>
+    /// <param name="writer">Output writer.</param>
     /// <param name="source">The source file.</param>
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="destination">The output folder.</param>
     /// <param name="relative">The relative position, from 0 - 1.</param>
-    /// <param name="writer">Output writer.</param>
     /// <returns>The output path.</returns>
     [Alias("single")]
     public static string SnapSingle(
+        IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
         [Alias("d")] string? destination = null,
-        [Alias("r")] double relative = .3,
-        IOutputWriter? writer = null)
+        [Alias("r")] double relative = .3)
     {
-        writer ??= new ConsoleWriter();
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);

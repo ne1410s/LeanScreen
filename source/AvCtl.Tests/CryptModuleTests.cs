@@ -14,6 +14,19 @@ using Comanche.Services;
 public class CryptModuleTests
 {
     [Fact]
+    public void EncryptMedia_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => CryptModule.EncryptMedia(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
     public void EncryptMedia_WithFiles_ReportsProgress()
     {
         // Arrange
@@ -21,7 +34,7 @@ public class CryptModuleTests
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, writer: mockWriter.Object);
+        CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
@@ -46,7 +59,7 @@ public class CryptModuleTests
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, writer: mockWriter.Object);
+        CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
         mockWriter.Verify(
@@ -67,7 +80,7 @@ public class CryptModuleTests
         var consoleWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, groupLabelLength: groupLength, writer: consoleWriter.Object);
+        CryptModule.EncryptMedia(consoleWriter.Object, root, groupLabelLength: groupLength);
         var creationCheck = File.Exists(expectedLocation);
         var removalCheck = !File.Exists(expectedRemoval);
 

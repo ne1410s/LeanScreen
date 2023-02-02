@@ -4,11 +4,26 @@
 
 namespace AvCtl.Tests;
 
+using Comanche.Services;
+
 /// <summary>
 /// Tests for the <see cref="InfoModule"/>.
 /// </summary>
 public class InfoModuleTests
 {
+    [Fact]
+    public void GetBasicInfo_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => InfoModule.GetBasicInfo(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
     [Theory]
     [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
     [InlineData("sample.avi")]

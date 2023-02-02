@@ -17,7 +17,7 @@ using Crypt.IO;
 /// <summary>
 /// Common utilities.
 /// </summary>
-internal static class CommonUtils
+public static class CommonUtils
 {
     /// <summary>
     /// Gets a directory based on user-supplied parameters.
@@ -95,10 +95,7 @@ internal static class CommonUtils
     {
         if (sourceDir == null)
         {
-            return new[]
-            {
-                "hello, world!".Hash(HashType.Sha1),
-            };
+            return Array.Empty<byte[]>();
         }
 
         var di = new DirectoryInfo(sourceDir);

@@ -6,12 +6,26 @@ namespace AvCtl.Tests;
 
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Comanche.Services;
 
 /// <summary>
 /// Tests for the <see cref="SnapshotModule"/>.
 /// </summary>
 public class SnapshotModuleTests
 {
+    [Fact]
+    public void SnapEvenly_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => SnapshotModule.SnapEvenly(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
     [Fact]
     public void SnapEvenly_ForFileWithCustomTotal_ProducesSameTotal()
     {
@@ -107,6 +121,19 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void SnapSingle_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => SnapshotModule.SnapSingle(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
     }
 
     [Fact]
