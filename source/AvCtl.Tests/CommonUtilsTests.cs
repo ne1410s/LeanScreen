@@ -5,6 +5,8 @@
 namespace AvCtl.Tests;
 
 using System;
+using Crypt.Encoding;
+using Crypt.Keying;
 
 /// <summary>
 /// Tests for the <see cref="CommonUtils"/> class.
@@ -94,35 +96,27 @@ public class CommonUtilsTests
     public void GetHashes_WithGoodKeySourceAndRegex_ReturnsExpected()
     {
         // Arrange
-        var expected = new byte[][]
-        {
-            new byte[] { 184, 130, 199, 245, 65, 134, 232, 154, 193, 193, 249, 8, 187, 88, 94, 0, 34, 40, 218, 115 },
-        };
+        const string expected = "EE+QlNwpWomd7OqvqV74w1NFwp4=";
 
         // Act
-        var actual = CommonUtils.GetHashes("Samples", "flv$");
+        var hashes = CommonUtils.GetHashes("Samples", "flv$");
+        var result = new DefaultKeyDeriver().DeriveKey(string.Empty, hashes).Encode(Codec.ByteBase64);
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        result.Should().Be(expected);
     }
 
     [Fact]
     public void GetHashes_WithGoodKeySourceButNoRegex_ReturnsExpected()
     {
         // Arrange
-        var expected = new byte[][]
-        {
-            new byte[] { 156, 170, 68, 217, 234, 120, 57, 174, 103, 189, 137, 149, 240, 6, 182, 212, 71, 4, 17, 36 },
-            new byte[] { 232, 159, 75, 147, 66, 202, 184, 126, 124, 2, 173, 184, 30, 13, 42, 120, 9, 110, 6, 145 },
-            new byte[] { 53, 192, 14, 54, 171, 65, 119, 248, 64, 245, 67, 208, 12, 1, 165, 134, 25, 32, 86, 112 },
-            new byte[] { 148, 206, 67, 137, 78, 64, 77, 42, 37, 237, 157, 118, 169, 10, 147, 8, 30, 218, 104, 247 },
-            new byte[] { 59, 230, 202, 220, 187, 190, 250, 5, 80, 41, 153, 85, 103, 205, 16, 26, 54, 204, 224, 126 },
-        };
+        const string expected = "v0l5re++sfvRkyRlwBBD4aS8if0=";
 
         // Act
-        var actual = CommonUtils.GetHashes(Path.Combine("Samples", "Info"), null);
+        var hashes = CommonUtils.GetHashes(Path.Combine("Samples", "Info"), null);
+        var result = new DefaultKeyDeriver().DeriveKey(string.Empty, hashes).Encode(Codec.ByteBase64);
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        result.Should().Be(expected);
     }
 }
