@@ -30,8 +30,8 @@ public static class CryptModule
     [Alias("bulk")]
     public static void EncryptMedia(
         [Alias("s")] string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         [Alias("g")] int groupLabelLength = 2,
         IOutputWriter? writer = null)
     {

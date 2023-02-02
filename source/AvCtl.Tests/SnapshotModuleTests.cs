@@ -80,11 +80,10 @@ public class SnapshotModuleTests
     {
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
-        const string keyCsv = "9,0,2,1,0";
         var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
-        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz");
 
         // Assert
         returnDest.Should().Be(destInfo.FullName);
@@ -138,10 +137,9 @@ public class SnapshotModuleTests
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
         var expectedDest = new FileInfo(source).DirectoryName;
-        const string keyCsv = "9,0,2,1,0";
 
         // Act
-        var returnDest = TestHelper.Route($"snap single -s {source} -k {keyCsv}");
+        var returnDest = TestHelper.Route($"snap single -s {source} -ks Samples -kr xyz");
 
         // Assert
         returnDest.Should().Be(expectedDest);

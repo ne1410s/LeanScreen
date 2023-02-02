@@ -38,8 +38,8 @@ public static class CollateModule
     [Alias("evenly")]
     public static string CollateEvenly(
         [Alias("s")] string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
         [Alias("c")] int columns = 4,
@@ -89,8 +89,8 @@ public static class CollateModule
     [Alias("bulk")]
     public static void CollateManyEvenly(
         [Alias("s")] string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
         [Alias("c")] int columns = 4,

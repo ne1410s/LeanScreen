@@ -17,12 +17,11 @@ public class CryptModuleTests
     public void EncryptMedia_WithFiles_ReportsProgress()
     {
         // Arrange
-        const string empty = "";
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, empty, empty, writer: mockWriter.Object);
+        CryptModule.EncryptMedia(root, writer: mockWriter.Object);
 
         // Assert
         mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
@@ -43,12 +42,11 @@ public class CryptModuleTests
     public void EncryptMedia_WithNoWriter_WritesToConsole()
     {
         // Arrange
-        const string empty = "";
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, empty, empty, writer: mockWriter.Object);
+        CryptModule.EncryptMedia(root, writer: mockWriter.Object);
 
         // Assert
         mockWriter.Verify(
@@ -63,14 +61,13 @@ public class CryptModuleTests
         // Arrange
         const int groupLength = 3;
         const string fileName = "44e339204806870505a2a448115b2e554080cee37ddfb46949e47f1c586b011f.mkv";
-        const string empty = "";
         var root = TestHelper.CloneSamples();
         var expectedLocation = Path.Combine(root, fileName[..groupLength], fileName);
         var expectedRemoval = Path.Combine(root, fileName);
         var consoleWriter = new Mock<IOutputWriter>();
 
         // Act
-        CryptModule.EncryptMedia(root, empty, empty, groupLength, consoleWriter.Object);
+        CryptModule.EncryptMedia(root, groupLabelLength: groupLength, writer: consoleWriter.Object);
         var creationCheck = File.Exists(expectedLocation);
         var removalCheck = !File.Exists(expectedRemoval);
 

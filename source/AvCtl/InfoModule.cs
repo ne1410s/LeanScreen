@@ -26,8 +26,8 @@ public static class InfoModule
     [Alias("basic")]
     public static string GetBasicInfo(
         [Alias("s")] string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         IOutputWriter? writer = null)
     {
         writer ??= new ConsoleWriter();

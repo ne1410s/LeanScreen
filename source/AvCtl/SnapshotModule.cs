@@ -30,8 +30,8 @@ public static class SnapshotModule
     [Alias("evenly")]
     public static string SnapEvenly(
         [Alias("s")]string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         [Alias("d")]string? destination = null,
         [Alias("t")]int itemCount = 24,
         IOutputWriter? writer = null)
@@ -70,8 +70,8 @@ public static class SnapshotModule
     [Alias("single")]
     public static string SnapSingle(
         [Alias("s")] string source,
-        [Alias("ks")] string keySource,
-        [Alias("kr")] string keyRegex,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
         [Alias("d")] string? destination = null,
         [Alias("r")] double relative = .3,
         IOutputWriter? writer = null)
