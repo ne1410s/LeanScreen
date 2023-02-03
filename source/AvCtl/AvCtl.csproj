@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Analyse" Version="1.0.12" />
-    <PackageReference Include="Comanche" Version="1.1.3" />
+    <PackageReference Include="Comanche" Version="1.1.4" />
   </ItemGroup>
 
   <ItemGroup>
