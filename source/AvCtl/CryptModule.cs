@@ -8,6 +8,7 @@ using Av;
 using Av.Models;
 using Comanche.Attributes;
 using Comanche.Services;
+using Crypt.Encoding;
 using Crypt.IO;
 using Crypt.Keying;
 
@@ -29,7 +30,7 @@ public static class CryptModule
     /// <param name="groupLabelLength">The grouping label length.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
-        IOutputWriter writer,
+        [Hidden] IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
@@ -45,6 +46,7 @@ public static class CryptModule
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {key.Encode(Codec.ByteBase64)}");
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)
         {

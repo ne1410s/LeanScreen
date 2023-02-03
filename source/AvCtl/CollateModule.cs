@@ -37,7 +37,7 @@ public static class CollateModule
     /// <returns>The output path.</returns>
     [Alias("evenly")]
     public static string CollateEvenly(
-        IOutputWriter writer,
+        [Hidden] IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
@@ -50,8 +50,62 @@ public static class CollateModule
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        var di = CommonUtils.QualifyDestination(source, destination);
+        return CollateInternal(source, key, di.FullName, itemCount, columns, itemHeight);
+    }
+
+    /// <summary>
+    /// Collates all video files in source.
+    /// </summary>
+    /// <param name="writer">Output writer.</param>
+    /// <param name="source">The source directory.</param>
+    /// <param name="keySource">The key source directory.</param>
+    /// <param name="keyRegex">The key source regular expression.</param>
+    /// <param name="destination">The output folder.</param>
+    /// <param name="itemCount">The total number of items.</param>
+    /// <param name="columns">The number of columns to use.</param>
+    /// <param name="itemHeight">The item height to set.</param>
+    [Alias("bulk")]
+    public static void CollateManyEvenly(
+        [Hidden] IOutputWriter writer,
+        [Alias("s")] string source,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null,
+        [Alias("d")] string? destination = null,
+        [Alias("t")] int itemCount = 24,
+        [Alias("c")] int columns = 4,
+        [Alias("h")] int itemHeight = 300)
+    {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
+        var blendedInput = writer.CaptureStrings().Blend();
+        var hashes = CommonUtils.GetHashes(keySource, keyRegex);
+        var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {key.Encode(Codec.ByteBase64)}");
 
         var di = CommonUtils.QualifyDestination(source, destination);
+        var diSource = new DirectoryInfo(source);
+        var items = diSource.EnumerateMedia(Av.Models.MediaTypes.Video);
+        var total = items.Count();
+        var done = 0;
+
+        writer.WriteLine($"Collation: Start - Files: {total}");
+        foreach (var file in items)
+        {
+            CollateInternal(file.FullName, key, di.FullName, itemCount, columns, itemHeight);
+            writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
+        }
+
+        writer.WriteLine("Collation: End");
+    }
+
+    private static string CollateInternal(
+        string source,
+        byte[] key,
+        string destination,
+        int itemCount,
+        int columns,
+        int itemHeight)
+    {
         var fi = new FileInfo(source);
         var snapper = CommonUtils.GetSnapper(source, key, out _);
         var frameList = new List<RenderedFrame>();
@@ -70,46 +124,8 @@ public static class CollateModule
             fileName = fi.Name[..12] + "." + saltHex + ".jpg";
         }
 
-        var path = Path.Combine(di.FullName, fileName);
+        var path = Path.Combine(destination, fileName);
         File.WriteAllBytes(path, memStr.ToArray());
         return path;
-    }
-
-    /// <summary>
-    /// Collates all video files in source.
-    /// </summary>
-    /// <param name="writer">Output writer.</param>
-    /// <param name="source">The source directory.</param>
-    /// <param name="keySource">The key source directory.</param>
-    /// <param name="keyRegex">The key source regular expression.</param>
-    /// <param name="destination">The output folder.</param>
-    /// <param name="itemCount">The total number of items.</param>
-    /// <param name="columns">The number of columns to use.</param>
-    /// <param name="itemHeight">The item height to set.</param>
-    [Alias("bulk")]
-    public static void CollateManyEvenly(
-        IOutputWriter writer,
-        [Alias("s")] string source,
-        [Alias("ks")] string? keySource = null,
-        [Alias("kr")] string? keyRegex = null,
-        [Alias("d")] string? destination = null,
-        [Alias("t")] int itemCount = 24,
-        [Alias("c")] int columns = 4,
-        [Alias("h")] int itemHeight = 300)
-    {
-        _ = writer ?? throw new ArgumentNullException(nameof(writer));
-        var diSource = new DirectoryInfo(source);
-        var items = diSource.EnumerateMedia(Av.Models.MediaTypes.Video);
-        var total = items.Count();
-        var done = 0;
-
-        writer.WriteLine($"Collation: Start - Files: {total}");
-        foreach (var file in items)
-        {
-            CollateEvenly(writer, file.FullName, keySource, keyRegex, destination, itemCount, columns, itemHeight);
-            writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
-        }
-
-        writer.WriteLine("Collation: End");
     }
 }

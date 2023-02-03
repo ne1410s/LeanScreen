@@ -29,7 +29,7 @@ public static class SnapshotModule
     /// <returns>The output path.</returns>
     [Alias("evenly")]
     public static string SnapEvenly(
-        IOutputWriter writer,
+        [Hidden] IOutputWriter writer,
         [Alias("s")]string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
@@ -69,7 +69,7 @@ public static class SnapshotModule
     /// <returns>The output path.</returns>
     [Alias("single")]
     public static string SnapSingle(
-        IOutputWriter writer,
+        [Hidden] IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,

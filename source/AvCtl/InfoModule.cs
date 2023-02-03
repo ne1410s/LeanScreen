@@ -25,7 +25,7 @@ public static class InfoModule
     /// <returns>Basic information about the source.</returns>
     [Alias("basic")]
     public static string GetBasicInfo(
-        IOutputWriter writer,
+        [Hidden] IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null)

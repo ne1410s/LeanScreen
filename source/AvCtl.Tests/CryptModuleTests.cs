@@ -37,6 +37,7 @@ public class CryptModuleTests
         CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
         mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Done: 25.00%", false), Times.Once());
         mockWriter.Verify(m => m.WriteLine("Done: 50.00%", false), Times.Once());

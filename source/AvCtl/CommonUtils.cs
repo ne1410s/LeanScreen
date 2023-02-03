@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Av.Abstractions.Rendering;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
+using Comanche.Attributes;
 using Crypt;
 using Crypt.Hashing;
 using Crypt.IO;
@@ -17,6 +18,7 @@ using Crypt.IO;
 /// <summary>
 /// Common utilities.
 /// </summary>
+[Hidden]
 public static class CommonUtils
 {
     /// <summary>
