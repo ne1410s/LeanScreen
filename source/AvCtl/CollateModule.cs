@@ -13,6 +13,7 @@ using Av.Imaging.SixLabors;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.Encoding;
+using Crypt.Hashing;
 using Crypt.IO;
 using Crypt.Keying;
 using Crypt.Transform;
@@ -80,7 +81,9 @@ public static class CollateModule
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {key.Encode(Codec.ByteBase64)}");
+        var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
+
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
 
         var di = CommonUtils.QualifyDestination(source, destination);
         var diSource = new DirectoryInfo(source);

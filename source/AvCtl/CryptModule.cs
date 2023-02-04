@@ -9,6 +9,7 @@ using Av.Models;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.Encoding;
+using Crypt.Hashing;
 using Crypt.IO;
 using Crypt.Keying;
 
@@ -45,8 +46,9 @@ public static class CryptModule
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {key.Encode(Codec.ByteBase64)}");
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
         writer.WriteLine($"Encryption: Start - Files: {total}");
         foreach (var item in items)
         {
