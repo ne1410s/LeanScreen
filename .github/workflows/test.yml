@@ -49,14 +49,7 @@ jobs:
     - name: Get mutation data
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
-      run: |
-        returncode=0
-        echo "Generating mutants for solution..."
-        iterr=$(dotnet stryker -f "stryker-config.json" &>/dev/null; echo $?)
-        [ "$iterr" != 0 ] && echo " -- failed to destroy all mutants :(" && returncode=1
-        [ "$iterr" == 0 ] && echo " -- you destroyed all the mutants :)"
-        echo " -- staging report to artifact location..."
-        mv ./StrykerOutput/**/mutation-report.html "${{ github.workspace }}/drop/reports/mutation-report.html"
+      run: dotnet stryker -O ${{ github.workspace }}/drop
     - name: Drop artifact - reports
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
       uses: actions/upload-artifact@v3
