@@ -22,7 +22,8 @@ public class SixLaborsCollatingServiceTests
         var act = () => sut.Collate(null);
 
         // Act
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("frames");
     }
 
     [Fact]
