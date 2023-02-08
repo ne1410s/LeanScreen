@@ -7,13 +7,8 @@ dotnet tool restore
 # Run unit tests (multiple test projects, no threshold)
 gci **/TestResults/ | ri -r; dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:coveragereport -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary"; start coveragereport/index.html;
 
-# Run mutation tests and show report (per project)
-gci **/StrykerOutput/ | ri -r;
-$tp="Av.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
-$tp="Av.Abstractions.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
-$tp="Av.Imaging.SixLabors.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
-$tp="Av.Rendering.Ffmpeg.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
-$tp="AvCtl.Tests"; dotnet stryker -o -tp $tp -f "$tp/stryker-config.json"
+# Run mutation tests and show report (now multiple projects!)
+gci **/StrykerOutput/ | ri -r; dotnet stryker -o;
 
 # Bundle up executable
 dotnet publish AvCtl -p:PublishSingleFile=true -p:DebugType=None -r win-x64 -c Release --sc false

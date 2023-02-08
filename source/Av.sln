@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		global.json = global.json
 		README.md = README.md
+		stryker-config.json = stryker-config.json
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject
 		C_5_4temp_4scratch_4ne1410s_4Av_4source_4stryker-config_1json__JsonSchema = str
