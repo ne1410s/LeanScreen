@@ -5,7 +5,6 @@
 namespace Av.Services
 {
     using System;
-    using System.Linq;
     using Av.Abstractions.Rendering;
 
     /// <summary>
@@ -48,7 +47,7 @@ namespace Av.Services
             onRendered = onRendered ?? throw new ArgumentNullException(nameof(onRendered));
             times = times ?? throw new ArgumentNullException(nameof(times));
 
-            if (times.All(t => t == default))
+            if (Array.TrueForAll(times, t => t == default))
             {
                 times = this.renderer.Media.Duration.DistributeEvenly(times.Length);
             }

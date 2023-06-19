@@ -114,6 +114,6 @@ public class CommonUtilsTests
 
         // Assert
         actual.Length.Should().Be(5);
-        actual.All(a => a.Length == 20).Should().BeTrue();
+        Array.TrueForAll(actual, a => a.Length == 20).Should().BeTrue();
     }
 }
