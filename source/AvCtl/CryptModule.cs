@@ -29,17 +29,19 @@ public static class CryptModule
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="groupLabelLength">The grouping label length.</param>
+    /// <param name="recurse">Whether to recurse.</param>
     [Alias("bulk")]
     public static void EncryptMedia(
         [Hidden] IOutputWriter writer,
         [Alias("s")] string source,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
-        [Alias("g")] int groupLabelLength = 2)
+        [Alias("g")] int groupLabelLength = 2,
+        [Alias("r")] bool recurse = true)
     {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var di = new DirectoryInfo(source);
-        var items = di.EnumerateMedia(MediaTypes.AnyMedia, false);
+        var items = di.EnumerateMedia(MediaTypes.AnyMedia, false, recurse, take: int.MaxValue);
         var total = items.Count();
         var done = 0;
 
@@ -58,7 +60,7 @@ public static class CryptModule
         }
 
         writer.WriteLine("Encryption: End");
-        foreach (var notDone in di.EnumerateMedia(MediaTypes.NonMedia, false))
+        foreach (var notDone in di.EnumerateMedia(MediaTypes.NonMedia, false, recurse, take: int.MaxValue))
         {
             writer.WriteLine($" - Not secured: {notDone.FullName}");
         }

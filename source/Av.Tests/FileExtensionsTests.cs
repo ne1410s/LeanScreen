@@ -63,7 +63,7 @@ public class FileExtensionsTests
         var di = new DirectoryInfo("Samples");
 
         // Act
-        var media = di.EnumerateMedia(types);
+        var media = di.EnumerateMedia(types, recurse: true);
 
         // Assert
         media.Count().Should().Be(expectedCount);
@@ -79,7 +79,22 @@ public class FileExtensionsTests
         var di = new DirectoryInfo("Samples");
 
         // Act
-        var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure);
+        var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure, true);
+
+        // Assert
+        media.Count().Should().Be(expectedCount);
+    }
+
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 3)]
+    public void EnumerateMedia_VaryingRecurseFlag_CountExpected(bool recurse, int expectedCount)
+    {
+        // Arrange
+        var di = new DirectoryInfo("Samples");
+
+        // Act
+        var media = di.EnumerateMedia(MediaTypes.AnyMedia, recurse: recurse);
 
         // Assert
         media.Count().Should().Be(expectedCount);

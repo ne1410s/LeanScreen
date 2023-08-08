@@ -66,6 +66,8 @@ public static class CollateModule
     /// <param name="itemCount">The total number of items.</param>
     /// <param name="columns">The number of columns to use.</param>
     /// <param name="itemHeight">The item height to set.</param>
+    /// <param name="recurse">Whether to recurse.</param>
+    /// <param name="maxFiles">The maximum number of files to process.</param>
     [Alias("bulk")]
     public static void CollateManyEvenly(
         [Hidden] IOutputWriter writer,
@@ -75,7 +77,9 @@ public static class CollateModule
         [Alias("d")] string? destination = null,
         [Alias("t")] int itemCount = 24,
         [Alias("c")] int columns = 4,
-        [Alias("h")] int itemHeight = 300)
+        [Alias("h")] int itemHeight = 300,
+        [Alias("r")] bool recurse = true,
+        [Alias("m")] int maxFiles = 100)
     {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var blendedInput = writer.CaptureStrings().Blend();
@@ -87,7 +91,7 @@ public static class CollateModule
 
         var di = CommonUtils.QualifyDestination(source, destination);
         var diSource = new DirectoryInfo(source);
-        var items = diSource.EnumerateMedia(Av.Models.MediaTypes.Video);
+        var items = diSource.EnumerateMedia(Av.Models.MediaTypes.Video, recurse: recurse, take: maxFiles);
         var total = items.Count();
         var done = 0;
 

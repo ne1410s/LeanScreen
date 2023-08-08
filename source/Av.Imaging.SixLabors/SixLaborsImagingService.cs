@@ -5,6 +5,7 @@
 namespace Av.Imaging.SixLabors
 {
     using System.IO;
+    using System.Threading.Tasks;
     using Av.Abstractions.Imaging;
     using Av.Abstractions.Shared;
     using global::SixLabors.ImageSharp;
@@ -21,6 +22,17 @@ namespace Av.Imaging.SixLabors
             var retVal = new MemoryStream();
             image.Save(retVal, new JpegEncoder());
             retVal.Position = 0;
+            return retVal;
+        }
+
+        /// <inheritdoc/>
+        public async Task<MemoryStream> ResizeImage(Stream stream, Size2D targetSize)
+        {
+            var format = await Image.DetectFormatAsync(stream);
+            var image = await Image.LoadAsync(stream);
+            image.Resize(targetSize);
+            var retVal = new MemoryStream();
+            await image.SaveAsync(retVal, format);
             return retVal;
         }
     }

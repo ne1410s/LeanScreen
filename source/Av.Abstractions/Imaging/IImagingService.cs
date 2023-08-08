@@ -5,6 +5,7 @@
 namespace Av.Abstractions.Imaging
 {
     using System.IO;
+    using System.Threading.Tasks;
     using Av.Abstractions.Shared;
 
     /// <summary>
@@ -19,5 +20,13 @@ namespace Av.Abstractions.Imaging
         /// <param name="size">The image dimensions.</param>
         /// <returns>A stream of encoded image bytes.</returns>
         MemoryStream Encode(byte[] rgb24Bytes, Size2D size);
+
+        /// <summary>
+        /// Resizes an image to the target size.
+        /// </summary>
+        /// <param name="stream">The original image stream.</param>
+        /// <param name="targetSize">The target size.</param>
+        /// <returns>A stream of encoded image bytes.</returns>
+        Task<MemoryStream> ResizeImage(Stream stream, Size2D targetSize);
     }
 }
