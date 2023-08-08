@@ -28,10 +28,9 @@ namespace Av.Imaging.SixLabors
         /// <inheritdoc/>
         public async Task<MemoryStream> ResizeImage(Stream stream, Size2D targetSize)
         {
-            var format = await Image.DetectFormatAsync(stream);
-            var image = await Image.LoadAsync(stream);
-            image.Resize(targetSize);
+            var (image, format) = await Image.LoadWithFormatAsync(stream);
             var retVal = new MemoryStream();
+            image.Resize(targetSize);
             await image.SaveAsync(retVal, format);
             return retVal;
         }

@@ -30,4 +30,24 @@ public class SixLaborsImagingServiceTests
         encoded.Length.Should().Be(658);
         encoded.Take(10).Should().BeEquivalentTo(new byte[] { 255, 216, 255, 224, 0, 16, 74, 70, 73, 70 });
     }
+
+    [Fact]
+    public async Task Resize_WithData_ResultAsExpected()
+    {
+        // Arrange
+        var sut = new SixLaborsImagingService();
+        var str = new MemoryStream(new byte[]
+        {
+            66, 77, 58, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 40, 0, 0, 0, 1,
+            0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 28, 237, 0,
+        });
+
+        // Act
+        var result = await sut.ResizeImage(str, new Size2D { Width = 2 });
+        var bytes = result.ToArray();
+
+        // Assert
+        bytes.Take(5).Should().BeEquivalentTo(new byte[] { 66, 77, 70, 0, 0 });
+    }
 }
