@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.16" />
+    <PackageReference Include="Analyse" Version="1.0.17" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
   </ItemGroup>
 

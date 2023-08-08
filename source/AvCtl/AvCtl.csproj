@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.16" />
-    <PackageReference Include="Comanche" Version="1.1.5" />
+    <PackageReference Include="Analyse" Version="1.0.17" />
+    <PackageReference Include="Comanche" Version="1.1.6" />
   </ItemGroup>
 
   <ItemGroup>
