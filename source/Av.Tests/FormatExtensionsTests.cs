@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Tests;
+
 using System.Globalization;
 using Av.Models;
-
-namespace Av.Tests;
 
 /// <summary>
 /// Tests for the <see cref="FormatExtensions"/>.

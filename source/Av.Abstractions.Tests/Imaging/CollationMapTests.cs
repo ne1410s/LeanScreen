@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Abstractions.Tests.Imaging;
+
 using Av.Abstractions.Imaging;
 using Av.Abstractions.Shared;
-
-namespace Av.Abstractions.Tests.Imaging;
 
 /// <summary>
 /// Tests for the <see cref="CollationMap"/>.

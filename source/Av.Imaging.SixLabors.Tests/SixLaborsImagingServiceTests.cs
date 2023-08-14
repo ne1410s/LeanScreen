@@ -2,9 +2,9 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-using Av.Abstractions.Shared;
-
 namespace Av.Imaging.SixLabors.Tests;
+
+using Av.Abstractions.Shared;
 
 /// <summary>
 /// Tests for the <see cref="SixLaborsImagingService"/>.

@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Tests.Services;
+
 using Av.Abstractions.Rendering;
 using Av.Services;
-
-namespace Av.Tests.Services;
 
 /// <summary>
 /// Tests for the <see cref="ThumbnailGenerator"/>.

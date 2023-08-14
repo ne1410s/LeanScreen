@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Rendering.Ffmpeg.Tests.Decoding;
+
 using Av.Rendering.Ffmpeg.Decoding;
 using FFmpeg.AutoGen;
-
-namespace Av.Rendering.Ffmpeg.Tests.Decoding;
 
 /// <summary>
 /// Tests for the <see cref="PhysicalFfmpegDecoding"/>.

@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Rendering.Ffmpeg.Tests;
+
 using System.Reflection;
 using Av.Abstractions.Shared;
-
-namespace Av.Rendering.Ffmpeg.Tests;
 
 /// <summary>
 /// Tests for the <see cref="FfmpegConverter"/>.

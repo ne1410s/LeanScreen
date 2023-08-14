@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
+namespace Av.Abstractions.Tests.Rendering;
+
 using Av.Abstractions.Rendering;
 using Av.Abstractions.Shared;
-
-namespace Av.Abstractions.Tests.Rendering;
 
 /// <summary>
 /// Tests for the <see cref="MediaInfo"/> class.
