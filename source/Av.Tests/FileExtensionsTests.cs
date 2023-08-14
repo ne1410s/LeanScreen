@@ -132,7 +132,6 @@ public class FileExtensionsTests
         exists.Should().BeTrue();
     }
 
-
     [Fact]
     public void EncryptMediaTo_ZeroSortLength_GeneratesExpected()
     {

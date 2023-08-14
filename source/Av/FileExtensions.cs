@@ -84,12 +84,8 @@ public static class FileExtensions
         foreach (var mediaFile in di.EnumerateMedia(mediaTypes, false, recurse, skip, take))
         {
             mediaFile.EncryptInSitu(userKey);
-            if (sortFolderLength > 0)
-            {
-                var sortPath = mediaFile.Name.Substring(0, sortFolderLength);
-                targetPath = Path.Combine(targetPath, sortPath);
-            }
-
+            var sortPath = mediaFile.Name.Substring(0, sortFolderLength);
+            targetPath = Path.Combine(targetPath, sortPath);
             Directory.CreateDirectory(targetPath);
             File.Move(mediaFile.FullName, Path.Combine(targetPath, mediaFile.Name));
         }
