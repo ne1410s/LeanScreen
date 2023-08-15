@@ -80,14 +80,15 @@ public static class FileExtensions
         int skip = 0,
         int take = int.MaxValue)
     {
-        var targetPath = target?.FullName ?? throw new ArgumentNullException(nameof(target));
+        _ = target?.FullName ?? throw new ArgumentNullException(nameof(target));
         foreach (var mediaFile in di.EnumerateMedia(mediaTypes, false, recurse, skip, take))
         {
             mediaFile.EncryptInSitu(userKey);
             var sortPath = mediaFile.Name.Substring(0, sortFolderLength);
-            targetPath = Path.Combine(targetPath, sortPath);
+            var targetPath = Path.Combine(target.FullName, sortPath);
             Directory.CreateDirectory(targetPath);
-            File.Move(mediaFile.FullName, Path.Combine(targetPath, mediaFile.Name));
+            mediaFile.CopyTo(Path.Combine(targetPath, mediaFile.Name), true);
+            mediaFile.Delete();
         }
     }
 }

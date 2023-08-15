@@ -149,4 +149,22 @@ public class FileExtensionsTests
         // Assert
         exists.Should().BeTrue();
     }
+
+    [Fact]
+    public void EncryptMediaTo_WithDuplicates_DoesNotError()
+    {
+        // Arrange
+        var source = new DirectoryInfo(Guid.NewGuid().ToString());
+        var target = new DirectoryInfo(Guid.NewGuid().ToString());
+        source.Create();
+        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file1.png"));
+        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file2.png"));
+        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file3.png"));
+
+        // Act
+        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 });
+
+        // Assert
+        source.GetFiles().Should().BeEmpty();
+    }
 }
