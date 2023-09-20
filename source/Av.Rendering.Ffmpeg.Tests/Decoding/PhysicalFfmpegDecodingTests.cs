@@ -27,7 +27,7 @@ public class PhysicalFfmpegDecodingTests
     }
 
     [Fact]
-    public void Ctor_WithNetworkStream_CallsLogger()
+    public void Ctor_WithNetworkStreamAndVerboseLevel_ReceivesVerboseMessage()
     {
         // Arrange
         const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
@@ -35,9 +35,45 @@ public class PhysicalFfmpegDecodingTests
         Console.SetOut(writer);
 
         // Act
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
+        FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
         _ = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().Contain("Starting connection attempt");
+    }
+
+    [Fact]
+    public void Ctor_WithNetworkStreamAndWarningLevel_DoesNotReceiveVerboseMessage()
+    {
+        // Arrange
+        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        StringWriter writer = new();
+        Console.SetOut(writer);
+
+        // Act
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
+        FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
+        _ = new PhysicalFfmpegDecoding(source);
+
+        // Assert
+        writer.ToString().Should().NotContain("Starting connection attempt");
+    }
+
+    [Fact]
+    public void Ctor_WithNetworkStreamAndVerboseLevelButNullLogger_DoesNotReceiveVerboseMessage()
+    {
+        // Arrange
+        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        StringWriter writer = new();
+        Console.SetOut(writer);
+
+        // Act
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
+        FfmpegUtils.Logger = null;
+        _ = new PhysicalFfmpegDecoding(source);
+
+        // Assert
+        writer.ToString().Should().NotContain("Starting connection attempt");
     }
 }

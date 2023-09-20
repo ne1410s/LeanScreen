@@ -15,6 +15,16 @@ namespace Av.Rendering.Ffmpeg
     public static class FfmpegUtils
     {
         /// <summary>
+        /// Gets or sets the logger.
+        /// </summary>
+        public static Action<int, string> Logger { get; set; }
+
+        /// <summary>
+        /// Gets or sets the log level.
+        /// </summary>
+        public static int LogLevel { get; set; } = ffmpeg.AV_LOG_WARNING;
+
+        /// <summary>
         /// Gets the error message from a code.
         /// </summary>
         /// <param name="error">The error code.</param>
@@ -113,14 +123,14 @@ namespace Av.Rendering.Ffmpeg
             ffmpeg.av_log_set_level(ffmpeg.AV_LOG_VERBOSE);
             av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
             {
-                if (level <= ffmpeg.av_log_get_level())
+                if (Logger != null && level <= LogLevel)
                 {
                     const int lineSize = 1024;
                     var lineBuffer = stackalloc byte[lineSize];
                     var printPrefix = 1;
                     ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
                     var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                    Console.Write(line);
+                    Logger.Invoke(level, line);
                 }
             };
 
