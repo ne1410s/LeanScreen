@@ -4,9 +4,8 @@
 
 namespace AvCtl;
 
+using System;
 using Av;
-using Av.Abstractions.Rendering;
-using Av.Imaging.SixLabors;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.Keying;
@@ -42,18 +41,18 @@ public static class SnapshotModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
         var di = CommonUtils.QualifyDestination(source, destination);
-        var snapper = CommonUtils.GetSnapper(source, key, out var renderer);
-        var imager = new SixLaborsImagingService();
-        var onFrameReceived = (RenderedFrame frame, int index) =>
-        {
-            var itemNo = (index + 1L).FormatToUpperBound(itemCount);
-            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
-            var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
-            using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            File.WriteAllBytes(path, memStr.ToArray());
-        };
+        using var capper = CommonUtils.GetCapper(source, key);
+        var times = capper.Media.Duration.DistributeEvenly(itemCount);
 
-        snapper.Generate(onFrameReceived, itemCount);
+        for (var i = 0; i < times.Length; i++)
+        {
+            var frame = capper.Snap(times[0]);
+            var itemNo = (i + 1L).FormatToUpperBound(itemCount);
+            var frameNo = frame.FrameNumber.FormatToUpperBound(capper.Media.TotalFrames);
+            var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
+            File.WriteAllBytes(path, frame.Image.ToArray());
+        }
+
         return di.FullName;
     }
 
@@ -82,17 +81,11 @@ public static class SnapshotModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
         var di = CommonUtils.QualifyDestination(source, destination);
-        var snapper = CommonUtils.GetSnapper(source, key, out var renderer);
-        var imager = new SixLaborsImagingService();
-        var onFrameReceived = (RenderedFrame frame, int _) =>
-        {
-            var frameNo = frame.FrameNumber.FormatToUpperBound(renderer.Media.TotalFrames);
-            var path = Path.Combine(di.FullName, $"p{relative}_f{frameNo}.jpg");
-            using var memStr = imager.Encode(frame.Rgb24Bytes, frame.Dimensions);
-            File.WriteAllBytes(path, memStr.ToArray());
-        };
-
-        snapper.Generate(onFrameReceived, renderer.Media.Duration * relative);
+        using var capper = CommonUtils.GetCapper(source, key);
+        using var frame = capper.Snap(relative);
+        var frameNo = frame.FrameNumber.FormatToUpperBound(capper.Media.TotalFrames);
+        var path = Path.Combine(di.FullName, $"p{relative}_f{frameNo}.jpg");
+        File.WriteAllBytes(path, frame.Image.ToArray());
         return di.FullName;
     }
 }

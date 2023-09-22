@@ -4,8 +4,10 @@
 
 namespace Av.Abstractions.Imaging
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using Av.Abstractions.Rendering;
     using Av.Abstractions.Shared;
 
     /// <summary>
@@ -28,5 +30,13 @@ namespace Av.Abstractions.Imaging
         /// <param name="targetSize">The target size.</param>
         /// <returns>A stream of encoded image bytes.</returns>
         Task<MemoryStream> ResizeImage(Stream stream, Size2D targetSize);
+
+        /// <summary>
+        /// Collates a sequence of frames.
+        /// </summary>
+        /// <param name="frames">The frames.</param>
+        /// <param name="opts">Collation options.</param>
+        /// <returns>A stream of encoded image bytes.</returns>
+        MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null);
     }
 }

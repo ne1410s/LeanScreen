@@ -15,40 +15,26 @@ namespace Av.Rendering.Ffmpeg
     /// <summary>
     /// Ffmpeg frame renderer.
     /// </summary>
-    public sealed class FfmpegRenderer : IRenderingService, IDisposable
+    public sealed class FfmpegRenderer : IRenderingService
     {
-        private readonly IFfmpegDecodingSession decoder;
-        private readonly FfmpegConverter converter;
+        private IFfmpegDecodingSession decoder;
+        private FfmpegConverter converter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FfmpegRenderer"/> class.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="key">The key (for cryptographic sources).</param>
-        /// <param name="frameSize">The target frame size.</param>
-        public FfmpegRenderer(string source, byte[] key = null, Size2D? frameSize = null)
-            : this(GetDecoder(source, key), frameSize)
-        { }
+        /// <inheritdoc/>
+        public MediaInfo Media { get; private set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FfmpegRenderer"/> class.
-        /// </summary>
-        /// <param name="decoder">The decoder.</param>
-        /// <param name="frameSize">The target frame size.</param>
-        public FfmpegRenderer(IFfmpegDecodingSession decoder, Size2D? frameSize = null)
+        /// <inheritdoc/>
+        public Size2D ThumbSize { get; private set; }
+
+        /// <inheritdoc/>
+        public void SetSource(string filePath, byte[] key, Size2D? thumbSize = null)
         {
-            this.decoder = decoder ?? throw new ArgumentException("Required parameter is missing.", nameof(decoder));
-            var finalFrameSize = frameSize == null ? decoder.Dimensions : decoder.Dimensions.ResizeTo(frameSize.Value);
-            this.converter = new FfmpegConverter(decoder.Dimensions, decoder.PixelFormat, finalFrameSize);
-            this.Media = new(decoder.Duration, decoder.Dimensions, decoder.TotalFrames, decoder.FrameRate);
-            this.Session = new(finalFrameSize);
+            var codec = GetDecoder(filePath, key);
+            this.decoder = codec;
+            this.ThumbSize = thumbSize == null ? codec.Dimensions : codec.Dimensions.ResizeTo(thumbSize.Value);
+            this.Media = new(codec.Duration, codec.Dimensions, codec.TotalFrames, codec.FrameRate);
+            this.converter = new(codec.Dimensions, codec.PixelFormat, this.ThumbSize);
         }
-
-        /// <inheritdoc/>
-        public MediaInfo Media { get; }
-
-        /// <inheritdoc/>
-        public RenderSessionInfo Session { get; }
 
         /// <inheritdoc/>
         public RenderedFrame RenderAt(TimeSpan position)
@@ -62,7 +48,7 @@ namespace Av.Rendering.Ffmpeg
             return new RenderedFrame
             {
                 Rgb24Bytes = rawFrame.Rgb24Bytes,
-                Dimensions = this.Session.FrameSize,
+                Dimensions = this.ThumbSize,
                 Position = actualPosition,
                 FrameNumber = (long)Math.Round(inferredFrame),
             };

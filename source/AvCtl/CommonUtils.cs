@@ -4,10 +4,13 @@
 
 namespace AvCtl;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Av.Abstractions.Rendering;
+using Av.Abstractions.Shared;
+using Av.Imaging.SixLabors;
 using Av.Rendering.Ffmpeg;
 using Av.Services;
 using Comanche.Attributes;
@@ -39,28 +42,27 @@ public static class CommonUtils
     }
 
     /// <summary>
-    /// Gets a thumbnail generator.
-    /// </summary>
-    /// <param name="source">The video source path.</param>
-    /// <param name="key">The key, if a secure file.</param>
-    /// <param name="renderer">The chosen renderer.</param>
-    /// <returns>A thumbnail generator.</returns>
-    public static ThumbnailGenerator GetSnapper(
-        string source, byte[] key, out IRenderingService renderer)
-    {
-        renderer = GetRenderer(source, key);
-        return new ThumbnailGenerator(renderer);
-    }
-
-    /// <summary>
     /// Gets a renderer.
     /// </summary>
-    /// <param name="source">The video source path.</param>
-    /// <param name="key">The key, if a secure file.</param>
     /// <returns>A renderer.</returns>
-    public static IRenderingService GetRenderer(string source, byte[] key)
+    public static IRenderingService GetRenderer() => new FfmpegRenderer();
+
+    /// <summary>
+    /// Gets a capper.
+    /// </summary>
+    /// <param name="filePath">The file path.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="thumbSize">The thumb size.</param>
+    /// <returns>A capper.</returns>
+    [SuppressMessage(
+        "Reliability",
+        "CA2000:Dispose objects before losing scope",
+        Justification = "Disposed by owner")]
+    public static Capper GetCapper(string filePath, byte[] key, Size2D? thumbSize = null)
     {
-        return new FfmpegRenderer(source, key);
+        var renderer = GetRenderer();
+        renderer.SetSource(filePath, key, thumbSize);
+        return new(renderer, new SixLaborsImagingService());
     }
 
     /// <summary>

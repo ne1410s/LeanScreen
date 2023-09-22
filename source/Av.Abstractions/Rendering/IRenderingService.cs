@@ -5,11 +5,13 @@
 namespace Av.Abstractions.Rendering
 {
     using System;
+    using System.IO;
+    using Av.Abstractions.Shared;
 
     /// <summary>
     /// Obtains image stills from a video.
     /// </summary>
-    public interface IRenderingService
+    public interface IRenderingService : IDisposable
     {
         /// <summary>
         /// Gets source media info.
@@ -17,9 +19,17 @@ namespace Av.Abstractions.Rendering
         MediaInfo Media { get; }
 
         /// <summary>
-        /// Gets render session info.
+        /// Gets the target thumb size.
         /// </summary>
-        RenderSessionInfo Session { get; }
+        public Size2D ThumbSize { get; }
+
+        /// <summary>
+        /// Sets the source.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="thumbSize">The thumb size. If omitted, the natural media size is used.</param>
+        public void SetSource(string filePath, byte[] key, Size2D? thumbSize = null);
 
         /// <summary>
         /// Renders a frame at the position specified.

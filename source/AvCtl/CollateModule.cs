@@ -8,8 +8,6 @@ using System.Globalization;
 using System.IO;
 using Av;
 using Av.Abstractions.Imaging;
-using Av.Abstractions.Rendering;
-using Av.Imaging.SixLabors;
 using Comanche.Attributes;
 using Comanche.Services;
 using Crypt.Encoding;
@@ -114,11 +112,9 @@ public static class CollateModule
         int itemHeight)
     {
         var fi = new FileInfo(source);
-        var snapper = CommonUtils.GetSnapper(source, key, out _);
-        var frameList = new List<RenderedFrame>();
-        snapper.Generate((f, _) => frameList.Add(f), itemCount);
+        using var capper = CommonUtils.GetCapper(source, key);
         var opts = new CollationOptions { Columns = columns, ItemSize = new(0, itemHeight) };
-        var memStr = new SixLaborsCollatingService().Collate(frameList, opts);
+        var memStr = capper.Collate(opts, itemCount);
         var fileName = $"{fi.FullName}_collation_x{itemCount}.jpg";
 
         // Re-encrypt; using the original key
