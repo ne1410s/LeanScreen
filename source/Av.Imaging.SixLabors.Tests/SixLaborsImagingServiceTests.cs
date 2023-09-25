@@ -63,7 +63,8 @@ public class SixLaborsImagingServiceTests
         var act = () => sut.Collate(null);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("frames");
     }
 
     [Fact]

@@ -46,6 +46,24 @@ public class CapperTests
     }
 
     [Fact]
+    public void Collate_BespokeSize_GetsHonoured()
+    {
+        // Arrange
+        using var sut = GetSut(out var mocks);
+        var requestSize = new Size2D(12, 17);
+        var opts = new CollationOptions { ItemSize = requestSize };
+
+        // Act
+        sut.Collate(opts, TimeSpan.Zero);
+
+        // Assert
+        mocks.MockImager.Verify(
+            m => m.Collate(
+                It.IsAny<IEnumerable<RenderedFrame>>(),
+                It.Is<CollationOptions>(o => requestSize.Equals(o.ItemSize))));
+    }
+
+    [Fact]
     public void SetSource_WhenCalled_SetsRendererSource()
     {
         // Arrange
@@ -61,108 +79,36 @@ public class CapperTests
         mocks.MockRenderer.Verify(m => m.SetSource(filePath, key, size));
     }
 
-    ////[Fact]
-    ////public void Generate_NPositions_CallsRendererNTimes()
-    ////{
-    ////    // Arrange
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-    ////    var times = new TimeSpan[] { TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10) };
-    ////    var calls = 0;
+    [Fact]
+    public void Snap_WithRelativePosition_YieldsExpectedTime()
+    {
+        // Arrange
+        using var sut = GetSut(out var mocks);
+        const double relative = 0.75;
+        var duration = TimeSpan.FromSeconds(4);
+        var expectedRenderAt = duration * relative;
+        var size = new Size2D { Height = 10, Width = 10 };
+        mocks.MockRenderer.Setup(m => m.Media).Returns(new MediaInfo(duration, size, 40, 10));
 
-    ////    // Act
-    ////    sut.Generate((_, _) => calls++, times);
+        // Act
+        sut.Snap(relative);
 
-    ////    // Assert
-    ////    calls.Should().Be(times.Length);
-    ////    mockRenderer.Verify(m => m.RenderAt(It.IsAny<TimeSpan>()), Times.Exactly(times.Length));
-    ////}
+        // Assert
+        mocks.MockRenderer.Verify(m => m.RenderAt(expectedRenderAt));
+    }
 
-    ////[Fact]
-    ////public void Generate_NCount_CallsRendererNTimesEvenly()
-    ////{
-    ////    // Arrange
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
-    ////    mockRenderer.Setup(m => m.Media).Returns(mockMedia);
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-    ////    const int times = 3;
-    ////    var calls = 0;
+    [Fact]
+    public void Snap_WhenCalled_SequenceIsUnity()
+    {
+        // Arrange
+        using var sut = GetSut(out _);
 
-    ////    // Act
-    ////    sut.Generate((_, _) => calls++, times);
+        // Act
+        var result = sut.Snap(TimeSpan.Zero);
 
-    ////    // Assert
-    ////    calls.Should().Be(times);
-    ////    mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(0)), Times.Once());
-    ////    mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(1)), Times.Once());
-    ////    mockRenderer.Verify(m => m.RenderAt(TimeSpan.FromSeconds(2)), Times.Once());
-    ////}
-
-    ////[Fact]
-    ////public void Generate_NPositionsIncludingNonDefault_HonoursSpecified()
-    ////{
-    ////    // Arrange
-    ////    var actualCallTimes = new List<TimeSpan>();
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
-    ////    mockRenderer.Setup(m => m.Media).Returns(mockMedia);
-    ////    mockRenderer.Setup(m => m.RenderAt(It.IsAny<TimeSpan>())).Callback((TimeSpan ts) => actualCallTimes.Add(ts));
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-    ////    var times = new TimeSpan[] { default, default, TimeSpan.FromSeconds(1.3) };
-
-    ////    // Act
-    ////    sut.Generate((_, _) => { }, times);
-
-    ////    // Assert
-    ////    actualCallTimes.Should().BeEquivalentTo(times);
-    ////}
-
-    ////[Fact]
-    ////public void Generate_SinglePositionOfDefault_UsesPositionAtZero()
-    ////{
-    ////    // Arrange
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var mockMedia = new MediaInfo(TimeSpan.FromSeconds(2), default, 0, 0);
-    ////    mockRenderer.Setup(m => m.Media).Returns(mockMedia);
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-    ////    var times = new TimeSpan[1];
-
-    ////    // Act
-    ////    sut.Generate((_, _) => { }, times);
-
-    ////    // Assert
-    ////    mockRenderer.Verify(m => m.RenderAt(TimeSpan.Zero), Times.Once());
-    ////}
-
-    ////[Fact]
-    ////public void Generate_NullCallback_ThrowsException()
-    ////{
-    ////    // Arrange
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-    ////    var times = new TimeSpan[1];
-
-    ////    // Act
-    ////    var act = () => sut.Generate(null!, times);
-
-    ////    // Assert
-    ////    act.Should().Throw<ArgumentNullException>().WithParameterName("onRendered");
-    ////}
-
-    ////[Fact]
-    ////public void Generate_NullTimings_ThrowsException()
-    ////{
-    ////    // Arrange
-    ////    var mockRenderer = new Mock<IRenderingService>();
-    ////    var sut = new ThumbnailGenerator(mockRenderer.Object);
-
-    ////    // Act
-    ////    var act = () => sut.Generate((_, _) => { }, null!);
-
-    ////    // Assert
-    ////    act.Should().Throw<ArgumentNullException>().WithParameterName("times");
-    ////}
+        // Assert
+        result.SequenceNumber.Should().Be(1);
+    }
 
     private static Capper GetSut(out BagOfMocks mocks)
     {
@@ -171,6 +117,10 @@ public class CapperTests
             MockRenderer = new Mock<IRenderingService>(),
             MockImager = new Mock<IImagingService>(),
         };
+
+        mocks.MockRenderer
+            .Setup(m => m.RenderAt(It.IsAny<TimeSpan>()))
+            .Returns(new RenderedFrame());
 
         return new Capper(mocks.MockRenderer.Object, mocks.MockImager.Object);
     }
