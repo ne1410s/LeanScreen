@@ -35,7 +35,8 @@ public static class InfoModule
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
 
-        var renderer = CommonUtils.GetRenderer(source, key);
+        using var renderer = CommonUtils.GetRenderer();
+        renderer.SetSource(source, key);
         return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions
         {
             WriteIndented = true,
