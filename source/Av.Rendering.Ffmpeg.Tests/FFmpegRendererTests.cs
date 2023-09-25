@@ -10,7 +10,6 @@ using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;
 using Crypt.Hashing;
-using Crypt.Streams;
 
 /// <summary>
 /// Tests for the <see cref="FfmpegRenderer"/>.
@@ -173,26 +172,4 @@ public class FFmpegRendererTests
         // Assert
         decoder.Should().BeOfType(expectedType);
     }
-
-    [Fact]
-    public void InternalGet_UnrecognisedDecodeMode_ThrowsException()
-    {
-        // Arrange
-        const DecodeMode decodeMode = (DecodeMode)999;
-
-        // Act
-        var act = () => Get(decodeMode, default!);
-
-        // Assert
-        act.Should().ThrowExactly<ArgumentException>()
-            .WithMessage("Decode mode not recognised");
-    }
-
-    private static IFfmpegDecodingSession Get(DecodeMode mode, FileInfo fi, int bufferLength = 32768) => mode switch
-    {
-        DecodeMode.PhysicalFm => new PhysicalFfmpegDecoding(fi.FullName),
-        DecodeMode.SimpleFile => new StreamFfmpegDecoding(new SimpleFileStream(fi, bufferLength)),
-        DecodeMode.BlockReads => new StreamFfmpegDecoding(new BlockReadStream(fi, 32768)),
-        _ => throw new ArgumentException("Decode mode not recognised"),
-    };
 }

@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Services;
+namespace Av.Models;
 
 using System;
 using System.IO;
@@ -35,7 +35,7 @@ public sealed class CapturedFrame : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.Image?.Dispose();
+        this.Image.Dispose();
         GC.SuppressFinalize(this);
     }
 }

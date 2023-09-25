@@ -34,7 +34,7 @@ public class SixLaborsImagingServiceTests
     }
 
     [Fact]
-    public async Task Resize_WithData_ResultAsExpected()
+    public async Task ResizeImage_WithData_ResultAsExpected()
     {
         // Arrange
         var sut = new SixLaborsImagingService();
@@ -54,7 +54,20 @@ public class SixLaborsImagingServiceTests
     }
 
     [Fact]
-    public void RenderCollation_WithMultipleRows_ProducesExpected()
+    public void Collate_WithNullFrame_ThrowsException()
+    {
+        // Arrange
+        var sut = new SixLaborsImagingService();
+
+        // Act
+        var act = () => sut.Collate(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Collate_WithMultipleRows_ProducesExpected()
     {
         // Arrange
         var rgb24Bytes = new byte[]
@@ -86,7 +99,7 @@ public class SixLaborsImagingServiceTests
     }
 
     [Fact]
-    public void RenderCollation_WithCollateSize_ProducesExpected()
+    public void Collate_WithCollateSize_ProducesExpected()
     {
         // Arrange
         var rgb24Bytes = new byte[]

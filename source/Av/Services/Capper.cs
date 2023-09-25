@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using Av.Abstractions.Imaging;
 using Av.Abstractions.Rendering;
+using Av.Abstractions.Shared;
+using Av.Models;
 
 /// <summary>
 /// Produces video captures.
@@ -32,7 +34,16 @@ public sealed class Capper : IDisposable
     /// <summary>
     /// Gets the media.
     /// </summary>
-    public MediaInfo Media => this.renderer?.Media;
+    public MediaInfo Media => this.renderer.Media;
+
+    /// <summary>
+    /// Sets the source.
+    /// </summary>
+    /// <param name="filePath">The file path.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="thumbSize">The thumb size. If omitted, the natural media size is used.</param>
+    public void SetSource(string filePath, byte[] key, Size2D? thumbSize = null)
+        => this.renderer.SetSource(filePath, key, thumbSize);
 
     /// <summary>
     /// Gets a frame at the specified relative position.
@@ -85,7 +96,7 @@ public sealed class Capper : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.renderer?.Dispose();
+        this.renderer.Dispose();
         GC.SuppressFinalize(this);
     }
 

@@ -5,7 +5,6 @@
 namespace Av.Abstractions.Rendering
 {
     using System;
-    using System.IO;
     using Av.Abstractions.Shared;
 
     /// <summary>
