@@ -10,20 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.17" />
-    <PackageReference Include="Comanche" Version="1.1.6" />
+    <PackageReference Include="Analyse" Version="1.0.18" />
+    <PackageReference Include="Comanche" Version="1.1.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Av.Rendering.Ffmpeg\Av.Rendering.Ffmpeg.csproj" />
     <ProjectReference Include="..\Av.Imaging.SixLabors\Av.Imaging.SixLabors.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="9.3.0.71466">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

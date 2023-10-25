@@ -2,21 +2,20 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Rendering.Ffmpeg.Decoding
+namespace Av.Rendering.Ffmpeg.Decoding;
+
+/// <summary>
+/// Ffmpeg decoding session for physical sources.
+/// </summary>
+public sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
 {
     /// <summary>
-    /// Ffmpeg decoding session for physical sources.
+    /// Initializes a new instance of the <see cref="PhysicalFfmpegDecoding"/> class.
     /// </summary>
-    public sealed unsafe class PhysicalFfmpegDecoding : FfmpegDecodingSessionBase
+    /// <param name="url">The url to the physical media.</param>
+    public PhysicalFfmpegDecoding(string url)
+        : base(url)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PhysicalFfmpegDecoding"/> class.
-        /// </summary>
-        /// <param name="url">The url to the physical media.</param>
-        public PhysicalFfmpegDecoding(string url)
-            : base(url)
-        {
-            this.OpenInputContext();
-        }
+        this.OpenInputContext();
     }
 }

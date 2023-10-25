@@ -2,49 +2,48 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Abstractions.Rendering
+namespace Av.Abstractions.Rendering;
+
+using System;
+using Av.Abstractions.Shared;
+
+/// <summary>
+/// Original media info.
+/// </summary>
+public class MediaInfo
 {
-    using System;
-    using Av.Abstractions.Shared;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaInfo"/> class.
+    /// </summary>
+    /// <param name="duration">The duration.</param>
+    /// <param name="dimensions">The dimensions.</param>
+    /// <param name="totalFrames">The total number of frames.</param>
+    /// <param name="frameRate">The average frame rate.</param>
+    public MediaInfo(TimeSpan duration, Size2D dimensions, long totalFrames, double frameRate)
+    {
+        this.Duration = duration;
+        this.Dimensions = dimensions;
+        this.TotalFrames = totalFrames;
+        this.FrameRate = Math.Round(frameRate, 4);
+    }
 
     /// <summary>
-    /// Original media info.
+    /// Gets the duration.
     /// </summary>
-    public class MediaInfo
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MediaInfo"/> class.
-        /// </summary>
-        /// <param name="duration">The duration.</param>
-        /// <param name="dimensions">The dimensions.</param>
-        /// <param name="totalFrames">The total number of frames.</param>
-        /// <param name="frameRate">The average frame rate.</param>
-        public MediaInfo(TimeSpan duration, Size2D dimensions, long totalFrames, double frameRate)
-        {
-            this.Duration = duration;
-            this.Dimensions = dimensions;
-            this.TotalFrames = totalFrames;
-            this.FrameRate = Math.Round(frameRate, 4);
-        }
+    public TimeSpan Duration { get; }
 
-        /// <summary>
-        /// Gets the duration.
-        /// </summary>
-        public TimeSpan Duration { get; }
+    /// <summary>
+    /// Gets the frame size.
+    /// </summary>
+    public Size2D Dimensions { get; }
 
-        /// <summary>
-        /// Gets the frame size.
-        /// </summary>
-        public Size2D Dimensions { get; }
+    /// <summary>
+    /// Gets the total number of frames.
+    /// </summary>
+    public long TotalFrames { get; }
 
-        /// <summary>
-        /// Gets the total number of frames.
-        /// </summary>
-        public long TotalFrames { get; }
-
-        /// <summary>
-        /// Gets the average frame rate.
-        /// </summary>
-        public double FrameRate { get; }
-    }
+    /// <summary>
+    /// Gets the average frame rate.
+    /// </summary>
+    public double FrameRate { get; }
 }

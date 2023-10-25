@@ -2,32 +2,31 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Models
+namespace Av.Models;
+
+/// <summary>
+/// Media type information.
+/// </summary>
+public struct MediaTypeInfo
 {
     /// <summary>
-    /// Media type information.
+    /// Initializes a new instance of the <see cref="MediaTypeInfo"/> struct.
     /// </summary>
-    public struct MediaTypeInfo
+    /// <param name="mediaType">The media type.</param>
+    /// <param name="mimeType">The mime type.</param>
+    public MediaTypeInfo(MediaTypes mediaType, string mimeType)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MediaTypeInfo"/> struct.
-        /// </summary>
-        /// <param name="mediaType">The media type.</param>
-        /// <param name="mimeType">The mime type.</param>
-        public MediaTypeInfo(MediaTypes mediaType, string mimeType)
-        {
-            this.MediaType = mediaType;
-            this.MimeType = mimeType;
-        }
-
-        /// <summary>
-        /// Gets the media type.
-        /// </summary>
-        public MediaTypes MediaType { get; }
-
-        /// <summary>
-        /// Gets the mime type.
-        /// </summary>
-        public string MimeType { get; }
+        this.MediaType = mediaType;
+        this.MimeType = mimeType;
     }
+
+    /// <summary>
+    /// Gets the media type.
+    /// </summary>
+    public MediaTypes MediaType { get; }
+
+    /// <summary>
+    /// Gets the mime type.
+    /// </summary>
+    public string MimeType { get; }
 }

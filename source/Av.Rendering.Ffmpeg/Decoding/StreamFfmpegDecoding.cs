@@ -2,56 +2,55 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Rendering.Ffmpeg.Decoding
+namespace Av.Rendering.Ffmpeg.Decoding;
+
+using Crypt.Streams;
+using FFmpeg.AutoGen;
+
+/// <summary>
+/// Ffmpeg decoding session for stream sources.
+/// </summary>
+public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
 {
-    using Crypt.Streams;
-    using FFmpeg.AutoGen;
+    private readonly ISimpleReadStream readStream;
+    private IUStream uStream;
+    private avio_alloc_context_read_packet readFn;
+    private avio_alloc_context_seek seekFn;
+    private AVIOContext* streamIc;
 
     /// <summary>
-    /// Ffmpeg decoding session for stream sources.
+    /// Initializes a new instance of the <see cref="StreamFfmpegDecoding"/> class.
     /// </summary>
-    public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
+    /// <param name="stream">A stream.</param>
+    public StreamFfmpegDecoding(ISimpleReadStream stream)
+        : base(string.Empty)
     {
-        private readonly ISimpleReadStream readStream;
-        private IUStream uStream;
-        private avio_alloc_context_read_packet readFn;
-        private avio_alloc_context_seek seekFn;
-        private AVIOContext* streamIc;
+        this.readStream = stream;
+        this.uStream = new UStreamInternal(stream);
+        this.readFn = this.uStream.ReadUnsafe;
+        this.seekFn = this.uStream.SeekUnsafe;
+        var bufLen = this.uStream.BufferLength;
+        var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
+        this.streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, this.readFn, null, this.seekFn);
+        streamIc->seekable = 1;
+        PtrFormatContext->pb = this.streamIc;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamFfmpegDecoding"/> class.
-        /// </summary>
-        /// <param name="stream">A stream.</param>
-        public StreamFfmpegDecoding(ISimpleReadStream stream)
-            : base(string.Empty)
-        {
-            this.readStream = stream;
-            this.uStream = new UStreamInternal(stream);
-            this.readFn = this.uStream.ReadUnsafe;
-            this.seekFn = this.uStream.SeekUnsafe;
-            var bufLen = this.uStream.BufferLength;
-            var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
-            this.streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, this.readFn, null, this.seekFn);
-            streamIc->seekable = 1;
-            PtrFormatContext->pb = this.streamIc;
+        this.OpenInputContext();
+    }
 
-            this.OpenInputContext();
-        }
+    /// <inheritdoc/>
+    public override void Dispose()
+    {
+        base.Dispose();
 
-        /// <inheritdoc/>
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            ffmpeg.av_freep(&streamIc->buffer);
-            var customInputContext = this.streamIc;
-            ffmpeg.av_freep(&customInputContext);
-            this.streamIc = null;
-            this.readFn = null;
-            this.seekFn = null;
-            this.uStream.Dispose();
-            this.uStream = null;
-            this.readStream.Dispose();
-        }
+        ffmpeg.av_freep(&streamIc->buffer);
+        var customInputContext = this.streamIc;
+        ffmpeg.av_freep(&customInputContext);
+        this.streamIc = null;
+        this.readFn = null;
+        this.seekFn = null;
+        this.uStream.Dispose();
+        this.uStream = null;
+        this.readStream.Dispose();
     }
 }
