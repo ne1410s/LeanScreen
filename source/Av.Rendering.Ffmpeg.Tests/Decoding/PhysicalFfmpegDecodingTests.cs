@@ -16,7 +16,7 @@ public class PhysicalFfmpegDecodingTests
     public void Ctor_WithNetworkStream_SetsBinariesPath()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         ffmpeg.RootPath = null;
 
         // Act
@@ -30,7 +30,7 @@ public class PhysicalFfmpegDecodingTests
     public void Ctor_WithNetworkStreamAndVerboseLevel_ReceivesVerboseMessage()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         StringWriter writer = new();
         Console.SetOut(writer);
 
@@ -47,7 +47,7 @@ public class PhysicalFfmpegDecodingTests
     public void Ctor_WithNetworkStreamAndWarningLevel_DoesNotReceiveVerboseMessage()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         StringWriter writer = new();
         Console.SetOut(writer);
 
@@ -64,7 +64,7 @@ public class PhysicalFfmpegDecodingTests
     public void Ctor_WithNetworkStreamAndVerboseLevelButNullLogger_DoesNotReceiveVerboseMessage()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         StringWriter writer = new();
         Console.SetOut(writer);
 

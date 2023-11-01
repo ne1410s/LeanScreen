@@ -78,7 +78,7 @@ public class SnapshotModuleTests
     public void SnapEvenly_ForUrlWithDefaultDestination_SavesLocally()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         var expectedDest = Directory.GetCurrentDirectory();
 
         // Act
@@ -177,7 +177,7 @@ public class SnapshotModuleTests
     public void SnapSingle_ForUrlWithDefaultDestination_SavesLocally()
     {
         // Arrange
-        const string source = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         var expectedDest = Directory.GetCurrentDirectory();
 
         // Act

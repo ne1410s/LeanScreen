@@ -46,7 +46,7 @@ public static class SnapshotModule
 
         for (var i = 0; i < times.Length; i++)
         {
-            var frame = capper.Snap(times[0]);
+            var frame = capper.Snap(times[i]);
             var itemNo = (i + 1L).FormatToUpperBound(itemCount);
             var frameNo = frame.FrameNumber.FormatToUpperBound(capper.Media.TotalFrames);
             var path = Path.Combine(di.FullName, $"n{itemNo}_f{frameNo}.jpg");
