@@ -7,6 +7,8 @@ namespace AvCtl;
 using System.Text.Json;
 using Comanche.Attributes;
 using Comanche.Services;
+using Crypt.Encoding;
+using Crypt.Hashing;
 using Crypt.Keying;
 
 /// <summary>
@@ -34,7 +36,9 @@ public static class InfoModule
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
         using var renderer = CommonUtils.GetRenderer();
         renderer.SetSource(source, key);
         return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions

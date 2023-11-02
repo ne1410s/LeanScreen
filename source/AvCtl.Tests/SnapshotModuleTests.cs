@@ -124,20 +124,20 @@ public class SnapshotModuleTests
     }
 
     [Fact]
-    public void SnapSingle_NoWriter_ThrowsException()
+    public void SnapSingleFrame_NoWriter_ThrowsException()
     {
         // Arrange
         IOutputWriter writer = null!;
 
         // Act
-        var act = () => SnapshotModule.SnapSingle(writer, null!);
+        var act = () => SnapshotModule.SnapSingleFrame(writer, null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
     }
 
     [Fact]
-    public void SnapSingle_ForFile_ProducesFileApproxFrame()
+    public void SnapSingleFrame_ForFile_ProducesFileApproxFrame()
     {
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
@@ -147,7 +147,7 @@ public class SnapshotModuleTests
         const int expectedFrame = (int)(mediaFrames * position);
 
         // Act
-        var returnDest = TestHelper.Route($"snap single -s {source} -d {destInfo.Name} -r {position}");
+        var returnDest = TestHelper.Route($"snap frame -s {source} -d {destInfo.Name} -r {position}");
         var filePath = Directory.GetFiles((string)returnDest!, "*.jpg").Single();
         var fileName = new FileInfo(filePath).Name;
         var frameNo = int.Parse(
@@ -159,14 +159,14 @@ public class SnapshotModuleTests
     }
 
     [Fact]
-    public void SnapSingle_ForCryptFile_ProducesResults()
+    public void SnapSingleFrame_ForCryptFile_ProducesResults()
     {
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
         var expectedDest = new FileInfo(source).DirectoryName;
 
         // Act
-        var returnDest = TestHelper.Route($"snap single -s {source} -ks Samples -kr xyz");
+        var returnDest = TestHelper.Route($"snap frame -s {source} -ks Samples -kr xyz");
 
         // Assert
         returnDest.Should().Be(expectedDest);
@@ -174,14 +174,14 @@ public class SnapshotModuleTests
     }
 
     [Fact]
-    public void SnapSingle_ForUrlWithDefaultDestination_SavesLocally()
+    public void SnapSingleFrame_ForUrlWithDefaultDestination_SavesLocally()
     {
         // Arrange
         const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         var expectedDest = Directory.GetCurrentDirectory();
 
         // Act
-        var returnDest = TestHelper.Route($"snap single -s {source} -r 0.75");
+        var returnDest = TestHelper.Route($"snap frame -s {source} -r 0.75");
 
         // Assert
         returnDest.Should().Be(expectedDest);

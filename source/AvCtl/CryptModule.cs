@@ -66,6 +66,36 @@ public static class CryptModule
         }
     }
 
+    /// <summary>
+    /// Encrypts a single file. The file is secured "in situ"; overwriting the
+    /// original bytes with new ones.
+    /// </summary>
+    /// <param name="writer">Output writer.</param>
+    /// <param name="source">The source file.</param>
+    /// <param name="keySource">The key source directory.</param>
+    /// <param name="keyRegex">The key source regular expression.</param>
+    /// <returns>The encrypted file name.</returns>
+    [Alias("file")]
+    public static string EncryptFile(
+        [Hidden] IOutputWriter writer,
+        [Alias("s")] string source,
+        [Alias("ks")] string? keySource = null,
+        [Alias("kr")] string? keyRegex = null)
+    {
+        _ = writer ?? throw new ArgumentNullException(nameof(writer));
+        var fi = new FileInfo(source);
+
+        var blendedInput = writer.CaptureStrings().Blend();
+        var hashes = CommonUtils.GetHashes(keySource, keyRegex);
+        var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
+
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        fi.EncryptInSitu(key);
+
+        return fi.FullName;
+    }
+
     private static void GroupByLabel(
         this FileInfo fi,
         DirectoryInfo root,

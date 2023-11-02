@@ -49,6 +49,9 @@ public static class CollateModule
         var blendedInput = writer.CaptureStrings().Blend();
         var hashes = CommonUtils.GetHashes(keySource, keyRegex);
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
+        var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
+
+        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
         var di = CommonUtils.QualifyDestination(source, destination);
         return CollateInternal(source, key, di.FullName, itemCount, columns, itemHeight);
     }
