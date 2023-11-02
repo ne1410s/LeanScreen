@@ -39,6 +39,7 @@ public class SnapshotModuleTests
 
         // Assert
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().Be(total);
+        destInfo.Delete(true);
     }
 
     [Fact]
@@ -57,6 +58,7 @@ public class SnapshotModuleTests
 
         // Assert
         actualPrefixes.Should().BeEquivalentTo(expectedPrefixes);
+        destInfo.Delete(true);
     }
 
     [Fact]
@@ -97,11 +99,12 @@ public class SnapshotModuleTests
         var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
-        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz -ih 30");
 
         // Assert
         returnDest.Should().Be(destInfo.FullName);
         Directory.GetFiles((string)returnDest!, "*.jpg").Length.Should().BeGreaterThan(0);
+        destInfo.Delete(true);
     }
 
     [Theory]
@@ -121,6 +124,7 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().NotThrow();
+        destInfo.Delete(true);
     }
 
     [Fact]
@@ -147,15 +151,14 @@ public class SnapshotModuleTests
         const int expectedFrame = (int)(mediaFrames * position);
 
         // Act
-        var returnDest = TestHelper.Route($"snap frame -s {source} -d {destInfo.Name} -r {position}");
-        var filePath = Directory.GetFiles((string)returnDest!, "*.jpg").Single();
-        var fileName = new FileInfo(filePath).Name;
+        var returnPath = TestHelper.Route($"snap frame -s {source} -d {destInfo.Name} -r {position}");
         var frameNo = int.Parse(
-            Regex.Match(fileName, "_f(?<frame>\\d+)").Groups["frame"].Value,
+            Regex.Match((string)returnPath!, "_f(?<frame>\\d+)").Groups["frame"].Value,
             CultureInfo.InvariantCulture);
 
         // Assert
         frameNo.Should().BeCloseTo(expectedFrame, 20);
+        destInfo.Delete(true);
     }
 
     [Fact]
@@ -163,14 +166,33 @@ public class SnapshotModuleTests
     {
         // Arrange
         var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
-        var expectedDest = new FileInfo(source).DirectoryName;
+        var destInfo = Directory.CreateDirectory($"pic_snap1_{Guid.NewGuid()}");
+        const string expectedFileName = "4a3a54004ec9."
+            + "0add1090e773790288e7f9e1525390799b47007ef9ea757fba22ba24807cbc36.jpg";
 
         // Act
-        var returnDest = TestHelper.Route($"snap frame -s {source} -ks Samples -kr xyz");
+        var returnPath = TestHelper.Route($"snap frame -s {source} -d {destInfo} -ks Samples -kr xyz");
 
         // Assert
-        returnDest.Should().Be(expectedDest);
-        Directory.GetFiles((string)returnDest!, "p0.3*.jpg").Length.Should().BeGreaterThan(0);
+        returnPath.Should().Be(Path.Combine(destInfo.FullName, expectedFileName));
+        destInfo.Delete(true);
+    }
+
+    [Fact]
+    public void SnapSingleFrame_ForCryptFileWithHeight_ProducesExpected()
+    {
+        // Arrange
+        var source = Path.Combine("Samples", "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4");
+        var destInfo = Directory.CreateDirectory($"pic_snap1_{Guid.NewGuid()}");
+        const string expectedFileName = "4a3a54004ec9."
+            + "86b327d4cec76cec1aa6842dce52405bb88d5cb4bb132cfd579b0f32b8ed2d87.jpg";
+
+        // Act
+        var returnPath = TestHelper.Route($"snap frame -s {source} -d {destInfo} -ks Samples -kr xyz -ih 50");
+
+        // Assert
+        returnPath.Should().Be(Path.Combine(destInfo.FullName, expectedFileName));
+        destInfo.Delete(true);
     }
 
     [Fact]
@@ -179,12 +201,12 @@ public class SnapshotModuleTests
         // Arrange
         const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
         var expectedDest = Directory.GetCurrentDirectory();
+        var expectedPath = Path.Combine(expectedDest, "p0.75_f125.jpg");
 
         // Act
-        var returnDest = TestHelper.Route($"snap frame -s {source} -r 0.75");
+        var returnPath = TestHelper.Route($"snap frame -s {source} -r 0.75");
 
         // Assert
-        returnDest.Should().Be(expectedDest);
-        Directory.GetFiles((string)returnDest!, "p0.75*.jpg").Length.Should().BeGreaterThan(0);
+        returnPath.Should().Be(expectedPath);
     }
 }

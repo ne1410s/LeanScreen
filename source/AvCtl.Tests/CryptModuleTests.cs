@@ -50,6 +50,7 @@ public class CryptModuleTests
 
         var remains = new DirectoryInfo(root).EnumerateMedia(MediaTypes.AnyMedia, false);
         remains.Should().BeEmpty();
+        Directory.Delete(root, true);
     }
 
     [Fact]
@@ -61,6 +62,7 @@ public class CryptModuleTests
 
         // Act
         CryptModule.EncryptMedia(mockWriter.Object, root);
+        Directory.Delete(root, true);
 
         // Assert
         mockWriter.Verify(
@@ -84,9 +86,41 @@ public class CryptModuleTests
         CryptModule.EncryptMedia(consoleWriter.Object, root, groupLabelLength: groupLength);
         var creationCheck = File.Exists(expectedLocation);
         var removalCheck = !File.Exists(expectedRemoval);
+        Directory.Delete(root, true);
 
         // Assert
         creationCheck.Should().BeTrue();
         removalCheck.Should().BeTrue();
+    }
+
+    [Fact]
+    public void EncryptFile_NoWriter_ThrowsException()
+    {
+        // Arrange
+        IOutputWriter writer = null!;
+
+        // Act
+        var act = () => CryptModule.EncryptFile(writer, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
+    public void EncryptFile_WithSource_ReturnsExpected()
+    {
+        // Arrange
+        var root = TestHelper.CloneSamples();
+        var mockWriter = new Mock<IOutputWriter>();
+        var inputPath = Path.Combine(root, "sample.avi");
+        const string expectedName = "0f5bed56f862512644ec87b7db6afc7299e2195c5bf9b27bcc631adb16785ed9.avi";
+        var expected = new FileInfo(Path.Combine(root, expectedName)).FullName;
+
+        // Act
+        var returnPath = CryptModule.EncryptFile(mockWriter.Object, inputPath);
+        Directory.Delete(root, true);
+
+        // Assert
+        returnPath.Should().Be(expected);
     }
 }

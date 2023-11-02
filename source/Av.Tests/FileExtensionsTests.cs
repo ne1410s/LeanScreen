@@ -60,13 +60,14 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingMediaType_CountExpected(MediaTypes types, int expectedCount)
     {
         // Arrange
-        var di = new DirectoryInfo("Samples");
+        var di = CopyAll(new DirectoryInfo("Samples"));
 
         // Act
         var media = di.EnumerateMedia(types, recurse: true);
 
         // Assert
         media.Count().Should().Be(expectedCount);
+        di.Delete(true);
     }
 
     [Theory]
@@ -76,13 +77,14 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingSecureFlag_CountExpected(bool? secure, int expectedCount)
     {
         // Arrange
-        var di = new DirectoryInfo("Samples");
+        var di = CopyAll(new DirectoryInfo("Samples"));
 
         // Act
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure, true);
 
         // Assert
         media.Count().Should().Be(expectedCount);
+        di.Delete(true);
     }
 
     [Theory]
@@ -91,13 +93,14 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingRecurseFlag_CountExpected(bool recurse, int expectedCount)
     {
         // Arrange
-        var di = new DirectoryInfo("Samples");
+        var di = CopyAll(new DirectoryInfo("Samples"));
 
         // Act
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, recurse: recurse);
 
         // Assert
         media.Count().Should().Be(expectedCount);
+        di.Delete(true);
     }
 
     [Fact]
@@ -166,5 +169,23 @@ public class FileExtensionsTests
 
         // Assert
         source.GetFiles().Should().BeEmpty();
+    }
+
+    private static DirectoryInfo CopyAll(DirectoryInfo source, DirectoryInfo? target = null)
+    {
+        target ??= new($"{source.Name}_{Guid.NewGuid()}");
+        target.Create();
+
+        foreach (var di in source.GetDirectories())
+        {
+            CopyAll(di, target.CreateSubdirectory(di.Name));
+        }
+
+        foreach (var fi in source.GetFiles())
+        {
+            fi.CopyTo(Path.Combine(target.FullName, fi.Name));
+        }
+
+        return target;
     }
 }

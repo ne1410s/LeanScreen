@@ -95,6 +95,7 @@ public class CollateModuleTests
         mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
         var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
         generated.Length.Should().Be(3);
+        Directory.Delete(root, true);
     }
 
     [Fact]
@@ -106,6 +107,7 @@ public class CollateModuleTests
 
         // Act
         CollateModule.CollateManyEvenly(mockWriter.Object, root);
+        Directory.Delete(root, true);
 
         // Assert
         mockWriter.Verify(

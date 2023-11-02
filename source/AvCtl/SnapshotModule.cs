@@ -42,7 +42,7 @@ public static class SnapshotModule
         [Alias("kr")] string? keyRegex = null,
         [Alias("d")]string? destination = null,
         [Alias("t")]int itemCount = 24,
-        [Alias("h")] int? itemHeight = null)
+        [Alias("ih")] int? itemHeight = null)
     {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var blendedInput = writer.CaptureStrings().Blend();
@@ -87,7 +87,7 @@ public static class SnapshotModule
         [Alias("kr")] string? keyRegex = null,
         [Alias("d")] string? destination = null,
         [Alias("r")] double relative = .3,
-        [Alias("h")] int? itemHeight = null)
+        [Alias("ih")] int? itemHeight = null)
     {
         _ = writer ?? throw new ArgumentNullException(nameof(writer));
         var blendedInput = writer.CaptureStrings().Blend();
