@@ -27,6 +27,20 @@ public class SnapshotModuleTests
     }
 
     [Fact]
+    public void SnapEvenly_WithWriter_WritesExpected()
+    {
+        // Arrange
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        var act = () => SnapshotModule.SnapEvenly(mockWriter.Object, "blah");
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>();
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+    }
+
+    [Fact]
     public void SnapEvenly_ForFileWithCustomTotal_ProducesSameTotal()
     {
         // Arrange
@@ -138,6 +152,20 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
+    }
+
+    [Fact]
+    public void SnapSingleFrame_WithWriter_WritesExpected()
+    {
+        // Arrange
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        var act = () => SnapshotModule.SnapSingleFrame(mockWriter.Object, "blah");
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>();
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
     }
 
     [Fact]

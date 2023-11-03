@@ -28,6 +28,20 @@ public class CollateModuleTests
     }
 
     [Fact]
+    public void CollateEvenly_WithFiles_ReportsProgress()
+    {
+        // Arrange
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        var act = () => CollateModule.CollateEvenly(mockWriter.Object, "blah");
+
+        // Assert
+        act.Should().ThrowExactly<InvalidOperationException>();
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+    }
+
+    [Fact]
     public void CollateEvenly_ForCryptFile_ProducesSecureResult()
     {
         // Arrange

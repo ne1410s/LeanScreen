@@ -107,6 +107,20 @@ public class CryptModuleTests
     }
 
     [Fact]
+    public void EncryptFile_WithWriter_WritesExpected()
+    {
+        // Arrange
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        var act = () => CryptModule.EncryptFile(mockWriter.Object, "blah");
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>();
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+    }
+
+    [Fact]
     public void EncryptFile_WithSource_ReturnsExpected()
     {
         // Arrange

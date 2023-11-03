@@ -24,6 +24,20 @@ public class InfoModuleTests
         act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(writer));
     }
 
+    [Fact]
+    public void GetBasicInfo_WithWriter_ThrowsException()
+    {
+        // Arrange
+        var mockWriter = new Mock<IOutputWriter>();
+
+        // Act
+        var act = () => InfoModule.GetBasicInfo(mockWriter.Object, "blah");
+
+        // Assert
+        act.Should().Throw<NullReferenceException>();
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+    }
+
     [Theory]
     [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
     [InlineData("sample.avi")]
