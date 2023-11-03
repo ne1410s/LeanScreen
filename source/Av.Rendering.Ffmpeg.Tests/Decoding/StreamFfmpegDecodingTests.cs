@@ -72,7 +72,7 @@ public class StreamFfmpegDecodingTests
         var decoding = new StreamFfmpegDecoding(new SimpleFileStream(fi));
 
         // Assert
-        decoding.Duration.Ticks.Should().Be(648960000);
+        decoding.Duration.Ticks.Should().Be(100000000);
     }
 
     [Fact]

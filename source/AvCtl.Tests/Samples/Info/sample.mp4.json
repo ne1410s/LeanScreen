@@ -1,9 +1,9 @@
 ﻿{
-  "Duration": "00:01:04.8960000",
+  "Duration": "00:00:10",
   "Dimensions": {
-    "Width": 320,
-    "Height": 240
+    "Width": 640,
+    "Height": 360
   },
-  "TotalFrames": 973,
-  "FrameRate": 15
+  "TotalFrames": 300,
+  "FrameRate": 30
 }

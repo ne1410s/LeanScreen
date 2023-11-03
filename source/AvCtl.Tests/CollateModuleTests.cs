@@ -66,7 +66,7 @@ public class CollateModuleTests
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
         var destInfo = Directory.CreateDirectory("col_6cols");
-        const string expectedMd5Hex = "9d4483d67c4af8ffba8f9dba26144059";
+        const string expectedMd5Hex = "d941bdcda3112f3466d0059bac7198f9";
 
         // Act
         var returnPath = (string)TestHelper.Route($"collate evenly -s {source} -d {destInfo.Name} -c 6")!;

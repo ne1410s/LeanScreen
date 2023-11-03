@@ -76,7 +76,7 @@ public class CryptModuleTests
     {
         // Arrange
         const int groupLength = 3;
-        const string fileName = "44e339204806870505a2a448115b2e554080cee37ddfb46949e47f1c586b011f.mkv";
+        const string fileName = "4349535bdc7d5452054e1fc4485a566f6ed54337a90f9d37499031eee427a809.mkv";
         var root = TestHelper.CloneSamples();
         var expectedLocation = Path.Combine(root, fileName[..groupLength], fileName);
         var expectedRemoval = Path.Combine(root, fileName);
@@ -127,7 +127,7 @@ public class CryptModuleTests
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
         var inputPath = Path.Combine(root, "sample.avi");
-        const string expectedName = "0f5bed56f862512644ec87b7db6afc7299e2195c5bf9b27bcc631adb16785ed9.avi";
+        const string expectedName = "471d7c1d2426b48c6115cb1c364fdfcaa65afcc8dd9cd4301121d28794e328ec.avi";
         var expected = new FileInfo(Path.Combine(root, expectedName)).FullName;
 
         // Act

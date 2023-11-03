@@ -174,7 +174,7 @@ public class SnapshotModuleTests
         // Arrange
         var source = Path.Combine("Samples", "sample.mp4");
         var destInfo = Directory.CreateDirectory($"pic_snap1_{Guid.NewGuid()}");
-        const int mediaFrames = 973;
+        const int mediaFrames = 300;
         const double position = 0.5;
         const int expectedFrame = (int)(mediaFrames * position);
 

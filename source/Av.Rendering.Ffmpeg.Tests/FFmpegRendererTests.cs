@@ -52,10 +52,10 @@ public class FFmpegRendererTests
     }
 
     [Theory]
-    [InlineData(1, 1, "d46e041b07eea036492b33315f9bbe1d")]
-    [InlineData(500, 100, "3b1b21c9cf626ae54c2840c32a5b3ad6")]
-    [InlineData(100, 500, "126d8039f3d4ac0282fa0ec9e9e24a4b")]
-    [InlineData(0, 72, "2dd40cdc29f03f09523dfcd2185d396d")]
+    [InlineData(1, 1, "2e7f411e0497d28729d257b46d9a29c1")]
+    [InlineData(500, 100, "f3b76d9a332737b4e594c8750eb4dd16")]
+    [InlineData(100, 500, "d0b76d42f1c7de683b271011f0ac898b")]
+    [InlineData(0, 72, "79f4d1aad4e61218528e6c6c8e5a3818")]
     public void RenderAt_VaryingSize_ReturnsExpected(int width, int height, string expectedMd5Hex)
     {
         // Arrange
@@ -73,7 +73,7 @@ public class FFmpegRendererTests
     }
 
     [Theory]
-    [InlineData("sample.mkv", 146.222, "be5b4daac7a633cf5f9ea7c9575273ad")]
+    [InlineData("sample.mkv", 146.222, "505a6dd01934f9be1208237ee4c5802a")]
     public void RenderAt_VaryingPosition_ReturnsExpected(string file, double frameNo, string expectedMd5Hex)
     {
         // Arrange
@@ -117,9 +117,9 @@ public class FFmpegRendererTests
     /// <param name="expectedTotalFrames">Expected total frames.</param>
     /// <param name="frameCsv">Expected frames.</param>
     [Theory]
-    [InlineData("sample.avi", 10, 345, "2,35,74,112,150,189,226,265,304,342")]
-    [InlineData("sample.mkv", 10, 658, "153,153,153,216,289,362,436,509,582,655")]
-    [InlineData("sample.mp4", 10, 973, "0,106,215,323,431,539,647,755,864,972")]
+    [InlineData("sample.avi", 10, 901, "2, 96, 196, 296, 396, 496, 596, 697, 797, 0")]
+    [InlineData("sample.mkv", 10, 400, "0, 40, 85, 129, 174, 218, 263, 307, 352, 396")]
+    [InlineData("sample.mp4", 10, 300, "0, 29, 63, 96, 129, 163, 196, 229, 263, 296")]
     public void RenderAt_FrameSweep_YieldsGoodFrameStats(
         string sampleFile,
         int frameCount,
