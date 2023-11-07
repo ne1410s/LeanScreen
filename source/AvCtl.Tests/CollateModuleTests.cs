@@ -4,6 +4,7 @@
 
 namespace AvCtl.Tests;
 
+using Comanche.Models;
 using Comanche.Services;
 using Crypt.Encoding;
 using Crypt.Hashing;
@@ -38,7 +39,7 @@ public class CollateModuleTests
 
         // Assert
         act.Should().ThrowExactly<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
     }
 
     [Fact]
@@ -95,18 +96,19 @@ public class CollateModuleTests
         // Arrange
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
+        const WriteStyle style = WriteStyle.Default;
 
         // Act
         CollateModule.CollateManyEvenly(mockWriter.Object, root);
 
         // Assert
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
-        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Collation: End", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style));
+        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Collation: End", style), Times.Once());
         var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
         generated.Length.Should().Be(3);
         Directory.Delete(root, true);
@@ -127,6 +129,6 @@ public class CollateModuleTests
         mockWriter.Verify(
             m => m.WriteLine(
                 It.Is<string>(s => s.StartsWith("Collation: Start")),
-                false));
+                WriteStyle.Default));
     }
 }

@@ -7,11 +7,12 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsPackable>false</IsPackable>
+	<VersionPrefix>1.1.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Analyse" Version="1.0.18" />
-    <PackageReference Include="Comanche" Version="1.1.7" />
+    <PackageReference Include="Comanche" Version="1.2.1-pre.32" />
   </ItemGroup>
 
   <ItemGroup>

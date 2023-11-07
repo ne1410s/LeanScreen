@@ -6,6 +6,7 @@ namespace AvCtl.Tests;
 
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Comanche.Models;
 using Comanche.Services;
 
 /// <summary>
@@ -37,7 +38,7 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
     }
 
     [Fact]
@@ -113,7 +114,7 @@ public class SnapshotModuleTests
         var destInfo = Directory.CreateDirectory("pic_crypt");
 
         // Act
-        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz -ih 30");
+        var returnDest = TestHelper.Route($"snap evenly -s {source} -d {destInfo.Name} -ks Samples -kr xyz -h 30");
 
         // Assert
         returnDest.Should().Be(destInfo.FullName);
@@ -165,7 +166,7 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
     }
 
     [Fact]
@@ -216,7 +217,7 @@ public class SnapshotModuleTests
             + "86b327d4cec76cec1aa6842dce52405bb88d5cb4bb132cfd579b0f32b8ed2d87.jpg";
 
         // Act
-        var returnPath = TestHelper.Route($"snap frame -s {source} -d {destInfo} -ks Samples -kr xyz -ih 50");
+        var returnPath = TestHelper.Route($"snap frame -s {source} -d {destInfo} -ks Samples -kr xyz -h 50");
 
         // Assert
         returnPath.Should().Be(Path.Combine(destInfo.FullName, expectedFileName));

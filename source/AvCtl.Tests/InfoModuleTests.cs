@@ -4,6 +4,7 @@
 
 namespace AvCtl.Tests;
 
+using Comanche.Models;
 using Comanche.Services;
 
 /// <summary>
@@ -35,7 +36,7 @@ public class InfoModuleTests
 
         // Assert
         act.Should().Throw<NullReferenceException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
     }
 
     [Theory]

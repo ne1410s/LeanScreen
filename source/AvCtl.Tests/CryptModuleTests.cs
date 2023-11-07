@@ -6,6 +6,7 @@ namespace AvCtl.Tests;
 
 using Av;
 using Av.Models;
+using Comanche.Models;
 using Comanche.Services;
 
 /// <summary>
@@ -32,20 +33,21 @@ public class CryptModuleTests
         // Arrange
         var root = TestHelper.CloneSamples();
         var mockWriter = new Mock<IOutputWriter>();
+        const WriteStyle style = WriteStyle.Default;
 
         // Act
         CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
-        mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", false), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Encryption: End", false), Times.Once());
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style));
+        mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", style), Times.Once());
+        mockWriter.Verify(m => m.WriteLine("Encryption: End", style), Times.Once());
         mockWriter.Verify(
-            m => m.WriteLine(It.Is<string>(s => s.StartsWith(" - Not secured: ")), false),
+            m => m.WriteLine(It.Is<string>(s => s.StartsWith(" - Not secured: ")), style),
             Times.Exactly(3));
 
         var remains = new DirectoryInfo(root).EnumerateMedia(MediaTypes.AnyMedia, false);
@@ -68,7 +70,7 @@ public class CryptModuleTests
         mockWriter.Verify(
             m => m.WriteLine(
                 It.Is<string>(s => s.StartsWith("Encryption: Start")),
-                false));
+                WriteStyle.Default));
     }
 
     [Fact]
@@ -117,7 +119,7 @@ public class CryptModuleTests
 
         // Assert
         act.Should().Throw<FileNotFoundException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), false));
+        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
     }
 
     [Fact]
