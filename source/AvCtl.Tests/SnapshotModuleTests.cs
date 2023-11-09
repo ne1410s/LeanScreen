@@ -38,7 +38,7 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default, true));
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class SnapshotModuleTests
 
         // Assert
         act.Should().Throw<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default, true));
     }
 
     [Fact]

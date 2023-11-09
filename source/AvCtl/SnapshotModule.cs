@@ -50,7 +50,7 @@ public static class SnapshotModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
         var di = CommonUtils.QualifyDestination(source, destination);
         var thumbSize = itemHeight.HasValue ? new Size2D(0, itemHeight.Value) : (Size2D?)null;
         using var capper = CommonUtils.GetCapper(source, key, thumbSize);
@@ -95,7 +95,7 @@ public static class SnapshotModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
         var di = CommonUtils.QualifyDestination(source, destination);
         var thumbSize = itemHeight.HasValue ? new Size2D(0, itemHeight.Value) : (Size2D?)null;
         using var capper = CommonUtils.GetCapper(source, key, thumbSize);

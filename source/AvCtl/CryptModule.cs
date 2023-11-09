@@ -50,19 +50,19 @@ public static class CryptModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
-        writer.WriteLine($"Encryption: Start - Files: {total}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
+        writer.Write($"Encryption: Start - Files: {total}", line: true);
         foreach (var item in items)
         {
             item.EncryptInSitu(key);
             item.GroupByLabel(di, groupLabelLength);
-            writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
+            writer.Write($"Done: {++done * 100.0 / total:N2}%", line: true);
         }
 
-        writer.WriteLine("Encryption: End");
+        writer.Write("Encryption: End", line: true);
         foreach (var notDone in di.EnumerateMedia(MediaTypes.NonMedia, false, recurse, take: int.MaxValue))
         {
-            writer.WriteLine($" - Not secured: {notDone.FullName}");
+            writer.Write($" - Not secured: {notDone.FullName}", line: true);
         }
     }
 
@@ -90,7 +90,7 @@ public static class CryptModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
         fi.EncryptInSitu(key);
 
         return fi.FullName;

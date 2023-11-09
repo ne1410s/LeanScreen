@@ -36,7 +36,7 @@ public class InfoModuleTests
 
         // Assert
         act.Should().Throw<NullReferenceException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default, true));
     }
 
     [Theory]

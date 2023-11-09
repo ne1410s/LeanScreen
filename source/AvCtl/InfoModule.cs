@@ -38,7 +38,7 @@ public static class InfoModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
         using var renderer = CommonUtils.GetRenderer();
         renderer.SetSource(source, key);
         return JsonSerializer.Serialize(renderer.Media, new JsonSerializerOptions

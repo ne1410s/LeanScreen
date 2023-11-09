@@ -51,7 +51,7 @@ public static class CollateModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
         var di = CommonUtils.QualifyDestination(source, destination);
         return CollateInternal(source, key, di.FullName, itemCount, columns, itemHeight);
     }
@@ -88,7 +88,7 @@ public static class CollateModule
         var key = new DefaultKeyDeriver().DeriveKey(blendedInput, hashes);
         var md5Base64 = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
 
-        writer.WriteLine($"Keys: {hashes.Length}, Check: {md5Base64}");
+        writer.Write($"Keys: {hashes.Length}, Check: {md5Base64}", line: true);
 
         var di = CommonUtils.QualifyDestination(source, destination);
         var diSource = new DirectoryInfo(source);
@@ -96,14 +96,14 @@ public static class CollateModule
         var total = items.Count();
         var done = 0;
 
-        writer.WriteLine($"Collation: Start - Files: {total}");
+        writer.Write($"Collation: Start - Files: {total}", line: true);
         foreach (var file in items)
         {
             CollateInternal(file.FullName, key, di.FullName, itemCount, columns, itemHeight);
-            writer.WriteLine($"Done: {++done * 100.0 / total:N2}%");
+            writer.Write($"Done: {++done * 100.0 / total:N2}%", line: true);
         }
 
-        writer.WriteLine("Collation: End");
+        writer.Write("Collation: End", line: true);
     }
 
     private static string CollateInternal(

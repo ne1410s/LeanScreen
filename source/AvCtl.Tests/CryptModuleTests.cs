@@ -39,15 +39,15 @@ public class CryptModuleTests
         CryptModule.EncryptMedia(mockWriter.Object, root);
 
         // Assert
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style));
-        mockWriter.Verify(m => m.WriteLine("Encryption: Start - Files: 4", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Encryption: End", style), Times.Once());
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style, true));
+        mockWriter.Verify(m => m.Write("Encryption: Start - Files: 4", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 25.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 50.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 75.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 100.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Encryption: End", style, true), Times.Once());
         mockWriter.Verify(
-            m => m.WriteLine(It.Is<string>(s => s.StartsWith(" - Not secured: ")), style),
+            m => m.Write(It.Is<string>(s => s.StartsWith(" - Not secured: ")), style, true),
             Times.Exactly(3));
 
         var remains = new DirectoryInfo(root).EnumerateMedia(MediaTypes.AnyMedia, false);
@@ -68,9 +68,10 @@ public class CryptModuleTests
 
         // Assert
         mockWriter.Verify(
-            m => m.WriteLine(
+            m => m.Write(
                 It.Is<string>(s => s.StartsWith("Encryption: Start")),
-                WriteStyle.Default));
+                WriteStyle.Default,
+                true));
     }
 
     [Fact]
@@ -119,7 +120,7 @@ public class CryptModuleTests
 
         // Assert
         act.Should().Throw<FileNotFoundException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default, true));
     }
 
     [Fact]

@@ -39,7 +39,7 @@ public class CollateModuleTests
 
         // Assert
         act.Should().ThrowExactly<InvalidOperationException>();
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default));
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), WriteStyle.Default, true));
     }
 
     [Fact]
@@ -102,13 +102,13 @@ public class CollateModuleTests
         CollateModule.CollateManyEvenly(mockWriter.Object, root);
 
         // Assert
-        mockWriter.Verify(m => m.WriteLine(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style));
-        mockWriter.Verify(m => m.WriteLine("Collation: Start - Files: 4", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 25.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 50.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 75.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Done: 100.00%", style), Times.Once());
-        mockWriter.Verify(m => m.WriteLine("Collation: End", style), Times.Once());
+        mockWriter.Verify(m => m.Write(It.Is<string>(s => s.StartsWith("Keys: 0, Check: ")), style, true));
+        mockWriter.Verify(m => m.Write("Collation: Start - Files: 4", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 25.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 50.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 75.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Done: 100.00%", style, true), Times.Once());
+        mockWriter.Verify(m => m.Write("Collation: End", style, true), Times.Once());
         var generated = new DirectoryInfo(root).GetFiles("sample.*v*.jpg", SearchOption.AllDirectories);
         generated.Length.Should().Be(3);
         Directory.Delete(root, true);
@@ -127,8 +127,9 @@ public class CollateModuleTests
 
         // Assert
         mockWriter.Verify(
-            m => m.WriteLine(
+            m => m.Write(
                 It.Is<string>(s => s.StartsWith("Collation: Start")),
-                WriteStyle.Default));
+                WriteStyle.Default,
+                true));
     }
 }
