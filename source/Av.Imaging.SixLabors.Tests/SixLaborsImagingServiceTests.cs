@@ -4,9 +4,9 @@
 
 namespace Av.Imaging.SixLabors.Tests;
 
-using System.Security.Cryptography;
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Rendering;
+using Crypt.Hashing;
 
 /// <summary>
 /// Tests for the <see cref="SixLaborsImagingService"/>.
@@ -38,12 +38,12 @@ public class SixLaborsImagingServiceTests
     {
         // Arrange
         var sut = new SixLaborsImagingService();
-        var str = new MemoryStream(new byte[]
-        {
+        var str = new MemoryStream(
+        [
             66, 77, 58, 0, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 40, 0, 0, 0, 1,
             0, 0, 0, 1, 0, 0, 0, 1, 0, 24, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 28, 237, 0,
-        });
+        ]);
 
         // Act
         var result = await sut.ResizeImage(str, new Size2D { Width = 2 });
@@ -60,7 +60,7 @@ public class SixLaborsImagingServiceTests
         var sut = new SixLaborsImagingService();
 
         // Act
-        var act = () => sut.Collate(null);
+        var act = () => sut.Collate(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>()
@@ -93,7 +93,7 @@ public class SixLaborsImagingServiceTests
 
         // Act
         var ms = sut.Collate(Enumerable.Repeat(frame, 9).Append(bigFrame));
-        var sha256 = SHA256.Create().ComputeHash(ms);
+        var sha256 = ms.ToArray().Hash(HashType.Sha256);
 
         // Assert
         sha256.Should().BeEquivalentTo(expectedSha256);
@@ -122,8 +122,8 @@ public class SixLaborsImagingServiceTests
         };
 
         // Act
-        var ms = sut.Collate(new[] { frame }, new() { ItemSize = new(12, 0) });
-        var sha256 = SHA256.Create().ComputeHash(ms);
+        var ms = sut.Collate([frame], new() { ItemSize = new(12, 0) });
+        var sha256 = ms.ToArray().Hash(HashType.Sha256);
 
         // Assert
         sha256.Should().BeEquivalentTo(expectedSha256);

@@ -17,7 +17,7 @@ public class UStreamInternalTests
     public void Dispose_WithNullStream_DoesNotError()
     {
         // Arrange
-        var sut = new UStreamInternal(null!);
+        using var sut = new UStreamInternal(null!);
 
         // Act
         var act = () => sut.Dispose();
@@ -46,7 +46,8 @@ public class UStreamInternalTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
-        var sut = new UStreamInternal(new SimpleFileStream(fi), mockCopier.Object);
+        using var str = new SimpleFileStream(fi);
+        using var sut = new UStreamInternal(str, mockCopier.Object);
         sut.SeekUnsafe(default, fi.Length, 0);
 
         // Act
@@ -65,7 +66,8 @@ public class UStreamInternalTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
-        var sut = new UStreamInternal(new SimpleFileStream(fi), mockCopier.Object);
+        using var str = new SimpleFileStream(fi);
+        using var sut = new UStreamInternal(str, mockCopier.Object);
 
         // Act
         _ = sut.ReadUnsafe(default, default, 1);
@@ -80,7 +82,8 @@ public class UStreamInternalTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
-        var sut = new UStreamInternal(new SimpleFileStream(fi));
+        using var str = new SimpleFileStream(fi);
+        using var sut = new UStreamInternal(str);
         var expected = ffmpeg.AVERROR_EOF;
 
         // Act
@@ -97,7 +100,7 @@ public class UStreamInternalTests
     {
         // Arrange
         var innerMock = new Mock<ISimpleReadStream>();
-        var sut = new UStreamInternal(innerMock.Object);
+        using var sut = new UStreamInternal(innerMock.Object);
         const long position = 12;
 
         // Act
@@ -114,7 +117,8 @@ public class UStreamInternalTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
 
         // Act
-        var sut = new UStreamInternal(new SimpleFileStream(fi));
+        using var str = new SimpleFileStream(fi);
+        using var sut = new UStreamInternal(str);
 
         // Assert
         sut.CanSeek.Should().BeTrue();

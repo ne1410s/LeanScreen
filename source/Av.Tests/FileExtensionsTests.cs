@@ -4,7 +4,7 @@
 
 namespace Av.Tests;
 
-using Av.Models;
+using Av.Common;
 
 /// <summary>
 /// Tests for the <see cref="FileExtensions"/>.
@@ -101,74 +101,6 @@ public class FileExtensionsTests
         // Assert
         media.Count().Should().Be(expectedCount);
         di.Delete(true);
-    }
-
-    [Fact]
-    public void EncryptMediaTo_NullTarget_ThrowsException()
-    {
-        // Arrange
-        var di = new DirectoryInfo("Samples");
-
-        // Act
-        var act = () => di.EncryptMediaTo(null, Array.Empty<byte>());
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .Which.ParamName.Should().Be("target");
-    }
-
-    [Fact]
-    public void EncryptMediaTo_WithSortLength_GeneratesExpected()
-    {
-        // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file.png"));
-        const string expectedName = "6b0ea016cd3a043a496502126ad46ba80448b207a642831e19166b64de81ec13.png";
-
-        // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 }, sortFolderLength: 3);
-        var exists = File.Exists(Path.Combine(target.Name, "6b0", expectedName));
-
-        // Assert
-        exists.Should().BeTrue();
-    }
-
-    [Fact]
-    public void EncryptMediaTo_ZeroSortLength_GeneratesExpected()
-    {
-        // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file.png"));
-        const string expectedName = "6b0ea016cd3a043a496502126ad46ba80448b207a642831e19166b64de81ec13.png";
-
-        // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 }, sortFolderLength: 0);
-        var exists = File.Exists(Path.Combine(target.Name, expectedName));
-
-        // Assert
-        exists.Should().BeTrue();
-    }
-
-    [Fact]
-    public void EncryptMediaTo_WithDuplicates_DoesNotError()
-    {
-        // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file1.png"));
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file2.png"));
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file3.png"));
-
-        // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 });
-
-        // Assert
-        source.GetFiles().Should().BeEmpty();
     }
 
     private static DirectoryInfo CopyAll(DirectoryInfo source, DirectoryInfo? target = null)

@@ -6,7 +6,7 @@ namespace Av.Rendering.Ffmpeg.Decoding;
 
 using System;
 using System.Collections.Generic;
-using Av.Abstractions.Shared;
+using Av.Common;
 using FFmpeg.AutoGen;
 
 /// <summary>

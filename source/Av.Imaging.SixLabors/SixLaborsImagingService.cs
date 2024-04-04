@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Av.Abstractions.Imaging;
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Imaging;
+using Av.Rendering;
 using global::SixLabors.ImageSharp;
 using global::SixLabors.ImageSharp.Formats.Jpeg;
 using global::SixLabors.ImageSharp.PixelFormats;
@@ -60,7 +60,7 @@ public class SixLaborsImagingService : IImagingService
         foreach (var frame in frames)
         {
             var inSize = frame.Dimensions;
-            var item = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes, inSize.Width, inSize.Height);
+            var item = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes.ToArray(), inSize.Width, inSize.Height);
             var coords = map.Coordinates[iterIndex++];
             item.Resize(map.ItemSize);
             canvas.Mutate(o => o

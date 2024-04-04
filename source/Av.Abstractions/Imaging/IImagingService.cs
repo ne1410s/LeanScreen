@@ -2,13 +2,13 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Abstractions.Imaging;
+namespace Av.Imaging;
 
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Rendering;
 
 /// <summary>
 /// Implementation for image services.

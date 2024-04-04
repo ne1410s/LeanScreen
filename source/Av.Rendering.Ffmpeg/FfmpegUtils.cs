@@ -71,7 +71,7 @@ public static class FfmpegUtils
     /// <returns>A timespan.</returns>
     public static TimeSpan ToTimeSpan(this double pts, AVRational timeBase)
     {
-        if (Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
+        if ((int)Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
         {
             return TimeSpan.Zero;
         }

@@ -6,35 +6,43 @@ namespace Av.Rendering.Ffmpeg;
 
 using System;
 using System.IO;
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Rendering;
 using Av.Rendering.Ffmpeg.Decoding;
-using Crypt.IO;
 using Crypt.Streams;
 
 /// <summary>
 /// Ffmpeg frame renderer.
 /// </summary>
-public sealed class FfmpegRenderer : IRenderingService
+public sealed class FfmpegRenderer : IRenderingSession
 {
-    private IFfmpegDecodingSession decoder;
-    private FfmpegConverter converter;
+    private readonly IFfmpegDecodingSession decoder;
+    private readonly FfmpegConverter converter;
 
-    /// <inheritdoc/>
-    public MediaInfo Media { get; private set; }
-
-    /// <inheritdoc/>
-    public Size2D ThumbSize { get; private set; }
-
-    /// <inheritdoc/>
-    public void SetSource(string filePath, byte[] key, Size2D? thumbSize = null)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FfmpegRenderer"/> class.
+    /// </summary>
+    /// <param name="stream">The source stream.</param>
+    /// <param name="salt">The salt.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="height">The height.</param>
+    public FfmpegRenderer(Stream stream, byte[] salt, byte[] key, int? height)
     {
-        var codec = GetDecoder(filePath, key);
+        var readStream = salt?.Length > 0
+            ? new CryptoBlockReadStream(stream, salt, key)
+            : new BlockReadStream(stream);
+        var codec = new StreamFfmpegDecoding(readStream);
         this.decoder = codec;
-        this.ThumbSize = thumbSize == null ? codec.Dimensions : codec.Dimensions.ResizeTo(thumbSize.Value);
+        this.ThumbSize = height == null ? codec.Dimensions : codec.Dimensions.ResizeTo(new() { Height = height.Value });
         this.Media = new(codec.Duration, codec.Dimensions, codec.TotalFrames, codec.FrameRate);
         this.converter = new(codec.Dimensions, codec.PixelFormat, this.ThumbSize);
     }
+
+    /// <inheritdoc/>
+    public MediaInfo Media { get; }
+
+    /// <inheritdoc/>
+    public Size2D ThumbSize { get; }
 
     /// <inheritdoc/>
     public RenderedFrame RenderAt(TimeSpan position)
@@ -59,13 +67,5 @@ public sealed class FfmpegRenderer : IRenderingService
     {
         this.converter.Dispose();
         this.decoder.Dispose();
-    }
-
-    private static IFfmpegDecodingSession GetDecoder(string source, byte[] key = null)
-    {
-        var fi = new FileInfo(source);
-        return fi.IsSecure()
-            ? new StreamFfmpegDecoding(new CryptoBlockReadStream(fi, key))
-            : new PhysicalFfmpegDecoding(source);
     }
 }

@@ -5,7 +5,7 @@
 namespace Av.Tests;
 
 /// <summary>
-/// Tests for the <see cref="ThumbingExtensions"/>.
+/// Tests for the <see cref="FrameExtensions"/>.
 /// </summary>
 public class ThumbingExtensionsTests
 {

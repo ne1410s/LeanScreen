@@ -4,7 +4,7 @@
 
 namespace Av.Abstractions.Tests.Shared;
 
-using Av.Abstractions.Shared;
+using Av.Common;
 
 /// <summary>
 /// Tests for the <see cref="Size2D"/>.

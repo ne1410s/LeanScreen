@@ -5,7 +5,7 @@
 namespace Av.Rendering.Ffmpeg.Tests;
 
 using System.Reflection;
-using Av.Abstractions.Shared;
+using Av.Common;
 
 /// <summary>
 /// Tests for the <see cref="FfmpegConverter"/>.
@@ -56,10 +56,10 @@ public class FfmpegConverterTests
         // Arrange
         FfmpegUtils.SetupBinaries();
         var size = new Size2D(1, 1);
-        var sut = new FfmpegConverter(size, default, size);
+        using var sut = new FfmpegConverter(size, default, size);
 
         // Act
-        var act = () => sut.Dispose();
+        var act = sut.Dispose;
 
         // Assert
         act.Should().NotThrow();

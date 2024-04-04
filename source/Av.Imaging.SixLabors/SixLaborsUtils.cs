@@ -4,7 +4,7 @@
 
 namespace Av.Imaging.SixLabors;
 
-using Av.Abstractions.Shared;
+using Av.Common;
 using global::SixLabors.ImageSharp;
 using global::SixLabors.ImageSharp.Processing;
 

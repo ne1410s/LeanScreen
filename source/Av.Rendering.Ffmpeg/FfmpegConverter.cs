@@ -6,7 +6,7 @@ namespace Av.Rendering.Ffmpeg;
 
 using System;
 using System.Runtime.InteropServices;
-using Av.Abstractions.Shared;
+using Av.Common;
 using FFmpeg.AutoGen;
 
 /// <summary>

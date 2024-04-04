@@ -5,7 +5,7 @@
 namespace Av.Tests;
 
 using System.Globalization;
-using Av.Models;
+using Av.Common;
 
 /// <summary>
 /// Tests for the <see cref="FormatExtensions"/>.

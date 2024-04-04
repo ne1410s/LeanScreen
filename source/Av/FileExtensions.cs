@@ -8,15 +8,36 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Av.Models;
+using System.Text.RegularExpressions;
+using System.Text;
+using Av.Common;
+using Crypt.Encoding;
+using Crypt.Hashing;
 using Crypt.IO;
+using Crypt.Keying;
 
 /// <summary>
-/// Extensions for <see cref="FileInfo"/>.
+/// File extensions.
 /// </summary>
 public static class FileExtensions
 {
     private const string AllFilesWildcard = "*";
+
+    /// <summary>
+    /// Gets a directory based on file system context.
+    /// </summary>
+    /// <param name="fi">The source media.</param>
+    /// <param name="destination">The supplied destination, if provided.</param>
+    /// <returns>Directory info.</returns>
+    public static DirectoryInfo QualifyDestination(this FileInfo fi, string? destination)
+    {
+        if (destination == null && fi?.Exists == true)
+        {
+            destination = fi.DirectoryName;
+        }
+
+        return new DirectoryInfo(destination ?? Directory.GetCurrentDirectory());
+    }
 
     /// <summary>
     /// Gets media type information for the file.
@@ -57,38 +78,59 @@ public static class FileExtensions
     }
 
     /// <summary>
-    /// Encrypts all unsecured media of the specified type(s), moving the
-    /// result to a new location.
+    /// Makes a key.
     /// </summary>
-    /// <param name="di">The source directory.</param>
-    /// <param name="target">The target directory.</param>
-    /// <param name="userKey">The security key.</param>
-    /// <param name="mediaTypes">The media type(s) to look for.</param>
-    /// <param name="recurse">Whether to recurse.</param>
-    /// <param name="sortFolderLength">The length of the sorting folder in
-    /// the target directory.</param>
-    /// <param name="skip">Files to skip.</param>
-    /// <param name="take">Files to take.</param>
-    /// <exception cref="ArgumentNullException">Missing target.</exception>
-    public static void EncryptMediaTo(
-        this DirectoryInfo di,
-        DirectoryInfo target,
-        byte[] userKey,
-        MediaTypes mediaTypes = MediaTypes.AnyMedia,
-        bool recurse = false,
-        byte sortFolderLength = 2,
-        int skip = 0,
-        int take = int.MaxValue)
+    /// <param name="keySource">Key file source.</param>
+    /// <param name="keyRegex">Key file regex.</param>
+    /// <param name="entropy">The entropy.</param>
+    /// <param name="checkSum">The check sum.</param>
+    /// <returns>The key.</returns>
+    public static ReadOnlyMemory<byte> MakeKey(
+        this DirectoryInfo? keySource,
+        Regex? keyRegex,
+        IEnumerable<string> entropy,
+        out string checkSum)
     {
-        _ = target?.FullName ?? throw new ArgumentNullException(nameof(target));
-        foreach (var mediaFile in di.EnumerateMedia(mediaTypes, false, recurse, skip, take))
+        var blended = entropy.Blend();
+        var hashes = GetHashes(keySource, keyRegex);
+        var key = new DefaultKeyDeriver().DeriveKey(blended, hashes);
+        checkSum = key.Hash(HashType.Md5).Encode(Codec.ByteBase64);
+        return key;
+    }
+
+    private static string Blend(this IEnumerable<string> input)
+    {
+        input ??= [];
+        var primary = input.FirstOrDefault() ?? string.Empty;
+        var remaining = string.Concat(input.Skip(1));
+        var sb = new StringBuilder();
+        for (var r = 0; r < Math.Max(primary.Length, remaining.Length); r++)
         {
-            mediaFile.EncryptInSitu(userKey);
-            var sortPath = mediaFile.Name.Substring(0, sortFolderLength);
-            var targetPath = Path.Combine(target.FullName, sortPath);
-            Directory.CreateDirectory(targetPath);
-            mediaFile.CopyTo(Path.Combine(targetPath, mediaFile.Name), true);
-            mediaFile.Delete();
+            sb.Append(primary[r % primary.Length]);
+            if (remaining.Length > 0)
+            {
+                sb.Append(remaining[r % remaining.Length]);
+            }
         }
+
+        return sb.ToString();
+    }
+
+    private static byte[][] GetHashes(DirectoryInfo? keySource, Regex? keyRegex)
+    {
+        if (keySource == null)
+        {
+            return [];
+        }
+
+        if (!keySource.Exists)
+        {
+            throw new ArgumentException($"Directory not found: {keySource}", nameof(keySource));
+        }
+
+        return keySource.EnumerateFiles()
+            .Where(f => keyRegex?.IsMatch(f.Name) != false)
+            .Select(f => f.Hash(HashType.Sha1))
+            .ToArray();
     }
 }
