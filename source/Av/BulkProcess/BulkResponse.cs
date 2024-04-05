@@ -1,4 +1,4 @@
-﻿// <copyright file="BulkItemResponse.cs" company="ne1410s">
+﻿// <copyright file="BulkResponse.cs" company="ne1410s">
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
@@ -7,8 +7,13 @@ namespace Av.Store;
 /// <summary>
 /// Bulk item response.
 /// </summary>
-public record BulkItemResponse
+public record BulkResponse
 {
+    /// <summary>
+    /// Gets the percentage completion.
+    /// </summary>
+    public double Percent => 100.0 * (this.Unmatched + this.Skipped + this.Processed) / this.Total;
+
     /// <summary>
     /// Gets or sets the total number of files.
     /// </summary>

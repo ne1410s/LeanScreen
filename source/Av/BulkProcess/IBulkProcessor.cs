@@ -4,6 +4,7 @@
 
 namespace Av.Store;
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -19,18 +20,24 @@ public interface IBulkProcessor
     /// <param name="source">The source directory.</param>
     /// <param name="recurse">Whether to include subdirectories.</param>
     /// <param name="purgeNonMedia">Whether to delete non-media files.</param>
+    /// <param name="onProgress">Progress handler.</param>
     /// <returns>The response.</returns>
-    public Task<BulkItemResponse> IngestAsync(
+    public Task<BulkResponse> IngestAsync(
         byte[] key,
         DirectoryInfo source,
         bool recurse,
-        bool purgeNonMedia);
+        bool purgeNonMedia,
+        IProgress<double>? onProgress = null);
 
     /// <summary>
     /// Ensures cappable media in the store is capped.
     /// </summary>
     /// <param name="key">The key.</param>
     /// <param name="max">The maximum number of items to take.</param>
+    /// <param name="onProgress">Progress handler.</param>
     /// <returns>Number of newly-capped items.</returns>
-    public Task<int> EnsureCapped(byte[] key, int max = 100);
+    public Task<int> EnsureCapped(
+        byte[] key,
+        int max = 100,
+        IProgress<double>? onProgress = null);
 }

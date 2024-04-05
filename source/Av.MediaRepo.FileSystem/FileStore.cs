@@ -40,7 +40,7 @@ public class FileStore : IMediaRepo
         var retVal = new List<string>();
         foreach (var fi in this.di.EnumerateMedia(MediaTypes.Video, true, true))
         {
-            var counterpart = fi.Directory!.GetFiles(fi.Name.Substring(0, 12)).Length > 1;
+            var counterpart = fi.Directory!.GetFiles(fi.Name.Substring(0, 12) + "*").Length > 1;
             if (!counterpart)
             {
                 retVal.Add(fi.Name);

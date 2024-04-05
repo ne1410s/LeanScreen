@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-_ = Comanche.Discover.Go();
+_ = Comanche.Discover.Go(true);
 
 /// <summary>
 /// The program.
