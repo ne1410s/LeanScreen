@@ -130,7 +130,14 @@ public static class FfmpegUtils
                 var printPrefix = 1;
                 ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
                 var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                Logger.Invoke(level, line);
+                try
+                {
+                    Logger.Invoke(level, line);
+                }
+                catch
+                {
+                    // Well we can't exactly log this...
+                }
             }
         };
 

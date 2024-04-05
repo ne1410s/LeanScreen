@@ -4,12 +4,10 @@
 
 namespace Av.CliTool;
 
-using System.Text.RegularExpressions;
 using Av;
 using Av.Extensions;
 using Av.Store;
 using Comanche.Attributes;
-using Comanche.Models;
 using Comanche.Services;
 
 /// <summary>

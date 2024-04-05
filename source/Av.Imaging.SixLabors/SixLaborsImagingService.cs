@@ -45,7 +45,7 @@ public class SixLaborsImagingService : IImagingService
     }
 
     /// <inheritdoc/>
-    public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions opts = null)
+    public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions? opts = null)
     {
         opts ??= new CollationOptions();
         var firstItemSize = (frames ?? throw new ArgumentNullException(nameof(frames))).First().Dimensions;
