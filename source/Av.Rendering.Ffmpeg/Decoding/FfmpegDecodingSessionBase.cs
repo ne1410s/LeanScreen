@@ -95,8 +95,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     public AVFrame Seek(TimeSpan position)
     {
         var ts = position.ToLong(this.TimeBase);
-        ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0)
-            .avThrowIfError();
+        ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0);
 
         AVFrame retVal;
         double msAhead;

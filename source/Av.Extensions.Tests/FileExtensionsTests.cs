@@ -81,6 +81,7 @@ public class FileExtensionsTests
 
     [Theory]
     [InlineData("sample.flv", "sample.flv_collate_t006_c02_h0200.jpg")]
+    [InlineData("1.mkv", "1.mkv_collate_t006_c02_h0200.jpg")]
     [InlineData(
         "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv",
         "1bcedf85fab4.87e1da6af4b93bb2b8f9c8033b48922ca11ef6384abd614f7c0a1bdbfc0104d0.jpg")]
