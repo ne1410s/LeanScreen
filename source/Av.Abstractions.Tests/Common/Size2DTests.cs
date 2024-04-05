@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Abstractions.Tests.Shared;
+namespace Av.Abstractions.Tests.Common;
 
 using Av.Common;
 

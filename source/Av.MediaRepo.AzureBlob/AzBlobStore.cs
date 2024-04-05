@@ -10,6 +10,7 @@ using Azure.Storage.Blobs;
 using Crypt.IO;
 
 /// <inheritdoc cref="IMediaRepo"/>
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class AzBlobStore : IMediaRepo
 {
     private readonly BlobContainerClient container;

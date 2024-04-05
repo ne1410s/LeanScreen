@@ -31,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="FluentAssertions" />
+	<Using Include="Moq" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Av.Abstractions\Av.Abstractions.csproj" />
   </ItemGroup>
 

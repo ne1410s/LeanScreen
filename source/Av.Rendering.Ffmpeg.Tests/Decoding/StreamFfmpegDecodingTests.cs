@@ -28,7 +28,7 @@ public class StreamFfmpegDecodingTests
 
         // Act
         using var str = new SimpleFileStream(fi);
-        var x = new StreamFfmpegDecoding(str);
+        using var x = new StreamFfmpegDecoding(str);
 
         // Assert
         ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();

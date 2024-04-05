@@ -4,7 +4,10 @@
 
 namespace Av.Tests;
 
+using System.Text.RegularExpressions;
 using Av.Common;
+using Crypt.Encoding;
+using Crypt.Hashing;
 
 /// <summary>
 /// Tests for the <see cref="FileExtensions"/>.
@@ -101,6 +104,54 @@ public class FileExtensionsTests
         // Assert
         media.Count().Should().Be(expectedCount);
         di.Delete(true);
+    }
+
+    [Theory]
+    [InlineData(null, "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
+    [InlineData("one,two,three", "cvN2WzfLE+6qnH8w8HyaoA==")]
+    public void MakeKey_VaryingEntropy_OutputsExpectedChecksum(string? entropyCsv, string expectedSum)
+    {
+        // Arrange
+        var entropy = entropyCsv?.Split(',') ?? [];
+
+        // Act
+        FileExtensions.MakeKey(null, null, entropy, out var checkSum);
+
+        // Assert
+        checkSum.Should().Be(expectedSum);
+    }
+
+    [Theory]
+    [InlineData("ogg", "f652b8fd0e9c447c9cb0cae3044a927e")]
+    [InlineData(null, "043ff9a3d7b83c77da79ebc9ccb17c0a")]
+    public void MakeKey_VaryingKeyRegex_ReturnsExpectedBytes(string? keyRegex, string expectedHash)
+    {
+        // Arrange
+        var regex = keyRegex == null ? null : new Regex(keyRegex);
+        var di = new DirectoryInfo("Samples/Subfolder");
+
+        // Act
+        var md5Hex = di.MakeKey(regex, [], out _).ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        // Assert
+        md5Hex.Should().Be(expectedHash);
+    }
+
+    [Theory]
+    [InlineData("Samples/blue-pixel.png", null, "Samples")]
+    [InlineData("Samples/blue-pixel.png", "samplez22", "samplez22")]
+    [InlineData("Samples/does-not-exist.png", null, null)]
+    public void QualifyDestination_VaryingParameters_ReturnsExpected(string file, string? dest, string? expectedDir)
+    {
+        // Arrange
+        expectedDir ??= new DirectoryInfo(Directory.GetCurrentDirectory()).Name;
+        var fi = new FileInfo(file);
+
+        // Act
+        var actualDir = fi.QualifyDestination(dest).Name;
+
+        // Assert
+        actualDir.Should().Be(expectedDir);
     }
 
     private static DirectoryInfo CopyAll(DirectoryInfo source, DirectoryInfo? target = null)

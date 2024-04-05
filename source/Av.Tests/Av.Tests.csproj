@@ -35,20 +35,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Samples\" />
+    <Using Include="FluentAssertions" />
+	<Using Include="Moq" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Samples\blue-pixel.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Subfolder\6b0ea016cd3a043a496502126ad46ba80448b207a642831e19166b64de81ec13.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Subfolder\info.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Samples\Subfolder\sample.ogg">
+    <None Update="Samples\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

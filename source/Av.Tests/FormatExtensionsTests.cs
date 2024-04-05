@@ -122,7 +122,7 @@ public class FormatExtensionsTests
     [InlineData(" ")]
     [InlineData("fakerzz")]
     [InlineData("zip.")]
-    public void GetMediaTypeInfo_NotFound_ReturnsNull(string extension)
+    public void GetMediaTypeInfo_NotFound_ReturnsNull(string? extension)
     {
         // Arrange
         var result = extension.GetMediaTypeInfo();
@@ -159,5 +159,19 @@ public class FormatExtensionsTests
 
         // Assert
         result.Should().Be("D6");
+    }
+
+    [Fact]
+    public void DistributeEvenly_WithValue_ReturnsExpected()
+    {
+        // Arrange
+        var value = TimeSpan.FromSeconds(10);
+        var expected = new TimeSpan[] { TimeSpan.Zero, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10) };
+
+        // Act
+        var result = value.DistributeEvenly(3);
+
+        // Assert
+        result.Should().BeEquivalentTo(expected);
     }
 }

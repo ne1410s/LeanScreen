@@ -144,9 +144,9 @@ public static class FormatExtensions
     /// </summary>
     /// <param name="extension">The extension.</param>
     /// <returns>Media type information.</returns>
-    public static MediaTypeInfo GetMediaTypeInfo(this string extension)
+    public static MediaTypeInfo GetMediaTypeInfo(this string? extension)
     {
-        extension = $".{extension?.ToLower(CultureInfo.InvariantCulture).TrimStart('.')}";
+        extension = $".{extension?.ToLowerInvariant().TrimStart('.')}";
         return ArchiveMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Archive, ArchiveMimes[extension])
             : ImageMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Image, ImageMimes[extension])
             : AudioMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Audio, AudioMimes[extension])
