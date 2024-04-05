@@ -42,7 +42,7 @@ public class StreamFfmpegDecodingTests
 
         // Act
         using var str = new SimpleFileStream(fi);
-        var sut = new StreamFfmpegDecoding(str);
+        using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
         sut.Url.Should().BeEmpty();
@@ -58,7 +58,7 @@ public class StreamFfmpegDecodingTests
 
         // Act
         using var str = new CryptoBlockReadStream(fi, key);
-        var sut = new StreamFfmpegDecoding(str);
+        using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
         sut.FrameRate.Should().BeApproximately(23.962, 0.001);
@@ -73,7 +73,7 @@ public class StreamFfmpegDecodingTests
 
         // Act
         using var str = new SimpleFileStream(fi);
-        var decoding = new StreamFfmpegDecoding(str);
+        using var decoding = new StreamFfmpegDecoding(str);
 
         // Assert
         decoding.Duration.Ticks.Should().Be(100000000);
@@ -120,7 +120,7 @@ public class StreamFfmpegDecodingTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
         using var str = new SimpleFileStream(fi);
-        var sut = new StreamFfmpegDecoding(str);
+        using var sut = new StreamFfmpegDecoding(str);
 
         // Act
         var info = sut.GetContextInfo();
@@ -134,7 +134,7 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        var sut = new TestDecoding(fi.FullName);
+        using var sut = new TestDecoding(fi.FullName);
 
         // Act
         var result = sut.Seek(default);
@@ -148,7 +148,7 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        var sut = new TestDecoding(fi.FullName);
+        using var sut = new TestDecoding(fi.FullName);
 
         // Act
         var result = sut.Seek(TimeSpan.FromDays(21));

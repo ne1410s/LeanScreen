@@ -20,7 +20,7 @@ public class PhysicalFfmpegDecodingTests
         ffmpeg.RootPath = null;
 
         // Act
-        var x = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
@@ -37,7 +37,7 @@ public class PhysicalFfmpegDecodingTests
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
         FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
-        var x = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().Contain("Starting connection attempt");
@@ -54,7 +54,7 @@ public class PhysicalFfmpegDecodingTests
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
         FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
-        var x = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
@@ -71,7 +71,7 @@ public class PhysicalFfmpegDecodingTests
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
         FfmpegUtils.Logger = null;
-        var x = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
