@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Store.AzureBlob;
+namespace Av.MediaRepo.AzureBlob;
 
 using System.Linq;
 using Av.MediaRepo;

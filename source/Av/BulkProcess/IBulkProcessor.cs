@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Store;
+namespace Av.BulkProcess;
 
 using System;
 using System.IO;

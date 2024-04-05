@@ -16,9 +16,8 @@ public static class FluentExtensions
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <param name="o">The item.</param>
-    /// <param name="paramName">The parameter name.</param>
     /// <returns>The original object.</returns>
     /// <exception cref="ArgumentNullException">If null.</exception>
-    public static T NotNull<T>(this T o, string? paramName = null)
-        => o ?? throw new ArgumentNullException(paramName ?? "<anon>");
+    public static T NotNull<T>(this T o)
+        => o ?? throw new ArgumentNullException(nameof(o));
 }

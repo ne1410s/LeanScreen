@@ -24,7 +24,7 @@ sudo chmod +x AvCtl
 dotnet --list-sdks
 
 # set dotnet version (remember to tweak pre-release, and newer versions)
-dotnet new globaljson --sdk-version 6.0.400
+dotnet new globaljson --sdk-version 8.0.202
 
 # add a tool manifest
 dotnet new tool-manifest

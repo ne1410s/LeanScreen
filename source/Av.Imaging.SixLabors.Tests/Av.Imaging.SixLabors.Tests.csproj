@@ -33,7 +33,7 @@
 	
   <ItemGroup>
     <Using Include="FluentAssertions" />
-	<Using Include="Moq" />
+	  <Using Include="Moq" />
     <Using Include="Xunit" />
   </ItemGroup>
 

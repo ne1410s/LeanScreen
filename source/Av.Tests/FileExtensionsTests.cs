@@ -106,6 +106,19 @@ public class FileExtensionsTests
         di.Delete(true);
     }
 
+    [Fact]
+    public void MakeKey_BadKeyFolder_ThrowsException()
+    {
+        // Arrange
+        var fakeDir = new DirectoryInfo(Guid.NewGuid().ToString());
+
+        // Act
+        var act = () => fakeDir.MakeKey(null, [], out _);
+
+        // Assert
+        act.Should().Throw<ArgumentException>().WithMessage("Directory not found*");
+    }
+
     [Theory]
     [InlineData(null, "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
     [InlineData("one,two,three", "cvN2WzfLE+6qnH8w8HyaoA==")]

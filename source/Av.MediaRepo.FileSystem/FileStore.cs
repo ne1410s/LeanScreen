@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Store.FileSystem;
+namespace Av.MediaRepo.FileSystem;
 
 using System.Collections.Generic;
 using System.IO;
@@ -61,7 +61,7 @@ public class FileStore : IMediaRepo
         itemId = itemId.NotNull();
         if (!new FileInfo(itemId).IsSecure())
         {
-            throw new InvalidOperationException("Source is not secure");
+            throw new InvalidOperationException("Source is not secure.");
         }
 
         var matches = await this.FindAsync(itemId);

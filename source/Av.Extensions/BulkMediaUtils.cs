@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 using Av.BulkProcess;
 using Av.Imaging.SixLabors;
 using Av.MediaRepo;
+using Av.MediaRepo.AzureBlob;
+using Av.MediaRepo.FileSystem;
 using Av.Rendering.Ffmpeg;
 using Av.Snaps;
-using Av.Store;
-using Av.Store.AzureBlob;
-using Av.Store.FileSystem;
 
 /// <summary>
 /// Bulk media utilities.
@@ -69,7 +68,13 @@ public static class BulkMediaUtils
         return await processor.EnsureCapped(key, max, onProgress);
     }
 
-    private static IMediaRepo GetRepo(string type, string param) => type switch
+    /// <summary>
+    /// Gets a media repo.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <param name="param">The parameter.</param>
+    /// <returns>A new repo.</returns>
+    public static IMediaRepo GetRepo(string type, string param) => type switch
     {
         "blob" => new AzBlobStore(param),
         _ => new FileStore(param),

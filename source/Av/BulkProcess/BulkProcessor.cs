@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Av.Common;
 using Av.MediaRepo;
 using Av.Services;
-using Av.Store;
 using Crypt.Encoding;
 using Crypt.IO;
 using Crypt.Transform;
@@ -32,7 +31,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
         var sourceFiles = source.EnumerateMedia(
             MediaTypes.NonMedia | MediaTypes.AnyMedia,
             recurse: recurse);
-        var retVal = new BulkResponse { Total = sourceFiles.Count() };
+        var retVal = new BulkResponse(sourceFiles.Count());
 
         onProgress?.Report(0);
         foreach (var file in sourceFiles)

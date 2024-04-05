@@ -4,7 +4,6 @@
 
 namespace Av.CliTool;
 
-using System.Text;
 using System.Text.RegularExpressions;
 using Comanche.Models;
 using Comanche.Services;
@@ -41,21 +40,8 @@ public static class WriterExtensions
     public static IProgress<double> ProgressHandler(this IOutputWriter writer)
     {
         const int totalBars = 20;
-        var str = new StringBuilder(60);
-
         Action<double> act = d =>
         {
-            //var bars = (int)(d / 100 * totalBars);
-            //str.Clear();
-            //str.Append(new string('\b', 30));
-            //str.Append('|');
-            //str.Append(new string('-', bars));
-            //str.Append(new string(' ', totalBars - bars));
-            //str.Append("| ");
-            //str.Append($"{d:N1}".PadLeft(5, ' '));
-            //str.Append(" %");
-            //writer.Write(str.ToString());
-
             var bars = (int)(d / 100 * totalBars);
             writer.Write(new string('\b', 30));
             writer.Write("|");
@@ -76,13 +62,15 @@ public static class WriterExtensions
             cancelTokenSource?.Cancel();
             cancelTokenSource = new CancellationTokenSource();
             Task.Delay(milliseconds, cancelTokenSource.Token)
-                .ContinueWith(t =>
-                {
-                    if (t.IsCompletedSuccessfully)
+                .ContinueWith(
+                    t =>
                     {
-                        func(arg);
-                    }
-                }, TaskScheduler.Default);
+                        if (t.IsCompletedSuccessfully)
+                        {
+                            func(arg);
+                            cancelTokenSource.Dispose();
+                        }
+                    }, TaskScheduler.Default);
         };
     }
 }

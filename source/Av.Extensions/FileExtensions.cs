@@ -28,7 +28,7 @@ public static class FileExtensions
     /// <returns>Media info.</returns>
     public static MediaInfo GetMediaInfo(this FileInfo fi, byte[] key)
     {
-        using var str = fi.NotNull(nameof(fi)).OpenRead();
+        using var str = fi.NotNull().OpenRead();
         return Snapper.GetInfo(str, fi.IsSecure() ? fi.ToSalt() : [], key);
     }
 
@@ -42,7 +42,7 @@ public static class FileExtensions
     /// <returns>Image stream.</returns>
     public static MemoryStream Snap(this FileInfo fi, byte[] key, double position = 0.4, int? height = 300)
     {
-        using var str = fi.NotNull(nameof(fi)).OpenRead();
+        using var str = fi.NotNull().OpenRead();
         return Snapper.Snap(str, fi.IsSecure() ? fi.ToSalt() : [], key, position, height);
     }
 
@@ -56,7 +56,7 @@ public static class FileExtensions
     /// <returns>The file location.</returns>
     public static string SnapHere(this FileInfo fi, byte[] key, double position = 0.4, int? height = 300)
     {
-        var fileName = fi.NotNull(nameof(fi)).Name;
+        var fileName = fi.NotNull().Name;
         var secure = fi.IsSecure();
         using var str = fi.Snap(key, position, height);
         var formatHeight = ((long)(height ?? 0)).FormatToUpperBound(9999);
@@ -68,7 +68,7 @@ public static class FileExtensions
             nameToUse = fileName.Substring(0, 12) + "." + newSalt + ".jpg";
         }
 
-        var targetPath = Path.Combine(fi.NotNull(nameof(fi)).Directory.FullName, nameToUse);
+        var targetPath = Path.Combine(fi.NotNull().Directory.FullName, nameToUse);
         using var ss = File.OpenWrite(targetPath);
         str.CopyTo(ss);
         return targetPath;
@@ -85,7 +85,7 @@ public static class FileExtensions
     /// <returns>Image stream.</returns>
     public static MemoryStream Collate(this FileInfo fi, byte[] key, int total = 24, int columns = 4, int? height = 300)
     {
-        using var str = fi.NotNull(nameof(fi)).OpenRead();
+        using var str = fi.NotNull().OpenRead();
         return Snapper.Collate(str, fi.IsSecure() ? fi.ToSalt() : [], key, total, columns, height);
     }
 
@@ -100,7 +100,7 @@ public static class FileExtensions
     /// <returns>The target path.</returns>
     public static string CollateHere(this FileInfo fi, byte[] key, int total = 24, int columns = 4, int? height = 300)
     {
-        var fileName = fi.NotNull(nameof(fi)).Name;
+        var fileName = fi.NotNull().Name;
         var secure = fi.IsSecure();
         using var str = fi.Collate(key, total, columns, height);
         var formatTotal = ((long)total).FormatToUpperBound(999);
@@ -113,7 +113,7 @@ public static class FileExtensions
             nameToUse = fileName.Substring(0, 12) + "." + newSalt + ".jpg";
         }
 
-        var targetPath = Path.Combine(fi.NotNull(nameof(fi)).Directory.FullName, nameToUse);
+        var targetPath = Path.Combine(fi.NotNull().Directory.FullName, nameToUse);
         using var ss = File.OpenWrite(targetPath);
         str.CopyTo(ss);
         return targetPath;
