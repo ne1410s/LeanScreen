@@ -153,15 +153,13 @@ public class FfmpegRendererTests
     }
 
     [Theory]
-    [InlineData("sample.mp4", false)]
-    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", false)]
-    public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName, bool expectPhysicalDecoder)
+    [InlineData("sample.mp4")]
+    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
+    public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName)
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", fileName));
-        var expectedType = expectPhysicalDecoder
-            ? typeof(PhysicalFfmpegDecoding)
-            : typeof(StreamFfmpegDecoding);
+        var expectedType = typeof(StreamFfmpegDecoding);
 
         // Act
         using var str = fi.OpenRead();

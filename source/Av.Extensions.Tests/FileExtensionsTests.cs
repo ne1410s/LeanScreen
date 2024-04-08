@@ -14,6 +14,19 @@ using Crypt.IO;
 /// </summary>
 public class FileExtensionsTests
 {
+    [Fact]
+    public void GetMediaInfo_NullInfo_ThrowsExpected()
+    {
+        // Arrange
+        var fi = (FileInfo)null!;
+
+        // Act
+        var act = () => fi.GetMediaInfo([]);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
     [Theory]
     [InlineData("sample.flv")]
     [InlineData("1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv")]

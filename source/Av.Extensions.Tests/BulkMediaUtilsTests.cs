@@ -5,6 +5,7 @@
 namespace Av.Extensions.Tests;
 
 using Av.BulkProcess;
+using Moq;
 
 /// <summary>
 /// Tests for the <see cref="BulkMediaUtils"/> class.
@@ -35,6 +36,23 @@ public class BulkMediaUtilsTests
         result.Should().Be(expected);
         sourceDir.Delete(true);
         targetDir.Delete(true);
+    }
+
+    [Fact]
+    public async Task Ingest_WithProgress_InvokesAction()
+    {
+        // Arrange
+        var mockProgress = new Mock<IProgress<double>>();
+        var ogDir = new DirectoryInfo("Samples");
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
+
+        // Act
+        await sourceDir.Ingest([], targetDir.FullName, onProgress: mockProgress.Object);
+
+        // Assert
+        mockProgress.Verify(p => p.Report(It.IsAny<double>()));
     }
 
     [Theory]
