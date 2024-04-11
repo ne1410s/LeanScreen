@@ -28,12 +28,14 @@ public class BulkMediaUtilsTests
         File.Copy($"{ogDir}/{secureName}", $"{sourceDir}/{secureName}");
         File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/7e/{pregenName}");
         var expected = new BulkResponse(4) { Processed = 2, Skipped = 1, Unmatched = 1 };
+        var expectSaveTo = $"{targetDir}/7e/7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
 
         // Act
         var result = await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
 
         // Assert
         result.Should().Be(expected);
+        new FileInfo(expectSaveTo).Length.Should().NotBe(0);
         sourceDir.Delete(true);
         targetDir.Delete(true);
     }
@@ -50,12 +52,15 @@ public class BulkMediaUtilsTests
         targetDir.CreateSubdirectory("7e");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
         File.Copy($"{ogDir}/{storeFile}", $"{targetDir}/7e/{storeFile}");
+        var expected = new BulkResponse(1) { Processed = 1 };
 
         // Act
-        await sourceDir.Ingest([], targetDir.FullName, onProgress: mockProgress.Object);
+        var result = await sourceDir.Ingest([], targetDir.FullName, onProgress: mockProgress.Object);
 
         // Assert
-        mockProgress.Verify(m => m.Report(It.IsAny<double>()));
+        result.Should().Be(expected);
+        mockProgress.Verify(m => m.Report(0));
+        mockProgress.Verify(m => m.Report(100));
     }
 
     [Fact]
@@ -65,15 +70,18 @@ public class BulkMediaUtilsTests
         var mockProgress = new Mock<IProgress<double>>();
         var ogDir = new DirectoryInfo("Samples");
         const string storeFile1 = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
+        const string storeFile2 = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         targetDir.CreateSubdirectory("1b");
+        targetDir.CreateSubdirectory("7e");
         File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/1b/{storeFile1}");
+        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/7e/{storeFile2}");
 
         // Act
         await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, onProgress: mockProgress.Object);
 
         // Assert
-        mockProgress.Verify(m => m.Report(It.IsAny<double>()));
+        mockProgress.Verify(m => m.Report(50));
         targetDir.Delete(true);
     }
 
@@ -96,12 +104,14 @@ public class BulkMediaUtilsTests
         File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/7e/{storeFile2}");
         File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/38/{storeFile3}");
         File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/7e/{pregenName}");
+        const string expectedName = "38595346adff.ef0975072db1fb63cf5c51bef438d095b70848c3e601df45cbc52a54e722c30a.jpg";
 
         // Act
         var result = await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, max: max);
 
         // Assert
         result.Should().Be(expected);
+        new FileInfo($"{targetDir}/38/{expectedName}").Exists.Should().Be(max > 1);
         targetDir.Delete(true);
     }
 

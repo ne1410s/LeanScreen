@@ -19,6 +19,7 @@ using Crypt.Transform;
 /// <inheritdoc cref="IBulkProcessor"/>
 public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcessor
 {
+    private const string RegexSuffix = @"\.[0-9a-f]+\.jpg$";
     private static readonly AesGcmEncryptor Encryptor = new();
 
     /// <inheritdoc/>
@@ -78,7 +79,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                 }
 
                 var isVideo = file.GetMediaTypeInfo().MediaType == MediaTypes.Video;
-                var rgx = new Regex("^" + itemId.Substring(0, 12) + "\\.[0-9a-f]+\\.jpg$");
+                var rgx = new Regex(itemId.Substring(0, 12) + RegexSuffix);
                 var hasCaps = relatedMedia.Exists(rgx.IsMatch);
                 if (isVideo && !hasCaps)
                 {
