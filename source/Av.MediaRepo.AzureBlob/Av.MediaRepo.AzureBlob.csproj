@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.20" />
+    <PackageReference Include="Analyse" Version="1.0.21" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
   </ItemGroup>
 
