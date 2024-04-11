@@ -5,9 +5,6 @@
 namespace Av.Extensions.Tests;
 
 using Av.BulkProcess;
-using Crypt.Encoding;
-using Crypt.Hashing;
-using Crypt.IO;
 using Moq;
 
 /// <summary>
