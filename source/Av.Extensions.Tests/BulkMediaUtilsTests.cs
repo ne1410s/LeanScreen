@@ -40,6 +40,25 @@ public class BulkMediaUtilsTests
         targetDir.Delete(true);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Ingest_VaryingPurge_OnlyPurgeRemovedNonPertinentFile(bool purge)
+    {
+        // Arrange
+        var ogDir = new DirectoryInfo("Samples");
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var nonMediaPath = $"{sourceDir}/1.txt";
+        await File.WriteAllTextAsync(nonMediaPath, "non-perinent!");
+
+        // Act
+        await sourceDir.Ingest([], targetDir.FullName, purgeNonMedia: purge);
+
+        // Assert
+        new FileInfo(nonMediaPath).Exists.Should().Be(!purge);
+    }
+
     [Fact]
     public async Task Ingest_WithProgress_InvokesAction()
     {
@@ -71,17 +90,23 @@ public class BulkMediaUtilsTests
         var ogDir = new DirectoryInfo("Samples");
         const string storeFile1 = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
         const string storeFile2 = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
+        const string storeFile3 = "38595346adffe0060eb052c38a636ec0149d5bfb1ef42ea64cd76e83f91af51b.flv";
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         targetDir.CreateSubdirectory("1b");
         targetDir.CreateSubdirectory("7e");
+        targetDir.CreateSubdirectory("38");
         File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/1b/{storeFile1}");
         File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/7e/{storeFile2}");
+        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/38/{storeFile3}");
 
         // Act
         await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, onProgress: mockProgress.Object);
 
         // Assert
-        mockProgress.Verify(m => m.Report(50));
+        mockProgress.Verify(m => m.Report(0));
+        mockProgress.Verify(m => m.Report(100 / 3d));
+        mockProgress.Verify(m => m.Report(200 / 3d));
+        mockProgress.Verify(m => m.Report(100));
         targetDir.Delete(true);
     }
 

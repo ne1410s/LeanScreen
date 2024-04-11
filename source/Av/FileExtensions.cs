@@ -107,7 +107,7 @@ public static class FileExtensions
         for (var r = 0; r < Math.Max(primary.Length, remaining.Length); r++)
         {
             sb.Append(primary[r % primary.Length]);
-            if (remaining.Length > 0)
+            if (remaining.Length != 0)
             {
                 sb.Append(remaining[r % remaining.Length]);
             }
