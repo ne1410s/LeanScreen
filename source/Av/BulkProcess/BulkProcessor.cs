@@ -7,6 +7,7 @@ namespace Av.BulkProcess;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Av.Common;
 using Av.MediaRepo;
@@ -77,7 +78,8 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                 }
 
                 var isVideo = file.GetMediaTypeInfo().MediaType == MediaTypes.Video;
-                var hasCaps = relatedMedia.Exists(m => m.StartsWith(itemId.Substring(0, 12)) && m.EndsWith(".jpg"));
+                var rgx = new Regex("^" + itemId.Substring(0, 12) + "\\.[0-9a-f]+\\.jpg$");
+                var hasCaps = relatedMedia.Exists(rgx.IsMatch);
                 if (isVideo && !hasCaps)
                 {
                     using var str = file.OpenRead();

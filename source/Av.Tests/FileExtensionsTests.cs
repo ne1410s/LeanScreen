@@ -121,14 +121,15 @@ public class FileExtensionsTests
 
     [Theory]
     [InlineData(null, "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
+    [InlineData("", "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
     [InlineData("one,two,three", "cvN2WzfLE+6qnH8w8HyaoA==")]
     public void MakeKey_VaryingEntropy_OutputsExpectedChecksum(string? entropyCsv, string expectedSum)
     {
         // Arrange
-        var entropy = entropyCsv?.Split(',') ?? [];
+        var entropy = entropyCsv?.Split(',');
 
         // Act
-        FileExtensions.MakeKey(null, null, entropy, out var checkSum);
+        FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
 
         // Assert
         checkSum.Should().Be(expectedSum);

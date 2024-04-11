@@ -44,15 +44,37 @@ public class BulkMediaUtilsTests
         // Arrange
         var mockProgress = new Mock<IProgress<double>>();
         var ogDir = new DirectoryInfo("Samples");
+        const string storeFile = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
         var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        targetDir.CreateSubdirectory("7e");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
+        File.Copy($"{ogDir}/{storeFile}", $"{targetDir}/7e/{storeFile}");
 
         // Act
         await sourceDir.Ingest([], targetDir.FullName, onProgress: mockProgress.Object);
 
         // Assert
-        mockProgress.Verify(p => p.Report(It.IsAny<double>()));
+        mockProgress.Verify(m => m.Report(It.IsAny<double>()));
+    }
+
+    [Fact]
+    public async Task ApplyCaps_WithProgress_InvokesAction()
+    {
+        // Arrange
+        var mockProgress = new Mock<IProgress<double>>();
+        var ogDir = new DirectoryInfo("Samples");
+        const string storeFile1 = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        targetDir.CreateSubdirectory("1b");
+        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/1b/{storeFile1}");
+
+        // Act
+        await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, onProgress: mockProgress.Object);
+
+        // Assert
+        mockProgress.Verify(m => m.Report(It.IsAny<double>()));
+        targetDir.Delete(true);
     }
 
     [Theory]
