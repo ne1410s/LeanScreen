@@ -5,6 +5,9 @@
 namespace Av.Extensions.Tests;
 
 using Av.BulkProcess;
+using Crypt.Encoding;
+using Crypt.Hashing;
+using Crypt.IO;
 using Moq;
 
 /// <summary>
@@ -36,6 +39,26 @@ public class BulkMediaUtilsTests
         // Assert
         result.Should().Be(expected);
         new FileInfo(expectSaveTo).Length.Should().NotBe(0);
+        new FileInfo($"{sourceDir}/sample.flv").Exists.Should().BeFalse();
+        sourceDir.Delete(true);
+        targetDir.Delete(true);
+    }
+
+    [Fact]
+    public async Task Ingest_NewlySecuredFile_CapsExpected()
+    {
+        // Arrange
+        var ogDir = new DirectoryInfo("Samples");
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
+        const string expectedName = "1bcedf85fab4.b60a2f1520bf1c6b2758520c619b02e429f397e0a383130a0803bbcefa6a742f.jpg";
+
+        // Act
+        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
+
+        // Assert
+        new FileInfo($"{targetDir}/1b/{expectedName}").Exists.Should().BeTrue();
         sourceDir.Delete(true);
         targetDir.Delete(true);
     }
@@ -71,7 +94,8 @@ public class BulkMediaUtilsTests
         targetDir.CreateSubdirectory("7e");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
         File.Copy($"{ogDir}/{storeFile}", $"{targetDir}/7e/{storeFile}");
-        var expected = new BulkResponse(1) { Processed = 1 };
+        File.Copy($"{ogDir}/non-media.txt", $"{sourceDir}/non-media.txt");
+        var expected = new BulkResponse(2) { Processed = 1, Unmatched = 1 };
 
         // Act
         var result = await sourceDir.Ingest([], targetDir.FullName, onProgress: mockProgress.Object);
@@ -79,7 +103,8 @@ public class BulkMediaUtilsTests
         // Assert
         result.Should().Be(expected);
         mockProgress.Verify(m => m.Report(0));
-        mockProgress.Verify(m => m.Report(100));
+        mockProgress.Verify(m => m.Report(50));
+        mockProgress.Verify(m => m.Report(100), Times.Exactly(2));
     }
 
     [Fact]
@@ -106,7 +131,7 @@ public class BulkMediaUtilsTests
         mockProgress.Verify(m => m.Report(0));
         mockProgress.Verify(m => m.Report(100 / 3d));
         mockProgress.Verify(m => m.Report(200 / 3d));
-        mockProgress.Verify(m => m.Report(100));
+        mockProgress.Verify(m => m.Report(100), Times.Exactly(2));
         targetDir.Delete(true);
     }
 
