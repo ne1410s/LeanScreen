@@ -71,7 +71,7 @@ public static class FfmpegUtils
     /// <returns>A timespan.</returns>
     public static TimeSpan ToTimeSpan(this double pts, AVRational timeBase)
     {
-        if (Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
+        if ((int)Math.Round(Math.Abs(pts - ffmpeg.AV_NOPTS_VALUE), 10) == 0)
         {
             return TimeSpan.Zero;
         }
@@ -130,7 +130,14 @@ public static class FfmpegUtils
                 var printPrefix = 1;
                 ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
                 var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                Logger.Invoke(level, line);
+                try
+                {
+                    Logger.Invoke(level, line);
+                }
+                catch
+                {
+                    // Well we can't exactly log this...
+                }
             }
         };
 

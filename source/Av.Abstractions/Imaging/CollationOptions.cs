@@ -2,11 +2,11 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Abstractions.Imaging;
+namespace Av.Imaging;
 
 using System;
 using System.Linq;
-using Av.Abstractions.Shared;
+using Av.Common;
 
 /// <summary>
 /// Collation options.

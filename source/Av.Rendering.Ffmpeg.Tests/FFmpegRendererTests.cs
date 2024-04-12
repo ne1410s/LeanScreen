@@ -6,15 +6,15 @@ namespace Av.Rendering.Ffmpeg.Tests;
 
 using System.Globalization;
 using System.Reflection;
-using Av.Abstractions.Shared;
 using Av.Rendering.Ffmpeg.Decoding;
 using Crypt.Encoding;
 using Crypt.Hashing;
+using Crypt.IO;
 
 /// <summary>
 /// Tests for the <see cref="FfmpegRenderer"/>.
 /// </summary>
-public class FFmpegRendererTests
+public class FfmpegRendererTests
 {
     public enum DecodeMode
     {
@@ -40,33 +40,33 @@ public class FFmpegRendererTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", sampleFileName));
-        var sut = new FfmpegRenderer();
-        sut.SetSource(fi.FullName, null, new Size2D(3, 3));
+        using var str = fi.OpenRead();
+        using var sut = new FfmpegRenderer(str, [], [], 3);
         var ts = sut.Media.Duration * position;
 
         // Act
-        var md5Hex = sut.RenderAt(ts).Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var md5Hex = sut.RenderAt(ts).Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
         md5Hex.Should().NotBeEmpty();
     }
 
     [Theory]
-    [InlineData(1, 1, "2e7f411e0497d28729d257b46d9a29c1")]
-    [InlineData(500, 100, "f3b76d9a332737b4e594c8750eb4dd16")]
-    [InlineData(100, 500, "d0b76d42f1c7de683b271011f0ac898b")]
-    [InlineData(0, 72, "79f4d1aad4e61218528e6c6c8e5a3818")]
-    public void RenderAt_VaryingSize_ReturnsExpected(int width, int height, string expectedMd5Hex)
+    [InlineData(1, "3c820c3da3c2338ebfa6ab8f123eb9d4")]
+    [InlineData(100, "69186884f769afea14402e065e55fceb")]
+    [InlineData(500, "2252faedce7b6e2568ca21b8eb55b9db")]
+    [InlineData(72, "79f4d1aad4e61218528e6c6c8e5a3818")]
+    public void RenderAt_VaryingSize_ReturnsExpected(int height, string expectedMd5Hex)
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mkv"));
-        var sut = new FfmpegRenderer();
-        sut.SetSource(fi.FullName, null, new Size2D { Width = width, Height = height });
+        using var str = fi.OpenRead();
+        using var sut = new FfmpegRenderer(str, [], [], height);
         var ts = sut.Media.Duration / 7;
 
         // Act
         var result = sut.RenderAt(ts);
-        var md5Hex = result.Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var md5Hex = result.Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
         md5Hex.Should().Be(expectedMd5Hex);
@@ -78,13 +78,13 @@ public class FFmpegRendererTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", file));
-        var sut = new FfmpegRenderer();
-        sut.SetSource(fi.FullName, null);
+        using var str = fi.OpenRead();
+        using var sut = new FfmpegRenderer(str, [], [], null);
         var ts = sut.Media.Duration * frameNo / sut.Media.TotalFrames;
 
         // Act
         var frame = sut.RenderAt(ts);
-        var md5Hex = frame.Rgb24Bytes.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var md5Hex = frame.Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
         md5Hex.Should().Be(expectedMd5Hex);
@@ -95,8 +95,8 @@ public class FFmpegRendererTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        var sut = new FfmpegRenderer();
-        sut.SetSource(fi.FullName, null);
+        using var str = fi.OpenRead();
+        using var sut = new FfmpegRenderer(str, [], [], null);
         const double relative = 0.5;
         var ts = sut.Media.Duration * relative;
         var expectedFrame = (int)(sut.Media.TotalFrames * relative);
@@ -128,9 +128,9 @@ public class FFmpegRendererTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", sampleFile));
-        var sut = new FfmpegRenderer();
-        sut.SetSource(fi.FullName, null);
-        var expectedFrames = frameCsv.Split(',').Select(n => long.Parse(n, CultureInfo.InvariantCulture));
+        using var str = fi.OpenRead();
+        using var sut = new FfmpegRenderer(str, [], [], null);
+        var expectedFrames = frameCsv.NotNull().Split(',').Select(n => long.Parse(n, CultureInfo.InvariantCulture));
 
         // Act
         var frameData = sut.Media.Duration.DistributeEvenly(frameCount)
@@ -153,19 +153,18 @@ public class FFmpegRendererTests
     }
 
     [Theory]
-    [InlineData("sample.mp4", true)]
-    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4", false)]
-    public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName, bool expectPhysicalDecoder)
+    [InlineData("sample.mp4")]
+    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
+    public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName)
     {
         // Arrange
-        var filePath = Path.Combine("Samples", fileName);
-        var expectedType = expectPhysicalDecoder
-            ? typeof(PhysicalFfmpegDecoding)
-            : typeof(StreamFfmpegDecoding);
+        var fi = new FileInfo(Path.Combine("Samples", fileName));
+        var expectedType = typeof(StreamFfmpegDecoding);
 
         // Act
-        var sut = new FfmpegRenderer();
-        sut.SetSource(filePath, new byte[] { 9, 0, 2, 1, 0 });
+        using var str = fi.OpenRead();
+        var salt = fi.IsSecure() ? fi.ToSalt() : [];
+        using var sut = new FfmpegRenderer(str, salt, [9, 0, 2, 1, 0], null);
         var decoderInfo = sut.GetType().GetField("decoder", BindingFlags.Instance | BindingFlags.NonPublic);
         var decoder = (IFfmpegDecodingSession)decoderInfo!.GetValue(sut)!;
 

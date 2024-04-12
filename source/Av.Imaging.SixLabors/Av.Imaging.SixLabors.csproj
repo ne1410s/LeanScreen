@@ -1,23 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<Authors>Paul Jones</Authors>
-	<Company>ne1410s</Company>
-	<Description>Multimedia imaging implementation</Description>
-	<PackageTags>av multimedia cryptography</PackageTags>
-	<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	<IncludeSymbols>True</IncludeSymbols>
-	<PackageProjectUrl>https://github.com/ne1410s/Av</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/ne1410s/Av</RepositoryUrl>
-	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<TargetFramework>netstandard2.0</TargetFramework>
-	<Title>$(AssemblyName)</Title>
-	<VersionPrefix>1.1.3</VersionPrefix>
+    <Authors>Paul Jones</Authors>
+    <Company>ne1410s</Company>
+    <Description>Av (Imaging - SixLabors)</Description>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <Nullable>enable</Nullable>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/ne1410s/Av</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>av multimedia cryptography</PackageTags>
+    <RepositoryUrl>https://github.com/ne1410s/Av</RepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>$(AssemblyName)</Title>
+    <VersionPrefix>1.1.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.18" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.6" />
+    <PackageReference Include="Analyse" Version="1.0.21" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.7" />
   </ItemGroup>
 
   <ItemGroup>

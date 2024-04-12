@@ -4,8 +4,8 @@
 
 namespace Av.Abstractions.Tests.Rendering;
 
-using Av.Abstractions.Rendering;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Rendering;
 
 /// <summary>
 /// Tests for the <see cref="MediaInfo"/> class.

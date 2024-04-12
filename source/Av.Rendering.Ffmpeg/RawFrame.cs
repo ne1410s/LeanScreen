@@ -4,6 +4,8 @@
 
 namespace Av.Rendering.Ffmpeg;
 
+using System;
+
 /// <summary>
 /// Raw frame data.
 /// </summary>
@@ -12,7 +14,7 @@ public class RawFrame
     /// <summary>
     /// Gets or sets the rendered bytes, in RGB 24-byte format.
     /// </summary>
-    public byte[] Rgb24Bytes { get; set; }
+    public ReadOnlyMemory<byte> Rgb24Bytes { get; set; }
 
     /// <summary>
     /// Gets or sets the presentation time of the frame.

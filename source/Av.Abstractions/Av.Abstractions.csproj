@@ -1,23 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	<Authors>Paul Jones</Authors>
+    <Authors>Paul Jones</Authors>
     <Company>ne1410s</Company>
-    <Description>Multimedia and bulk processing abstractions</Description>
-    <PackageTags>av multimedia cryptography</PackageTags>
+    <Description>Av (Abstractions)</Description>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IncludeSymbols>True</IncludeSymbols>
+    <Nullable>enable</Nullable>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/ne1410s/Av</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>av multimedia cryptography</PackageTags>
     <RepositoryUrl>https://github.com/ne1410s/Av</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>$(AssemblyName)</Title>
     <VersionPrefix>1.1.3</VersionPrefix>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.18" />
+    <PackageReference Include="Analyse" Version="1.0.21" />
+    <PackageReference Include="Crypt" Version="1.1.12" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
   </ItemGroup>
 
 </Project>

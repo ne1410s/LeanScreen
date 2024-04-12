@@ -4,8 +4,8 @@
 
 namespace Av.Abstractions.Tests.Imaging;
 
-using Av.Abstractions.Imaging;
-using Av.Abstractions.Shared;
+using Av.Common;
+using Av.Imaging;
 
 /// <summary>
 /// Tests for the <see cref="CollationOptions"/>.

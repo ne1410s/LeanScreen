@@ -7,7 +7,8 @@ namespace Av;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Av.Models;
+using System.Linq;
+using Av.Common;
 
 /// <summary>
 /// Extensions for formatting.
@@ -143,14 +144,14 @@ public static class FormatExtensions
     /// </summary>
     /// <param name="extension">The extension.</param>
     /// <returns>Media type information.</returns>
-    public static MediaTypeInfo GetMediaTypeInfo(this string extension)
+    public static MediaTypeInfo GetMediaTypeInfo(this string? extension)
     {
-        extension = $".{extension?.ToLower(CultureInfo.InvariantCulture).TrimStart('.')}";
+        extension = $".{extension?.ToLowerInvariant().TrimStart('.')}";
         return ArchiveMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Archive, ArchiveMimes[extension])
             : ImageMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Image, ImageMimes[extension])
             : AudioMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Audio, AudioMimes[extension])
             : VideoMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Video, VideoMimes[extension])
-            : new MediaTypeInfo(MediaTypes.NonMedia, null);
+            : new MediaTypeInfo(MediaTypes.NonMedia, null!);
     }
 
     /// <summary>
@@ -182,5 +183,19 @@ public static class FormatExtensions
         }
 
         return new HashSet<string>(extensions, StringComparer.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Gets an evenly-distributed sequence of times.
+    /// </summary>
+    /// <param name="duration">The total duration.</param>
+    /// <param name="count">The number of items to distribute.</param>
+    /// <returns>A sequence of evenly-distributed times.</returns>
+    public static TimeSpan[] DistributeEvenly(this TimeSpan duration, int count)
+    {
+        var deltaMs = duration.TotalMilliseconds / (Math.Max(2, count) - 1);
+        return Enumerable.Range(0, count)
+            .Select(n => TimeSpan.FromMilliseconds(deltaMs * n))
+            .ToArray();
     }
 }

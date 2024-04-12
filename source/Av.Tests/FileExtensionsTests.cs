@@ -4,7 +4,10 @@
 
 namespace Av.Tests;
 
-using Av.Models;
+using System.Text.RegularExpressions;
+using Av.Common;
+using Crypt.Encoding;
+using Crypt.Hashing;
 
 /// <summary>
 /// Tests for the <see cref="FileExtensions"/>.
@@ -104,71 +107,65 @@ public class FileExtensionsTests
     }
 
     [Fact]
-    public void EncryptMediaTo_NullTarget_ThrowsException()
+    public void MakeKey_BadKeyFolder_ThrowsException()
     {
         // Arrange
-        var di = new DirectoryInfo("Samples");
+        var fakeDir = new DirectoryInfo(Guid.NewGuid().ToString());
 
         // Act
-        var act = () => di.EncryptMediaTo(null, Array.Empty<byte>());
+        var act = () => fakeDir.MakeKey(null, [], out _);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
-            .Which.ParamName.Should().Be("target");
+        act.Should().Throw<ArgumentException>().WithMessage("Directory not found*");
     }
 
-    [Fact]
-    public void EncryptMediaTo_WithSortLength_GeneratesExpected()
+    [Theory]
+    [InlineData(null, "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
+    [InlineData("", "T3H8ysQ8c1Rd3ZzXcvN1mA==")]
+    [InlineData("one,two,three", "cvN2WzfLE+6qnH8w8HyaoA==")]
+    public void MakeKey_VaryingEntropy_OutputsExpectedChecksum(string? entropyCsv, string expectedSum)
     {
         // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file.png"));
-        const string expectedName = "6b0ea016cd3a043a496502126ad46ba80448b207a642831e19166b64de81ec13.png";
+        var entropy = entropyCsv?.Split(',');
 
         // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 }, sortFolderLength: 3);
-        var exists = File.Exists(Path.Combine(target.Name, "6b0", expectedName));
+        FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
 
         // Assert
-        exists.Should().BeTrue();
+        checkSum.Should().Be(expectedSum);
     }
 
-    [Fact]
-    public void EncryptMediaTo_ZeroSortLength_GeneratesExpected()
+    [Theory]
+    [InlineData("ogg", "f652b8fd0e9c447c9cb0cae3044a927e")]
+    [InlineData(null, "043ff9a3d7b83c77da79ebc9ccb17c0a")]
+    public void MakeKey_VaryingKeyRegex_ReturnsExpectedBytes(string? keyRegex, string expectedHash)
     {
         // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file.png"));
-        const string expectedName = "6b0ea016cd3a043a496502126ad46ba80448b207a642831e19166b64de81ec13.png";
+        var regex = keyRegex == null ? null : new Regex(keyRegex);
+        var di = new DirectoryInfo("Samples/Subfolder");
 
         // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 }, sortFolderLength: 0);
-        var exists = File.Exists(Path.Combine(target.Name, expectedName));
+        var md5Hex = di.MakeKey(regex, [], out _).ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        exists.Should().BeTrue();
+        md5Hex.Should().Be(expectedHash);
     }
 
-    [Fact]
-    public void EncryptMediaTo_WithDuplicates_DoesNotError()
+    [Theory]
+    [InlineData("Samples/blue-pixel.png", null, "Samples")]
+    [InlineData("Samples/blue-pixel.png", "samplez22", "samplez22")]
+    [InlineData("Samples/does-not-exist.png", null, null)]
+    public void QualifyDestination_VaryingParameters_ReturnsExpected(string file, string? dest, string? expectedDir)
     {
         // Arrange
-        var source = new DirectoryInfo(Guid.NewGuid().ToString());
-        var target = new DirectoryInfo(Guid.NewGuid().ToString());
-        source.Create();
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file1.png"));
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file2.png"));
-        File.Copy(Path.Combine("Samples", "blue-pixel.png"), Path.Combine(source.Name, "file3.png"));
+        expectedDir ??= new DirectoryInfo(Directory.GetCurrentDirectory()).Name;
+        var fi = new FileInfo(file);
 
         // Act
-        source.EncryptMediaTo(target, new byte[] { 1, 2, 3, 4 });
+        var actualDir = fi.QualifyDestination(dest).Name;
 
         // Assert
-        source.GetFiles().Should().BeEmpty();
+        actualDir.Should().Be(expectedDir);
     }
 
     private static DirectoryInfo CopyAll(DirectoryInfo source, DirectoryInfo? target = null)

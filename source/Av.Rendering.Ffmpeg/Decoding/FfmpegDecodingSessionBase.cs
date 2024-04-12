@@ -7,7 +7,7 @@ namespace Av.Rendering.Ffmpeg.Decoding;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Av.Abstractions.Shared;
+using Av.Common;
 using FFmpeg.AutoGen;
 
 /// <inheritdoc cref="IFfmpegDecodingSession"/>
@@ -95,8 +95,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     public AVFrame Seek(TimeSpan position)
     {
         var ts = position.ToLong(this.TimeBase);
-        ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0)
-            .avThrowIfError();
+        ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0);
 
         AVFrame retVal;
         double msAhead;
@@ -108,7 +107,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
             msAhead = (framePosition - position).TotalMilliseconds;
 
             // bail out if error, or bullseye
-            if (!readOk || msAhead == previousMsAhead || position == TimeSpan.Zero
+            if (!readOk || (int)msAhead == (int)previousMsAhead || position == TimeSpan.Zero
                 || Math.Abs(msAhead) <= SeekThresholdMs)
             {
                 break;

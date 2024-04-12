@@ -2,10 +2,10 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Abstractions.Rendering;
+namespace Av.Rendering;
 
 using System;
-using Av.Abstractions.Shared;
+using Av.Common;
 
 /// <summary>
 /// A rendered frame.
@@ -15,7 +15,7 @@ public class RenderedFrame
     /// <summary>
     /// Gets or sets the rendered bytes, in RGB 24-byte format.
     /// </summary>
-    public byte[] Rgb24Bytes { get; set; }
+    public ReadOnlyMemory<byte> Rgb24Bytes { get; set; }
 
     /// <summary>
     /// Gets or sets the frame dimensions.

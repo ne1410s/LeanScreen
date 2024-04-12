@@ -20,7 +20,7 @@ public class PhysicalFfmpegDecodingTests
         ffmpeg.RootPath = null;
 
         // Act
-        _ = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
@@ -31,13 +31,13 @@ public class PhysicalFfmpegDecodingTests
     {
         // Arrange
         const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
-        StringWriter writer = new();
+        using StringWriter writer = new();
         Console.SetOut(writer);
 
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
         FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
-        _ = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().Contain("Starting connection attempt");
@@ -48,13 +48,13 @@ public class PhysicalFfmpegDecodingTests
     {
         // Arrange
         const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
-        StringWriter writer = new();
+        using StringWriter writer = new();
         Console.SetOut(writer);
 
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
         FfmpegUtils.Logger = (_, msg) => Console.WriteLine(msg);
-        _ = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
@@ -65,13 +65,13 @@ public class PhysicalFfmpegDecodingTests
     {
         // Arrange
         const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
-        StringWriter writer = new();
+        using StringWriter writer = new();
         Console.SetOut(writer);
 
         // Act
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
         FfmpegUtils.Logger = null;
-        _ = new PhysicalFfmpegDecoding(source);
+        using var x = new PhysicalFfmpegDecoding(source);
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
