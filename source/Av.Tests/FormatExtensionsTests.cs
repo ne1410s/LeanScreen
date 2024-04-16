@@ -6,6 +6,7 @@ namespace Av.Tests;
 
 using System.Globalization;
 using Av.Common;
+using Crypt.Transform;
 
 /// <summary>
 /// Tests for the <see cref="FormatExtensions"/>.
@@ -163,6 +164,27 @@ public class FormatExtensionsTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void GetMediaTypeInfo_WithDecryptor_CallsBlock()
+    {
+        // Arrange
+        var mockDecryptor = new Mock<IGcmDecryptor>();
+        mockDecryptor
+            .Setup(m => m.DecryptBlock(It.IsAny<GcmEncryptedBlock>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), false))
+            .Returns([]);
+
+        // Act
+        new FileInfo(new string('a', 64) + ".0123456789").GetMediaTypeInfo(mockDecryptor.Object);
+
+        // Assert
+        mockDecryptor.Verify(
+            m => m.DecryptBlock(
+                It.IsAny<GcmEncryptedBlock>(),
+                It.IsAny<byte[]>(),
+                It.IsAny<byte[]>(),
+                false));
     }
 
     [Theory]
