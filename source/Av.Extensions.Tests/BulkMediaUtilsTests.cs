@@ -157,10 +157,8 @@ public class BulkMediaUtilsTests
         targetDir.Delete(true);
     }
 
-    [Theory]
-    [InlineData(100, 2)]
-    [InlineData(1, 1)]
-    public async Task ApplyCaps_HasSomeWorkToDo_AppliesCaps(int max, int expected)
+    [Fact]
+    public async Task ApplyCaps_HasSomeWorkToDo_AppliesCaps()
     {
         // Arrange
         var ogDir = new DirectoryInfo("Samples");
@@ -181,11 +179,37 @@ public class BulkMediaUtilsTests
             + ".09f5d2735fe6a00c3e1d2101a232448d7c336973886e58a38ba70f775180f756.91e7a8dd25";
 
         // Act
-        var result = await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, max: max);
+        await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName);
 
         // Assert
-        result.Should().Be(expected);
-        new FileInfo($"{targetDir}/c4/{expectedName}").Exists.Should().Be(max > 1);
+        new FileInfo($"{targetDir}/c4/{expectedName}").Exists.Should().Be(true);
+        targetDir.Delete(true);
+    }
+
+    [Fact]
+    public async Task ApplyCaps_MaxLimiting_MaxApplied()
+    {
+        // Arrange
+        var ogDir = new DirectoryInfo("Samples");
+        const string storeFile1 = "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63";
+        const string storeFile2 = "5e84bf533440c477c441fc829d173c0286ccf8c155b6a9aff325de4564f63c26.b97a77d7e2";
+        const string storeFile3 = "c49fc2afcf45544db942a83817f99b625d40cd30ec46a044b68d79bc995ddaf1.8a2216a3b3";
+        const string pregenName = "5e84bf533440" +
+            ".fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac";
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        targetDir.CreateSubdirectory("c1");
+        targetDir.CreateSubdirectory("5e");
+        targetDir.CreateSubdirectory("c4");
+        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/c1/{storeFile1}");
+        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/5e/{storeFile2}");
+        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/c4/{storeFile3}");
+        File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/5e/{pregenName}");
+
+        // Act
+        var result = await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, max: 1);
+
+        // Assert
+        result.Should().Be(1);
         targetDir.Delete(true);
     }
 
