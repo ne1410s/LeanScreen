@@ -19,7 +19,7 @@ using Crypt.Transform;
 /// <inheritdoc cref="IBulkProcessor"/>
 public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcessor
 {
-    private const string RegexSuffix = @"\.[0-9a-f]+\.jpg$";
+    private const string RegexSuffix = @"\.[0-9a-f]+\.[0-9a-f]{10}$";
     private static readonly AesGcmEncryptor Encryptor = new();
 
     /// <inheritdoc/>
@@ -59,10 +59,12 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                 else
                 {
                     using var saltStr = file.OpenRead();
-                    salt = Encryptor.GenerateSalt(saltStr);
+                    salt = Encryptor.GenerateSalt(saltStr, key);
                 }
 
-                var itemId = salt.Encode(Codec.ByteHex).ToLower() + file.Extension;
+                var saltText = salt.Encode(Codec.ByteHex).ToLower();
+                var ext = isSecure ? file.Extension : new FileInfo(saltText).ToSecureExtension(file.Extension);
+                var itemId = saltText + ext;
                 var relatedMedia = await repo.FindAsync(itemId);
                 var processed = false;
                 if (!relatedMedia.Contains(itemId))
@@ -86,7 +88,8 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                     using var str = file.OpenRead();
                     using var capStream = snapper.Collate(str, isSecure ? salt : [], key, 24, 4, 300);
                     var capSalt = capStream.Encrypt(key);
-                    var capItemId = itemId.Substring(0, 12) + "." + capSalt + ".jpg";
+                    var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
+                    var capItemId = itemId.Substring(0, 12) + "." + capSalt + capExt;
                     await repo.AddCaps(capStream, capItemId, itemId);
                     processed = true;
                 }
@@ -121,7 +124,8 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
             using var vidStream = await repo.OpenAsync(parentId);
             using var capStream = snapper.Collate(vidStream, salt, key, 24, 4, 300);
             var capSalt = capStream.Encrypt(key);
-            var capItemId = parentId.Substring(0, 12) + "." + capSalt + ".jpg";
+            var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
+            var capItemId = parentId.Substring(0, 12) + "." + capSalt + capExt;
             await repo.AddCaps(capStream, capItemId, parentId);
             capped++;
             onProgress?.Report(100.0 * capped / todo.Count);

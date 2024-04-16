@@ -52,7 +52,7 @@ public class StreamFfmpegDecodingTests
     public void Ctor_FractionalFrameRate_ConvertsToDouble()
     {
         // Arrange
-        const string fileName = "4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4";
+        const string fileName = "60f02e749eb0898e69dafbf2fdc8eb9f7e5d71c85d010526e4514532f5b7aece.d1116ac481";
         var fi = new FileInfo(Path.Combine("Samples", fileName));
         var key = new byte[] { 9, 0, 2, 1, 0 };
 

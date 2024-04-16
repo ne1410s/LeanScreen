@@ -15,7 +15,7 @@ public class FileStoreTests
     public async Task AddMedia_IsSecure_DoesNotThrow()
     {
         // Arrange
-        var file = new string('0', 64) + ".jpg";
+        var file = new string('0', 64) + ".4c26c413c2";
         var sut = new FileStore("dir");
 
         // Act

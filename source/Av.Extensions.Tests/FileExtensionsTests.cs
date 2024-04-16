@@ -29,7 +29,7 @@ public class FileExtensionsTests
 
     [Theory]
     [InlineData("sample.flv")]
-    [InlineData("1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv")]
+    [InlineData("c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63")]
     public void GetMediaInfo_WhenCalled_ReturnsExpected(string sourceName)
     {
         // Arrange
@@ -62,8 +62,8 @@ public class FileExtensionsTests
     [Theory]
     [InlineData("sample.flv", "sample.flv_snap_p055_h0024.jpg")]
     [InlineData(
-        "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv",
-        "1bcedf85fab4.1eb62785a1fdd615b52619ff6e957840a3a0e88ef9624e3210a5cf7f20fe8e25.jpg")]
+        "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63",
+        "c12a3419943d.eafc926af0e776a633eb7f5bf3cba71db5664c1a598fa35638411d19cc8a92a6.e4e4783272")]
     public void SnapHere_WhenCalled_ReturnsExpectedPath(string sourceName, string expectedName)
     {
         // Arrange
@@ -96,8 +96,8 @@ public class FileExtensionsTests
     [InlineData("sample.flv", "sample.flv_collate_t006_c02_h0200.jpg")]
     [InlineData("1.mkv", "1.mkv_collate_t006_c02_h0200.jpg")]
     [InlineData(
-        "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv",
-        "1bcedf85fab4.87e1da6af4b93bb2b8f9c8033b48922ca11ef6384abd614f7c0a1bdbfc0104d0.jpg")]
+        "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63",
+        "c12a3419943d.e13f663d61480831c5269fc07825a9c418574828fba4ae66b0c6c87829fa3e7c.e4e4783272")]
     public void CollateHere_WhenCalled_ReturnsExpectedPath(string sourceName, string expectedName)
     {
         // Arrange

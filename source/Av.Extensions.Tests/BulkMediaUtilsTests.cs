@@ -17,18 +17,20 @@ public class BulkMediaUtilsTests
     {
         // Arrange
         var ogDir = new DirectoryInfo("Samples");
-        const string secureName = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
-        const string pregenName = "7ee3322921c9.227c443d7e12ad1402229ed2c2492d9547ebee2332e7cc4c8a6a4a3d4c156bc3.jpg";
+        const string secureName = "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63";
+        const string pregenName = "5e84bf533440"
+            + ".fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac";
         var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
-        targetDir.CreateSubdirectory("7e");
+        targetDir.CreateSubdirectory("5e");
         File.Copy($"{ogDir}/non-media.txt", $"{sourceDir}/non-media.txt");
         File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
         File.Copy($"{ogDir}/{secureName}", $"{sourceDir}/{secureName}");
-        File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/7e/{pregenName}");
+        File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/5e/{pregenName}");
         var expected = new BulkResponse(4) { Processed = 2, Skipped = 1, Unmatched = 1 };
-        var expectSaveTo = $"{targetDir}/7e/7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
+        var expectSaveTo = $"{targetDir}/5e/"
+            + "5e84bf533440c477c441fc829d173c0286ccf8c155b6a9aff325de4564f63c26.b97a77d7e2";
 
         // Act
         var result = await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
@@ -49,13 +51,35 @@ public class BulkMediaUtilsTests
         var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
-        const string expectedName = "1bcedf85fab4.b60a2f1520bf1c6b2758520c619b02e429f397e0a383130a0803bbcefa6a742f.jpg";
+        const string name = "c12a3419943d.ceff13d13fc86ee668a86a90095f6be245d0b67ca469febafef902dee03fde0e.06984d1654";
 
         // Act
         await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
 
         // Assert
-        new FileInfo($"{targetDir}/1b/{expectedName}").Exists.Should().BeTrue();
+        new FileInfo($"{targetDir}/c1/{name}").Exists.Should().BeTrue();
+        sourceDir.Delete(true);
+        targetDir.Delete(true);
+    }
+
+    [Fact]
+    public async Task Ingest_PlainSourceWithUncappedAnalogue_CapsExpected()
+    {
+        // Arrange
+        var ogDir = new DirectoryInfo("Samples");
+        const string uncapped = "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63";
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        targetDir.CreateSubdirectory("c1");
+        File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
+        File.Copy($"{ogDir}/{uncapped}", $"{targetDir}/c1/{uncapped}");
+        const string name = "c12a3419943d.ceff13d13fc86ee668a86a90095f6be245d0b67ca469febafef902dee03fde0e.06984d1654";
+
+        // Act
+        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
+
+        // Assert
+        new FileInfo($"{targetDir}/c1/{name}").Exists.Should().BeTrue();
         sourceDir.Delete(true);
         targetDir.Delete(true);
     }
@@ -85,12 +109,12 @@ public class BulkMediaUtilsTests
         // Arrange
         var mockProgress = new Mock<IProgress<double>>();
         var ogDir = new DirectoryInfo("Samples");
-        const string storeFile = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
+        const string storeFile = "5e84bf533440c477c441fc829d173c0286ccf8c155b6a9aff325de4564f63c26.b97a77d7e2";
         var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
-        targetDir.CreateSubdirectory("7e");
+        targetDir.CreateSubdirectory("5e");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
-        File.Copy($"{ogDir}/{storeFile}", $"{targetDir}/7e/{storeFile}");
+        File.Copy($"{ogDir}/{storeFile}", $"{targetDir}/5e/{storeFile}");
         File.Copy($"{ogDir}/non-media.txt", $"{sourceDir}/non-media.txt");
         var expected = new BulkResponse(2) { Processed = 1, Unmatched = 1 };
 
@@ -110,16 +134,17 @@ public class BulkMediaUtilsTests
         // Arrange
         var mockProgress = new Mock<IProgress<double>>();
         var ogDir = new DirectoryInfo("Samples");
-        const string storeFile1 = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
-        const string storeFile2 = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
-        const string storeFile3 = "38595346adffe0060eb052c38a636ec0149d5bfb1ef42ea64cd76e83f91af51b.flv";
+        const string storeFile1 = "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63";
+        const string storeFile2 = "5e84bf533440c477c441fc829d173c0286ccf8c155b6a9aff325de4564f63c26.b97a77d7e2";
+        const string storeFile3 = "c49fc2afcf45544db942a83817f99b625d40cd30ec46a044b68d79bc995ddaf1.8a2216a3b3";
+
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
-        targetDir.CreateSubdirectory("1b");
-        targetDir.CreateSubdirectory("7e");
-        targetDir.CreateSubdirectory("38");
-        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/1b/{storeFile1}");
-        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/7e/{storeFile2}");
-        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/38/{storeFile3}");
+        targetDir.CreateSubdirectory("c1");
+        targetDir.CreateSubdirectory("5e");
+        targetDir.CreateSubdirectory("c4");
+        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/c1/{storeFile1}");
+        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/5e/{storeFile2}");
+        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/c4/{storeFile3}");
 
         // Act
         await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, onProgress: mockProgress.Object);
@@ -139,26 +164,28 @@ public class BulkMediaUtilsTests
     {
         // Arrange
         var ogDir = new DirectoryInfo("Samples");
-        const string storeFile1 = "1bcedf85fab4eae955a6444ee7b2d70be3b5fe02bdebaecd433828f9731630da.flv";
-        const string storeFile2 = "7ee3322921c9880a3fffc5e55b31521dfbf3c07e634736bbbb2ea0a8de6deec3.mkv";
-        const string storeFile3 = "38595346adffe0060eb052c38a636ec0149d5bfb1ef42ea64cd76e83f91af51b.flv";
-        const string pregenName = "7ee3322921c9.227c443d7e12ad1402229ed2c2492d9547ebee2332e7cc4c8a6a4a3d4c156bc3.jpg";
+        const string storeFile1 = "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63";
+        const string storeFile2 = "5e84bf533440c477c441fc829d173c0286ccf8c155b6a9aff325de4564f63c26.b97a77d7e2";
+        const string storeFile3 = "c49fc2afcf45544db942a83817f99b625d40cd30ec46a044b68d79bc995ddaf1.8a2216a3b3";
+        const string pregenName = "5e84bf533440" +
+            ".fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac";
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
-        targetDir.CreateSubdirectory("1b");
-        targetDir.CreateSubdirectory("7e");
-        targetDir.CreateSubdirectory("38");
-        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/1b/{storeFile1}");
-        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/7e/{storeFile2}");
-        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/38/{storeFile3}");
-        File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/7e/{pregenName}");
-        const string expectedName = "38595346adff.ef0975072db1fb63cf5c51bef438d095b70848c3e601df45cbc52a54e722c30a.jpg";
+        targetDir.CreateSubdirectory("c1");
+        targetDir.CreateSubdirectory("5e");
+        targetDir.CreateSubdirectory("c4");
+        File.Copy($"{ogDir}/{storeFile1}", $"{targetDir}/c1/{storeFile1}");
+        File.Copy($"{ogDir}/{storeFile2}", $"{targetDir}/5e/{storeFile2}");
+        File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/c4/{storeFile3}");
+        File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/5e/{pregenName}");
+        const string expectedName = "c49fc2afcf45"
+            + ".09f5d2735fe6a00c3e1d2101a232448d7c336973886e58a38ba70f775180f756.91e7a8dd25";
 
         // Act
         var result = await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName, max: max);
 
         // Assert
         result.Should().Be(expected);
-        new FileInfo($"{targetDir}/38/{expectedName}").Exists.Should().Be(max > 1);
+        new FileInfo($"{targetDir}/c4/{expectedName}").Exists.Should().Be(max > 1);
         targetDir.Delete(true);
     }
 

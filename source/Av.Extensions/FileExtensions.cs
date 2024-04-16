@@ -65,7 +65,8 @@ public static class FileExtensions
         if (secure)
         {
             var newSalt = str.Encrypt(key);
-            nameToUse = fileName.Substring(0, 12) + "." + newSalt + ".jpg";
+            var ext = fi.ToSecureExtension(".jpg");
+            nameToUse = fileName.Substring(0, 12) + "." + newSalt + ext;
         }
 
         var targetPath = Path.Combine(fi.NotNull().Directory.FullName, nameToUse);
@@ -109,8 +110,9 @@ public static class FileExtensions
         var nameToUse = $"{fileName}_collate_t{formatTotal}_c{formatColumns}_h{formatHeight}.jpg";
         if (secure)
         {
+            var ext = fi.ToSecureExtension(".jpg");
             var newSalt = str.Encrypt(key);
-            nameToUse = fileName.Substring(0, 12) + "." + newSalt + ".jpg";
+            nameToUse = fileName.Substring(0, 12) + "." + newSalt + ext;
         }
 
         var targetPath = Path.Combine(fi.NotNull().Directory.FullName, nameToUse);

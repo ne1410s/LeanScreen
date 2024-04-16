@@ -22,7 +22,7 @@ public static class CryptoExtensions
     public static string Encrypt(this MemoryStream stream, byte[] key)
     {
         var retVal = new AesGcmEncryptor()
-            .Encrypt(stream, stream, key)
+            .Encrypt(stream, stream, key, [])
             .Encode(Codec.ByteHex)
             .ToLowerInvariant();
         stream.NotNull().Seek(0, SeekOrigin.Begin);

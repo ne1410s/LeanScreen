@@ -154,7 +154,7 @@ public class FfmpegRendererTests
 
     [Theory]
     [InlineData("sample.mp4")]
-    [InlineData("4a3a54004ec9482cb7225c2574b0f889291e8270b1c4d61dbc1ab8d9fef4c9e0.mp4")]
+    [InlineData("60f02e749eb0898e69dafbf2fdc8eb9f7e5d71c85d010526e4514532f5b7aece.d1116ac481")]
     public void Ctor_VaryingFileSecurity_AffectsDecoder(string fileName)
     {
         // Arrange

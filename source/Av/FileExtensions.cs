@@ -40,14 +40,6 @@ public static class FileExtensions
     }
 
     /// <summary>
-    /// Gets media type information for the file.
-    /// </summary>
-    /// <param name="fi">The file.</param>
-    /// <returns>Media type information.</returns>
-    public static MediaTypeInfo GetMediaTypeInfo(this FileInfo fi)
-        => (fi ?? throw new ArgumentNullException(nameof(fi))).Extension.GetMediaTypeInfo();
-
-    /// <summary>
     /// Enumerates all media files recursively, according to the specified
     /// media type(s).
     /// </summary>

@@ -94,9 +94,10 @@ public class FormatExtensionsTests
     {
         // Arrange
         var expected = new MediaTypeInfo(expectedType, expectedMime);
+        var plainFile = new FileInfo("1" + extension);
 
         // Act
-        var result = extension.GetMediaTypeInfo();
+        var result = plainFile.GetMediaTypeInfo();
 
         // Assert
         result.Should().Be(expected);
@@ -107,8 +108,11 @@ public class FormatExtensionsTests
     [InlineData("ZIp")]
     public void GetMediaTypeInfo_VarietyOfFormats_ReturnsInfo(string extension)
     {
-        // Arrange & Act
-        var result = extension.GetMediaTypeInfo();
+        // Arrange
+        var plainFile = new FileInfo("1." + extension.TrimStart('.'));
+
+        // Act
+        var result = plainFile.GetMediaTypeInfo();
 
         // Assert
         result.MediaType.Should().Be(MediaTypes.Archive);
@@ -121,14 +125,44 @@ public class FormatExtensionsTests
     [InlineData(null)]
     [InlineData(" ")]
     [InlineData("fakerzz")]
-    [InlineData("zip.")]
+    [InlineData("zip_")]
     public void GetMediaTypeInfo_NotFound_ReturnsNull(string? extension)
     {
         // Arrange
-        var result = extension.GetMediaTypeInfo();
+        var plainFile = new FileInfo("1." + extension);
+
+        // Act
+        var result = plainFile.GetMediaTypeInfo();
 
         // Assert
         result.MimeType.Should().Be(null);
+    }
+
+    [Fact]
+    public void GetMediaTypeInfo_WithJpg_ReturnsExpected()
+    {
+        // Arrange
+        var fi = new FileInfo("test.jpg");
+        var expected = new MediaTypeInfo(MediaTypes.Image, "image/jpeg");
+
+        // Act
+        var result = fi.GetMediaTypeInfo();
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Fact]
+    public void GetMediaTypeInfo_NullFile_ThrowsExpected()
+    {
+        // Arrange
+        var fi = (FileInfo)null!;
+
+        // Act
+        var act = () => fi.GetMediaTypeInfo();
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Theory]

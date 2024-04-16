@@ -7,8 +7,11 @@ namespace Av;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using Av.Common;
+using Crypt.IO;
+using Crypt.Transform;
 
 /// <summary>
 /// Extensions for formatting.
@@ -142,11 +145,16 @@ public static class FormatExtensions
     /// <summary>
     /// Gets apparent media type information based on a file extension.
     /// </summary>
-    /// <param name="extension">The extension.</param>
+    /// <param name="fi">The file info.</param>
+    /// <param name="decryptor">Optional decryptor.</param>
     /// <returns>Media type information.</returns>
-    public static MediaTypeInfo GetMediaTypeInfo(this string? extension)
+    public static MediaTypeInfo GetMediaTypeInfo(this FileInfo fi, IGcmDecryptor? decryptor = null)
     {
-        extension = $".{extension?.ToLowerInvariant().TrimStart('.')}";
+        decryptor ??= new AesGcmDecryptor();
+        var extension = fi.NotNull().IsSecure()
+            ? fi.ToPlainExtension(decryptor)
+            : '.' + fi.Extension.ToLowerInvariant().TrimStart('.');
+
         return ArchiveMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Archive, ArchiveMimes[extension])
             : ImageMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Image, ImageMimes[extension])
             : AudioMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Audio, AudioMimes[extension])

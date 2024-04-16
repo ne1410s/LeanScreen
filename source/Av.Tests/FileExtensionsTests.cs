@@ -8,39 +8,13 @@ using System.Text.RegularExpressions;
 using Av.Common;
 using Crypt.Encoding;
 using Crypt.Hashing;
+using Crypt.IO;
 
 /// <summary>
 /// Tests for the <see cref="FileExtensions"/>.
 /// </summary>
 public class FileExtensionsTests
 {
-    [Fact]
-    public void GetMediaTypeInfo_WithJpg_ReturnsExpected()
-    {
-        // Arrange
-        var fi = new FileInfo("test.jpg");
-        var expected = new MediaTypeInfo(MediaTypes.Image, "image/jpeg");
-
-        // Act
-        var result = fi.GetMediaTypeInfo();
-
-        // Assert
-        result.Should().Be(expected);
-    }
-
-    [Fact]
-    public void GetMediaTypeInfo_NullFile_ThrowsExpected()
-    {
-        // Arrange
-        var fi = (FileInfo)null!;
-
-        // Act
-        var act = fi.GetMediaTypeInfo;
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
-    }
-
     [Fact]
     public void EnumerateMedia_NullDirectory_ThrowsExpected()
     {
@@ -129,7 +103,7 @@ public class FileExtensionsTests
         var entropy = entropyCsv?.Split(',');
 
         // Act
-        FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
+        Av.FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
 
         // Assert
         checkSum.Should().Be(expectedSum);
@@ -137,7 +111,7 @@ public class FileExtensionsTests
 
     [Theory]
     [InlineData("ogg", "f652b8fd0e9c447c9cb0cae3044a927e")]
-    [InlineData(null, "043ff9a3d7b83c77da79ebc9ccb17c0a")]
+    [InlineData(null, "e68a0f5696c34381362ccc1da69beb2f")]
     public void MakeKey_VaryingKeyRegex_ReturnsExpectedBytes(string? keyRegex, string expectedHash)
     {
         // Arrange
