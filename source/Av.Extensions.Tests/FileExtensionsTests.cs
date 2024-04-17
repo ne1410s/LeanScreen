@@ -10,7 +10,7 @@ using Crypt.Hashing;
 using Crypt.IO;
 
 /// <summary>
-/// Tests for the <see cref="FileExtensions"/> class.
+/// Tests for the <see cref="Av.Extensions.FileExtensions"/> class.
 /// </summary>
 public class FileExtensionsTests
 {
@@ -48,7 +48,9 @@ public class FileExtensionsTests
     public void SnapHere_WhenCalled_ProducesExpected(string sourceName, string expectedMd5)
     {
         // Arrange
-        var fi = new FileInfo(Path.Combine("Samples", sourceName));
+        var source = new FileInfo(Path.Combine("Samples", sourceName));
+        var fi = new FileInfo($"{source.DirectoryName}/{Guid.NewGuid()}{source.Extension}");
+        source.CopyTo(fi.FullName);
 
         // Act
         var path = fi.SnapHere([9, 0, 2, 1, 0]);
@@ -81,7 +83,9 @@ public class FileExtensionsTests
     public void CollateHere_WhenCalled_ProducesExpected(string sourceName, string expectedMd5)
     {
         // Arrange
-        var fi = new FileInfo(Path.Combine("Samples", sourceName));
+        var source = new FileInfo(Path.Combine("Samples", sourceName));
+        var fi = new FileInfo($"{source.DirectoryName}/{Guid.NewGuid()}{source.Extension}");
+        source.CopyTo(fi.FullName);
 
         // Act
         var path = fi.CollateHere([9, 0, 2, 1, 0]);
