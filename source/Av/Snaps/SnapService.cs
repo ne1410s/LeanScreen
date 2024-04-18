@@ -7,6 +7,7 @@ namespace Av.Snaps;
 using System;
 using System.IO;
 using System.Linq;
+using Av.Common;
 using Av.Imaging;
 using Av.Rendering;
 using Av.Services;
@@ -24,9 +25,10 @@ public class SnapService(IRenderingSessionFactory rendererFactory, IImagingServi
 
     /// <inheritdoc/>
     public MemoryStream Snap(
-        Stream stream, byte[] salt, byte[] key, double position = 0.4, int? height = 300)
+        Stream stream, byte[] salt, byte[] key, out Size2D size, double position = 0.4, int? height = 300)
     {
         using var renderer = rendererFactory.Create(stream, salt, key, height);
+        size = renderer.ThumbSize;
         var absolutePosition = position * renderer.Media.Duration.TotalSeconds;
         var frame = renderer.RenderAt(TimeSpan.FromSeconds(absolutePosition));
         return imager.Encode(frame.Rgb24Bytes.ToArray(), frame.Dimensions);
@@ -34,12 +36,13 @@ public class SnapService(IRenderingSessionFactory rendererFactory, IImagingServi
 
     /// <inheritdoc/>
     public MemoryStream Collate(
-        Stream stream, byte[] salt, byte[] key, int total = 24, int columns = 4, int? height = 300)
+        Stream stream, byte[] salt, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300)
     {
         using var renderer = rendererFactory.Create(stream, salt, key, height);
+        size = renderer.ThumbSize;
         var times = renderer.Media.Duration.DistributeEvenly(total);
         var frames = times.Select(renderer.RenderAt);
-        var opts = new CollationOptions { Columns = columns, ItemSize = renderer.ThumbSize };
+        var opts = new CollationOptions { Columns = columns, ItemSize = size };
         return imager.Collate(frames, opts);
     }
 }

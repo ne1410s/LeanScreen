@@ -48,16 +48,22 @@ public class SixLaborsImagingService : IImagingService
     public MemoryStream Collate(IEnumerable<RenderedFrame> frames, CollationOptions? opts = null)
     {
         opts ??= new CollationOptions();
-        var firstItemSize = (frames ?? throw new ArgumentNullException(nameof(frames))).First().Dimensions;
+        var frameList = frames?.ToList() ?? [];
+        if (frameList.Count == 0)
+        {
+            throw new ArgumentException("No frames found.", nameof(frames));
+        }
+
+        var firstItemSize = frameList[0].Dimensions;
         var itemSize = opts.ItemSize == null ? firstItemSize : firstItemSize.ResizeTo(opts.ItemSize.Value);
-        var map = opts.GetMap(itemSize, frames.Count());
+        var map = opts.GetMap(itemSize, frameList.Count);
         using var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height, CollationBackground);
         using var border = new Image<Rgb24>(
             itemSize.Width + (CollationBorderSize * 2),
             itemSize.Height + (CollationBorderSize * 2),
             CollationBorderColour);
         var iterIndex = 0;
-        foreach (var frame in frames)
+        foreach (var frame in frameList)
         {
             var inSize = frame.Dimensions;
             var item = Image.LoadPixelData<Rgb24>(frame.Rgb24Bytes.ToArray(), inSize.Width, inSize.Height);

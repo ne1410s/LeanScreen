@@ -5,6 +5,7 @@
 namespace Av.Extensions;
 
 using System.IO;
+using Av.Common;
 using Av.Imaging.SixLabors;
 using Av.Rendering;
 using Av.Rendering.Ffmpeg;
@@ -37,13 +38,15 @@ public static class FileExtensions
     /// </summary>
     /// <param name="fi">The file.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="position">The relative position.</param>
     /// <param name="height">The desired height in pixels.</param>
     /// <returns>Image stream.</returns>
-    public static MemoryStream Snap(this FileInfo fi, byte[] key, double position = 0.4, int? height = 300)
+    public static MemoryStream Snap(
+        this FileInfo fi, byte[] key, out Size2D size, double position = 0.4, int? height = 300)
     {
         using var str = fi.NotNull().OpenRead();
-        return Snapper.Snap(str, fi.IsSecure() ? fi.ToSalt() : [], key, position, height);
+        return Snapper.Snap(str, fi.IsSecure() ? fi.ToSalt() : [], key, out size, position, height);
     }
 
     /// <summary>
@@ -51,15 +54,17 @@ public static class FileExtensions
     /// </summary>
     /// <param name="fi">The file.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="position">The relative position.</param>
     /// <param name="height">The desired height in pixels.</param>
     /// <returns>The file location.</returns>
-    public static string SnapHere(this FileInfo fi, byte[] key, double position = 0.4, int? height = 300)
+    public static string SnapHere(
+        this FileInfo fi, byte[] key, out Size2D size, double position = 0.4, int? height = 300)
     {
         var fileName = fi.NotNull().Name;
         var secure = fi.IsSecure();
-        using var str = fi.Snap(key, position, height);
-        var formatHeight = ((long)(height ?? 0)).FormatToUpperBound(9999);
+        using var str = fi.Snap(key, out size, position, height);
+        var formatHeight = ((long)size.Height).FormatToUpperBound(9999);
         var formatPosition = ((long)(position * 100)).FormatToUpperBound(100);
         var nameToUse = $"{fileName}_snap_p{formatPosition}_h{formatHeight}.jpg";
         if (secure)
@@ -80,14 +85,16 @@ public static class FileExtensions
     /// </summary>
     /// <param name="fi">The file.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="total">The total number of frames.</param>
     /// <param name="columns">The number of columns.</param>
     /// <param name="height">The desired height in pixels.</param>
     /// <returns>Image stream.</returns>
-    public static MemoryStream Collate(this FileInfo fi, byte[] key, int total = 24, int columns = 4, int? height = 300)
+    public static MemoryStream Collate(
+        this FileInfo fi, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300)
     {
         using var str = fi.NotNull().OpenRead();
-        return Snapper.Collate(str, fi.IsSecure() ? fi.ToSalt() : [], key, total, columns, height);
+        return Snapper.Collate(str, fi.IsSecure() ? fi.ToSalt() : [], key, out size, total, columns, height);
     }
 
     /// <summary>
@@ -95,18 +102,20 @@ public static class FileExtensions
     /// </summary>
     /// <param name="fi">The file.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="total">The total number of frames.</param>
     /// <param name="columns">The number of columns.</param>
     /// <param name="height">The desired height in pixels.</param>
     /// <returns>The target path.</returns>
-    public static string CollateHere(this FileInfo fi, byte[] key, int total = 24, int columns = 4, int? height = 300)
+    public static string CollateHere(
+        this FileInfo fi, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300)
     {
         var fileName = fi.NotNull().Name;
         var secure = fi.IsSecure();
-        using var str = fi.Collate(key, total, columns, height);
+        using var str = fi.Collate(key, out size, total, columns, height);
         var formatTotal = ((long)total).FormatToUpperBound(999);
         var formatColumns = ((long)columns).FormatToUpperBound(99);
-        var formatHeight = ((long)(height ?? 0)).FormatToUpperBound(9999);
+        var formatHeight = ((long)size.Height).FormatToUpperBound(9999);
         var nameToUse = $"{fileName}_collate_t{formatTotal}_c{formatColumns}_h{formatHeight}.jpg";
         if (secure)
         {

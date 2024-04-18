@@ -5,6 +5,7 @@
 namespace Av.Services;
 
 using System.IO;
+using Av.Common;
 using Av.Rendering;
 
 /// <summary>
@@ -28,11 +29,12 @@ public interface ISnapService
     /// <param name="stream">The input stream.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="position">The requested position.</param>
     /// <param name="height">The requested item height.</param>
     /// <returns>Unencrypted image stream.</returns>
     public MemoryStream Snap(
-        Stream stream, byte[] salt, byte[] key, double position = 0.4, int? height = 300);
+        Stream stream, byte[] salt, byte[] key, out Size2D size, double position = 0.4, int? height = 300);
 
     /// <summary>
     /// Collates a sequence of frames.
@@ -40,10 +42,11 @@ public interface ISnapService
     /// <param name="stream">The input stream.</param>
     /// <param name="salt">The salt.</param>
     /// <param name="key">The key.</param>
+    /// <param name="size">The output frame dimensions.</param>
     /// <param name="total">The total number of items.</param>
     /// <param name="columns">The maximum number of columns.</param>
     /// <param name="height">The requested item height.</param>
     /// <returns>Unencrypted image stream.</returns>
     public MemoryStream Collate(
-        Stream stream, byte[] salt, byte[] key, int total = 24, int columns = 4, int? height = 300);
+        Stream stream, byte[] salt, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300);
 }

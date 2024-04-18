@@ -53,7 +53,7 @@ public class FileExtensionsTests
         source.CopyTo(fi.FullName);
 
         // Act
-        var path = fi.SnapHere([9, 0, 2, 1, 0]);
+        var path = fi.SnapHere([9, 0, 2, 1, 0], out _);
         var snapFi = new FileInfo(path);
         var md5Hex = snapFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
@@ -72,7 +72,7 @@ public class FileExtensionsTests
         var fi = new FileInfo(Path.Combine("Samples", sourceName));
 
         // Act
-        var actualName = new FileInfo(fi.SnapHere([9, 0, 2, 1, 0], .55, 24)).Name;
+        var actualName = new FileInfo(fi.SnapHere([9, 0, 2, 1, 0], out _, .55, 24)).Name;
 
         // Assert
         actualName.Should().Be(expectedName);
@@ -88,7 +88,7 @@ public class FileExtensionsTests
         source.CopyTo(fi.FullName);
 
         // Act
-        var path = fi.CollateHere([9, 0, 2, 1, 0]);
+        var path = fi.CollateHere([9, 0, 2, 1, 0], out _);
         var snapFi = new FileInfo(path);
         var md5Hex = snapFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
@@ -108,7 +108,7 @@ public class FileExtensionsTests
         var fi = new FileInfo(Path.Combine("Samples", sourceName));
 
         // Act
-        var actualName = new FileInfo(fi.CollateHere([9, 0, 2, 1, 0], 6, 2, 200)).Name;
+        var actualName = new FileInfo(fi.CollateHere([9, 0, 2, 1, 0], out _, 6, 2, 200)).Name;
 
         // Assert
         actualName.Should().Be(expectedName);

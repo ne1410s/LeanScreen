@@ -54,6 +54,21 @@ public class SixLaborsImagingServiceTests
     }
 
     [Fact]
+    public void Collate_WithEmptyFrames_ThrowsException()
+    {
+        // Arrange
+        var sut = new SixLaborsImagingService();
+
+        // Act
+        var act = () => sut.Collate([]);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("No frames found.*")
+            .WithParameterName("frames");
+    }
+
+    [Fact]
     public void Collate_WithNullFrame_ThrowsException()
     {
         // Arrange
@@ -63,7 +78,8 @@ public class SixLaborsImagingServiceTests
         var act = () => sut.Collate(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>()
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("No frames found.*")
             .WithParameterName("frames");
     }
 

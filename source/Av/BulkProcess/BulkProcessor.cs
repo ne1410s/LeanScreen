@@ -86,7 +86,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                 if (isVideo && !hasCaps)
                 {
                     using var str = file.OpenRead();
-                    using var capStream = snapper.Collate(str, isSecure ? salt : [], key, 24, 4, 300);
+                    using var capStream = snapper.Collate(str, isSecure ? salt : [], key, out _, 24, 4, 300);
                     var capSalt = capStream.Encrypt(key);
                     var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
                     var capItemId = itemId.Substring(0, 12) + "." + capSalt + capExt;
@@ -122,7 +122,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
         {
             var salt = new FileInfo(parentId).ToSalt();
             using var vidStream = await repo.OpenAsync(parentId);
-            using var capStream = snapper.Collate(vidStream, salt, key, 24, 4, 300);
+            using var capStream = snapper.Collate(vidStream, salt, key, out _, 24, 4, 300);
             var capSalt = capStream.Encrypt(key);
             var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
             var capItemId = parentId.Substring(0, 12) + "." + capSalt + capExt;

@@ -176,7 +176,7 @@ public class BulkMediaUtilsTests
         File.Copy($"{ogDir}/{storeFile3}", $"{targetDir}/c4/{storeFile3}");
         File.Copy($"{ogDir}/{pregenName}", $"{targetDir}/5e/{pregenName}");
         const string expectedName = "c49fc2afcf45"
-            + ".09f5d2735fe6a00c3e1d2101a232448d7c336973886e58a38ba70f775180f756.91e7a8dd25";
+            + ".4d05057d335e0a9fed0f8542e263f5018905250ee30bf0911ec75498a6352b18.8780a82eb8";
 
         // Act
         await BulkMediaUtils.ApplyCaps([9, 0, 2, 1, 0], targetDir.FullName);
