@@ -59,7 +59,15 @@ public static class WriterExtensions
         CancellationTokenSource? cancelTokenSource = null;
         return arg =>
         {
-            cancelTokenSource?.Cancel();
+            try
+            {
+                cancelTokenSource?.Cancel();
+            }
+            catch
+            {
+                // Just do nothing
+            }
+
             cancelTokenSource = new CancellationTokenSource();
             Task.Delay(milliseconds, cancelTokenSource.Token)
                 .ContinueWith(
