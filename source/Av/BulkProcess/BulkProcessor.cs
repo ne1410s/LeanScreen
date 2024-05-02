@@ -7,7 +7,6 @@ namespace Av.BulkProcess;
 using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Av.Common;
 using Av.MediaRepo;
@@ -80,19 +79,19 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                     processed = true;
                 }
 
-                var isVideo = file.GetMediaTypeInfo().MediaType == MediaTypes.Video;
-                var rgx = new Regex(itemId.Substring(0, 12) + RegexSuffix);
-                var hasCaps = relatedMedia.Exists(rgx.IsMatch);
-                if (isVideo && !hasCaps)
-                {
-                    using var str = file.OpenRead();
-                    using var capStream = snapper.Collate(str, isSecure ? salt : [], key, out _, 24, 4, 300);
-                    var capSalt = capStream.Encrypt(key);
-                    var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
-                    var capItemId = itemId.Substring(0, 12) + "." + capSalt + capExt;
-                    await repo.AddCaps(capStream, capItemId, itemId);
-                    processed = true;
-                }
+                ////var isVideo = file.GetMediaTypeInfo().MediaType == MediaTypes.Video;
+                ////var rgx = new Regex(itemId.Substring(0, 12) + RegexSuffix);
+                ////var hasCaps = relatedMedia.Exists(rgx.IsMatch);
+                ////if (isVideo && !hasCaps)
+                ////{
+                ////    using var str = file.OpenRead();
+                ////    using var capStream = snapper.Collate(str, isSecure ? salt : [], key, out _, 24, 4, 300);
+                ////    var capSalt = capStream.Encrypt(key);
+                ////    var capExt = new FileInfo(capSalt).ToSecureExtension(".jpg");
+                ////    var capItemId = itemId.Substring(0, 12) + "." + capSalt + capExt;
+                ////    await repo.AddCaps(capStream, capItemId, itemId);
+                ////    processed = true;
+                ////}
 
                 file.Delete();
                 if (processed)

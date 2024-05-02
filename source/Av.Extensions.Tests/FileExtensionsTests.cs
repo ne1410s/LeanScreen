@@ -43,6 +43,37 @@ public class FileExtensionsTests
         info.Should().BeEquivalentTo(expected);
     }
 
+    [Fact]
+    public async Task ResizeImage_NotImage_ThrowsException()
+    {
+        // Arrange
+        var fakeVid = new FileInfo("hi.wmv");
+
+        // Act
+        var act = () => fakeVid.ResizeImage([]);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>().WithMessage("Media type must be: Image*");
+    }
+
+    [Fact]
+    public async Task ResizeImage_IsImage_ProducesExpectedHash()
+    {
+        // Arrange
+        const string expected = "a338f1f9914186c1730f51dde4d09fd6";
+        const string name = "5e84bf533440.fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac";
+        var imageSource = new FileInfo($"Samples/{name}");
+
+        // Act
+        using var stream = await imageSource.ResizeImage([9, 0, 2, 1, 0]);
+        var resultingPosition = stream.Position;
+        var actual = stream.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        // Assert
+        resultingPosition.Should().Be(0);
+        actual.Should().Be(expected);
+    }
+
     [Theory]
     [InlineData("sample.flv", "efd6f4e5213878701053d32b3273214e")]
     public void SnapHere_WhenCalled_ProducesExpected(string sourceName, string expectedMd5)

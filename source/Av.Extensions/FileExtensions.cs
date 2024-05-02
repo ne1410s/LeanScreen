@@ -4,22 +4,24 @@
 
 namespace Av.Extensions;
 
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using Av.Common;
 using Av.Imaging.SixLabors;
 using Av.Rendering;
 using Av.Rendering.Ffmpeg;
 using Av.Snaps;
 using Crypt.IO;
+using Crypt.Streams;
 
 /// <summary>
 /// Extensions for files.
 /// </summary>
 public static class FileExtensions
 {
-    private static readonly SnapService Snapper = new(
-        new FfmpegRendererFactory(),
-        new SixLaborsImagingService());
+    private static readonly SixLaborsImagingService Imager = new();
+    private static readonly SnapService Snapper = new(new FfmpegRendererFactory(), Imager);
 
     /// <summary>
     /// Gets media info.
@@ -31,6 +33,30 @@ public static class FileExtensions
     {
         using var str = fi.NotNull().OpenRead();
         return Snapper.GetInfo(str, fi.IsSecure() ? fi.ToSalt() : [], key);
+    }
+
+    /// <summary>
+    /// Resizes an image file.
+    /// </summary>
+    /// <param name="fi">The source file.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="height">The desired height in pixels.</param>
+    /// <returns>Image stream.</returns>
+    public static async Task<MemoryStream> ResizeImage(this FileInfo fi, byte[] key, int height = 300)
+    {
+        var mediaType = fi.GetMediaTypeInfo().MediaType;
+        if (mediaType != MediaTypes.Image)
+        {
+            throw new ArgumentException($"Media type must be: Image, but received: {mediaType}.");
+        }
+
+        using var readStream = fi.IsSecure()
+            ? new CryptoBlockReadStream(fi, key)
+            : new BlockReadStream(fi);
+
+        var retVal = await Imager.ResizeImage(readStream, new() { Height = height });
+        retVal.Seek(0, SeekOrigin.Begin);
+        return retVal;
     }
 
     /// <summary>
