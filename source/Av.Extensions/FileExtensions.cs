@@ -36,6 +36,20 @@ public static class FileExtensions
     }
 
     /// <summary>
+    /// Gets image dimensions.
+    /// </summary>
+    /// <param name="fi">The file.</param>
+    /// <param name="key">The key.</param>
+    /// <returns>Image dimensions.</returns>
+    public static async Task<Size2D> GetImageSize(this FileInfo fi, byte[] key)
+    {
+        using var readStream = fi.IsSecure()
+            ? new CryptoBlockReadStream(fi, key)
+            : new BlockReadStream(fi);
+        return await Imager.GetSize(readStream);
+    }
+
+    /// <summary>
     /// Resizes an image file.
     /// </summary>
     /// <param name="fi">The source file.</param>

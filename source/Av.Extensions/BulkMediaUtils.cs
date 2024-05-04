@@ -31,6 +31,7 @@ public static class BulkMediaUtils
     /// <param name="key">The key.</param>
     /// <param name="mediaRepoParam">The media repo parameter.</param>
     /// <param name="mediaRepoName">The media repo name.</param>
+    /// <param name="applySnap">Whether to apply snapshot.</param>
     /// <param name="recurse">Whether to look for sources in subdirectories.</param>
     /// <param name="purgeNonMedia">Whether to delete non-media source.</param>
     /// <param name="onProgress">Progress handler.</param>
@@ -40,12 +41,13 @@ public static class BulkMediaUtils
         byte[] key,
         string mediaRepoParam,
         string mediaRepoName = "fs",
+        bool applySnap = false,
         bool recurse = true,
         bool purgeNonMedia = true,
         IProgress<double>? onProgress = null)
     {
         var processor = new BulkProcessor(Snapper, GetRepo(mediaRepoName, mediaRepoParam));
-        return await processor.IngestAsync(key, di, recurse, purgeNonMedia, onProgress);
+        return await processor.IngestAsync(key, di, recurse, purgeNonMedia, applySnap, onProgress);
     }
 
     /// <summary>

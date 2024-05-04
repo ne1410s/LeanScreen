@@ -4,6 +4,7 @@
 
 namespace Av.Extensions.Tests;
 
+using Av.Common;
 using Av.Rendering;
 using Crypt.Encoding;
 using Crypt.Hashing;
@@ -41,6 +42,22 @@ public class FileExtensionsTests
 
         // Assert
         info.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineData("5e84bf533440.fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac", 1650, 1980)]
+    [InlineData("blue-pixel.png", 1, 1)]
+    public async Task GetSize_WithImage_ReturnsExpected(string path, int expectedWidth, int expectedHeight)
+    {
+        // Arrange
+        var fi = new FileInfo($"Samples/{path}");
+        var expectedSize = new Size2D(expectedWidth, expectedHeight);
+
+        // Act
+        var actualSize = await fi.GetImageSize([9, 0, 2, 1, 0]);
+
+        // Assert
+        actualSize.Should().Be(expectedSize);
     }
 
     [Fact]

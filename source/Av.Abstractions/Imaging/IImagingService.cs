@@ -16,6 +16,13 @@ using Av.Rendering;
 public interface IImagingService
 {
     /// <summary>
+    /// Gets the natural image size.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <returns>The dimensions.</returns>
+    Task<Size2D> GetSize(Stream stream);
+
+    /// <summary>
     /// Encodes image bytes to a stream.
     /// </summary>
     /// <param name="rgb24Bytes">The image bytes as 24-bit rgb.</param>

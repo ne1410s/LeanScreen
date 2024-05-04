@@ -25,6 +25,13 @@ public class SixLaborsImagingService : IImagingService
     private static readonly Rgb24 CollationBorderColour = new(0, 0, 0);
 
     /// <inheritdoc/>
+    public async Task<Size2D> GetSize(Stream stream)
+    {
+        var (image, _) = await Image.LoadWithFormatAsync(stream);
+        return new(image.Width, image.Height);
+    }
+
+    /// <inheritdoc/>
     public MemoryStream Encode(byte[] rgb24Bytes, Size2D size)
     {
         var image = Image.LoadPixelData<Rgb24>(rgb24Bytes, size.Width, size.Height);

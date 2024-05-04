@@ -20,6 +20,7 @@ public interface IBulkProcessor
     /// <param name="source">The source directory.</param>
     /// <param name="recurse">Whether to include subdirectories.</param>
     /// <param name="purgeNonMedia">Whether to delete non-media files.</param>
+    /// <param name="applySnap">Whether to apply a snapshot on ingest.</param>
     /// <param name="onProgress">Progress handler.</param>
     /// <returns>The response.</returns>
     public Task<BulkResponse> IngestAsync(
@@ -27,6 +28,7 @@ public interface IBulkProcessor
         DirectoryInfo source,
         bool recurse,
         bool purgeNonMedia,
+        bool applySnap,
         IProgress<double>? onProgress = null);
 
     /// <summary>

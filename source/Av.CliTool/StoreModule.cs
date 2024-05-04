@@ -23,6 +23,7 @@ public static class StoreModule
     /// <param name="source">The source directory.</param>
     /// <param name="storeParam">The store parameter.</param>
     /// <param name="storeType">The target store type. Can be: fs | blob.</param>
+    /// <param name="applySnap">Whether to apply snapshots.</param>
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="recurse">Whether to recurse.</param>
@@ -33,6 +34,7 @@ public static class StoreModule
         [Alias("s")] string source,
         [Alias("sp")] string storeParam,
         [Alias("st")] string storeType = "fs",
+        [Alias("as")] bool applySnap = false,
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
         [Alias("r")] bool recurse = true,
@@ -41,7 +43,7 @@ public static class StoreModule
         writer = writer.NotNull();
         var di = new DirectoryInfo(source);
         var key = writer.PrepareKey(keySource, keyRegex);
-        var result = await di.Ingest(key, storeParam, storeType, recurse, purge, writer.ProgressHandler());
+        var result = await di.Ingest(key, storeParam, storeType, applySnap, recurse, purge, writer.ProgressHandler());
         await Task.Delay(1000);
         writer.Write(line: true);
         return result;

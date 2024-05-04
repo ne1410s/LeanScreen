@@ -54,7 +54,7 @@ public class BulkMediaUtilsTests
         const string name = "c12a3419943d.ceff13d13fc86ee668a86a90095f6be245d0b67ca469febafef902dee03fde0e.06984d1654";
 
         // Act
-        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
+        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName, applySnap: true);
 
         // Assert
         new FileInfo($"{targetDir}/c1/{name}").Exists.Should().BeTrue();
@@ -76,7 +76,7 @@ public class BulkMediaUtilsTests
         const string name = "c12a3419943d.ceff13d13fc86ee668a86a90095f6be245d0b67ca469febafef902dee03fde0e.06984d1654";
 
         // Act
-        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName);
+        await sourceDir.Ingest([9, 0, 2, 1, 0], targetDir.FullName, applySnap: true);
 
         // Assert
         new FileInfo($"{targetDir}/c1/{name}").Exists.Should().BeTrue();
