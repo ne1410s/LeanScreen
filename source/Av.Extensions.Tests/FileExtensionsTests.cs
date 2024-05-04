@@ -73,12 +73,14 @@ public class FileExtensionsTests
         await act.Should().ThrowAsync<ArgumentException>().WithMessage("Media type must be: Image*");
     }
 
-    [Fact]
-    public async Task ResizeImage_IsImage_ProducesExpectedHash()
+    [Theory]
+    [InlineData("blue-pixel.png", "4591d2fd73a570ff757fb3c9e55186a7")]
+    [InlineData(
+        "5e84bf533440.fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac",
+        "a338f1f9914186c1730f51dde4d09fd6")]
+    public async Task ResizeImage_IsImage_ProducesExpectedHash(string name, string expectedHash)
     {
         // Arrange
-        const string expected = "a338f1f9914186c1730f51dde4d09fd6";
-        const string name = "5e84bf533440.fb62352ee50d77e90b9d4c59f92263b576756148e1cee33b8ad338741b2af7b4.63e74026ac";
         var imageSource = new FileInfo($"Samples/{name}");
 
         // Act
@@ -88,7 +90,7 @@ public class FileExtensionsTests
 
         // Assert
         resultingPosition.Should().Be(0);
-        actual.Should().Be(expected);
+        actual.Should().Be(expectedHash);
     }
 
     [Theory]
