@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace Av.Tests;
+namespace Av.Tests.BulkProcess;
 
 using Av.BulkProcess;
 

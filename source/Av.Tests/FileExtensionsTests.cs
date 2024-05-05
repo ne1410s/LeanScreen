@@ -6,6 +6,7 @@ namespace Av.Tests;
 
 using System.Text.RegularExpressions;
 using Av.Common;
+using Av.Tests.Samples;
 using Crypt.Encoding;
 using Crypt.Hashing;
 using Crypt.IO;
@@ -37,7 +38,7 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingMediaType_CountExpected(MediaTypes types, int expectedCount)
     {
         // Arrange
-        var di = CopyAll(new DirectoryInfo("Samples"));
+        var di = TestHelper.CopySamples();
 
         // Act
         var media = di.EnumerateMedia(types, recurse: true);
@@ -54,7 +55,7 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingSecureFlag_CountExpected(bool? secure, int expectedCount)
     {
         // Arrange
-        var di = CopyAll(new DirectoryInfo("Samples"));
+        var di = TestHelper.CopySamples();
 
         // Act
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure, true);
@@ -70,7 +71,7 @@ public class FileExtensionsTests
     public void EnumerateMedia_VaryingRecurseFlag_CountExpected(bool recurse, int expectedCount)
     {
         // Arrange
-        var di = CopyAll(new DirectoryInfo("Samples"));
+        var di = TestHelper.CopySamples();
 
         // Act
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, recurse: recurse);
@@ -140,23 +141,5 @@ public class FileExtensionsTests
 
         // Assert
         actualDir.Should().Be(expectedDir);
-    }
-
-    private static DirectoryInfo CopyAll(DirectoryInfo source, DirectoryInfo? target = null)
-    {
-        target ??= new($"{source.Name}_{Guid.NewGuid()}");
-        target.Create();
-
-        foreach (var di in source.GetDirectories())
-        {
-            CopyAll(di, target.CreateSubdirectory(di.Name));
-        }
-
-        foreach (var fi in source.GetFiles())
-        {
-            fi.CopyTo(Path.Combine(target.FullName, fi.Name));
-        }
-
-        return target;
     }
 }
