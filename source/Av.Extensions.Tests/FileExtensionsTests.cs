@@ -6,9 +6,9 @@ namespace Av.Extensions.Tests;
 
 using Av.Common;
 using Av.Rendering;
-using Crypt.Encoding;
-using Crypt.Hashing;
-using Crypt.IO;
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
+using CryptoStream.IO;
 
 /// <summary>
 /// Tests for the <see cref="Av.Extensions.FileExtensions"/> class.

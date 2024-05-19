@@ -11,10 +11,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
 using Av.Common;
-using Crypt.Encoding;
-using Crypt.Hashing;
-using Crypt.IO;
-using Crypt.Keying;
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
+using CryptoStream.IO;
+using CryptoStream.Keying;
 
 /// <summary>
 /// File extensions.

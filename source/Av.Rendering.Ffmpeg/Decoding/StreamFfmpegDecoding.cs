@@ -4,7 +4,7 @@
 
 namespace Av.Rendering.Ffmpeg.Decoding;
 
-using Crypt.Streams;
+using CryptoStream.Streams;
 using FFmpeg.AutoGen;
 
 /// <summary>
@@ -13,7 +13,7 @@ using FFmpeg.AutoGen;
 public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
 {
     private readonly ISimpleReadStream readStream;
-    private IUStream uStream;
+    private UStreamInternal uStream;
     private avio_alloc_context_read_packet readFn;
     private avio_alloc_context_seek seekFn;
     private AVIOContext* streamIc;

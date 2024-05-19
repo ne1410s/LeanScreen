@@ -9,7 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Av.Common;
 using Av.MediaRepo;
-using Crypt.IO;
+using CryptoStream.IO;
 
 /// <inheritdoc cref="IMediaRepo"/>
 public class FileStore : IMediaRepo
@@ -72,7 +72,7 @@ public class FileStore : IMediaRepo
 
             var targetPath = Path.Combine(folder.FullName, itemId);
             using var ss = File.OpenWrite(targetPath);
-            source.CopyTo(ss);
+            await source.CopyToAsync(ss);
         }
     }
 

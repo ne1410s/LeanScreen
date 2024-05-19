@@ -9,14 +9,14 @@ using System.IO;
 using Av.Common;
 using Av.Rendering;
 using Av.Rendering.Ffmpeg.Decoding;
-using Crypt.Streams;
+using CryptoStream.Streams;
 
 /// <summary>
 /// Ffmpeg frame renderer.
 /// </summary>
 public sealed class FfmpegRenderer : IRenderingSession
 {
-    private readonly IFfmpegDecodingSession decoder;
+    private readonly StreamFfmpegDecoding decoder;
     private readonly FfmpegConverter converter;
 
     /// <summary>

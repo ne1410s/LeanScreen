@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Av.BulkProcess;
 using Av.Imaging.SixLabors;
 using Av.MediaRepo;
-using Av.MediaRepo.AzureBlob;
 using Av.MediaRepo.FileSystem;
 using Av.Rendering.Ffmpeg;
 using Av.Snaps;
@@ -78,7 +77,6 @@ public static class BulkMediaUtils
     /// <returns>A new repo.</returns>
     public static IMediaRepo GetRepo(string type, string param) => type switch
     {
-        "blob" => new AzBlobStore(param),
         _ => new FileStore(param),
     };
 }

@@ -8,7 +8,7 @@ using System;
 using System.Runtime.InteropServices;
 
 /// <inheritdoc cref="IByteArrayCopier"/>
-internal class ByteArrayCopier : IByteArrayCopier
+internal sealed class ByteArrayCopier : IByteArrayCopier
 {
     /// <inheritdoc/>
     public void Copy(byte[] target, IntPtr source, int length)

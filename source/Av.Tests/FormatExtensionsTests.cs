@@ -6,7 +6,7 @@ namespace Av.Tests;
 
 using System.Globalization;
 using Av.Common;
-using Crypt.Transform;
+using CryptoStream.Transform;
 
 /// <summary>
 /// Tests for the <see cref="FormatExtensions"/>.

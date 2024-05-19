@@ -12,8 +12,8 @@ using Av.Imaging.SixLabors;
 using Av.Rendering;
 using Av.Rendering.Ffmpeg;
 using Av.Snaps;
-using Crypt.IO;
-using Crypt.Streams;
+using CryptoStream.IO;
+using CryptoStream.Streams;
 
 /// <summary>
 /// Extensions for files.

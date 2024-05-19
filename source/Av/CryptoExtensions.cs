@@ -5,8 +5,8 @@
 namespace Av;
 
 using System.IO;
-using Crypt.Encoding;
-using Crypt.Transform;
+using CryptoStream.Encoding;
+using CryptoStream.Transform;
 
 /// <summary>
 /// Crypto extensions.

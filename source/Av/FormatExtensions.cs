@@ -6,12 +6,13 @@ namespace Av;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using Av.Common;
-using Crypt.IO;
-using Crypt.Transform;
+using CryptoStream.IO;
+using CryptoStream.Transform;
 
 /// <summary>
 /// Extensions for formatting.
@@ -27,8 +28,8 @@ public static class FormatExtensions
     private const double Gigabyte = 1073741824;
     private const double Terabyte = 1099511627776;
 
-    private static readonly IReadOnlyDictionary<string, string> ArchiveMimes =
-        new Dictionary<string, string>
+    private static readonly ReadOnlyDictionary<string, string> ArchiveMimes =
+        new(new Dictionary<string, string>()
         {
             { ".7z", "application/x-7z-compressed" },
             { ".gz", "application/gzip" },
@@ -36,10 +37,10 @@ public static class FormatExtensions
             { ".rar", "application/vnd.rar" },
             { ".tar", "application/x-tar" },
             { ".zip", "application/zip" },
-        };
+        });
 
-    private static readonly IReadOnlyDictionary<string, string> ImageMimes =
-        new Dictionary<string, string>
+    private static readonly ReadOnlyDictionary<string, string> ImageMimes =
+        new(new Dictionary<string, string>
         {
             { ".bmp", "image/bmp" },
             { ".gif", "image/gif" },
@@ -50,10 +51,10 @@ public static class FormatExtensions
             { ".tif", "image/tiff" },
             { ".tiff", "image/tiff" },
             { ".webp", "image/webp" },
-        };
+        });
 
-    private static readonly IReadOnlyDictionary<string, string> AudioMimes =
-        new Dictionary<string, string>
+    private static readonly ReadOnlyDictionary<string, string> AudioMimes =
+        new(new Dictionary<string, string>
         {
             { ".aac", "audio/aac" },
             { ".m4a", "audio/m4a" },
@@ -61,10 +62,10 @@ public static class FormatExtensions
             { ".oga", "audio/ogg" },
             { ".wav", "audio/wav" },
             { ".weba", "audio/webm" },
-        };
+        });
 
-    private static readonly IReadOnlyDictionary<string, string> VideoMimes =
-        new Dictionary<string, string>
+    private static readonly ReadOnlyDictionary<string, string> VideoMimes =
+        new(new Dictionary<string, string>
         {
             { ".3g2", "video/3gpp2" },
             { ".3gp", "video/3gpp" },
@@ -85,7 +86,7 @@ public static class FormatExtensions
             { ".vob", "video/x-ms-vob" },
             { ".webm", "video/webm" },
             { ".wmv", "video/x-ms-wmv" },
-        };
+        });
 
     /// <summary>
     /// Formats a byte count as size on disk.
@@ -155,10 +156,10 @@ public static class FormatExtensions
             ? fi.ToPlainExtension(decryptor)
             : '.' + fi.Extension.ToLowerInvariant().TrimStart('.');
 
-        return ArchiveMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Archive, ArchiveMimes[extension])
-            : ImageMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Image, ImageMimes[extension])
-            : AudioMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Audio, AudioMimes[extension])
-            : VideoMimes.ContainsKey(extension) ? new MediaTypeInfo(MediaTypes.Video, VideoMimes[extension])
+        return ArchiveMimes.TryGetValue(extension, out var arcMime) ? new MediaTypeInfo(MediaTypes.Archive, arcMime)
+            : ImageMimes.TryGetValue(extension, out var imgMime) ? new MediaTypeInfo(MediaTypes.Image, imgMime)
+            : AudioMimes.TryGetValue(extension, out var audMime) ? new MediaTypeInfo(MediaTypes.Audio, audMime)
+            : VideoMimes.TryGetValue(extension, out var vidMime) ? new MediaTypeInfo(MediaTypes.Video, vidMime)
             : new MediaTypeInfo(MediaTypes.NonMedia, null!);
     }
 

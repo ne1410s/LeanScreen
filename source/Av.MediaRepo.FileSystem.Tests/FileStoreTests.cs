@@ -5,7 +5,7 @@
 namespace Av.MediaRepo.FileSystem.Tests;
 
 using Av.MediaRepo.FileSystem;
-using Crypt.IO;
+using CryptoStream.IO;
 
 /// <summary>
 /// Tests for the <see cref="FileStore"/> class.

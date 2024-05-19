@@ -7,9 +7,9 @@ namespace Av.Tests;
 using System.Text.RegularExpressions;
 using Av.Common;
 using Av.Tests.Samples;
-using Crypt.Encoding;
-using Crypt.Hashing;
-using Crypt.IO;
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
+using CryptoStream.IO;
 
 /// <summary>
 /// Tests for the <see cref="FileExtensions"/>.

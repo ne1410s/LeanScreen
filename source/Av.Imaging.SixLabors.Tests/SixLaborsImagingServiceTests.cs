@@ -6,7 +6,7 @@ namespace Av.Imaging.SixLabors.Tests;
 
 using Av.Common;
 using Av.Rendering;
-using Crypt.Hashing;
+using CryptoStream.Hashing;
 
 /// <summary>
 /// Tests for the <see cref="SixLaborsImagingService"/>.

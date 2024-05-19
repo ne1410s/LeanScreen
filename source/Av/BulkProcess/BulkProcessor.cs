@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 using Av.Common;
 using Av.MediaRepo;
 using Av.Services;
-using Crypt.Encoding;
-using Crypt.IO;
-using Crypt.Transform;
+using CryptoStream.Encoding;
+using CryptoStream.IO;
+using CryptoStream.Transform;
 
 /// <inheritdoc cref="IBulkProcessor"/>
 public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcessor
@@ -33,8 +33,8 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
     {
         var sourceFiles = source.EnumerateMedia(
             MediaTypes.NonMedia | MediaTypes.AnyMedia,
-            recurse: recurse);
-        var retVal = new BulkResponse(sourceFiles.Count());
+            recurse: recurse).ToList();
+        var retVal = new BulkResponse(sourceFiles.Count);
 
         onProgress?.Report(0);
         foreach (var file in sourceFiles)
@@ -63,7 +63,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                     salt = Encryptor.GenerateSalt(saltStr, key);
                 }
 
-                var saltText = salt.Encode(Codec.ByteHex).ToLower();
+                var saltText = salt.Encode(Codec.ByteHex).ToLowerInvariant();
                 var ext = isSecure ? file.Extension : new FileInfo(saltText).ToSecureExtension(file.Extension);
                 var itemId = saltText + ext;
                 var relatedMedia = await repo.FindAsync(itemId);

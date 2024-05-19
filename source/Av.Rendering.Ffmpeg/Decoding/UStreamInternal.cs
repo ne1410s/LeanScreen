@@ -5,7 +5,7 @@
 namespace Av.Rendering.Ffmpeg.Decoding;
 
 using System;
-using Crypt.Streams;
+using CryptoStream.Streams;
 using FFmpeg.AutoGen;
 
 /// <summary>

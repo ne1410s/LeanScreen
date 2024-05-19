@@ -7,9 +7,9 @@ namespace Av.Rendering.Ffmpeg.Tests;
 using System.Globalization;
 using System.Reflection;
 using Av.Rendering.Ffmpeg.Decoding;
-using Crypt.Encoding;
-using Crypt.Hashing;
-using Crypt.IO;
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
+using CryptoStream.IO;
 
 /// <summary>
 /// Tests for the <see cref="FfmpegRenderer"/>.
