@@ -41,10 +41,9 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     /// <inheritdoc/>
     public override void Dispose()
     {
-        base.Dispose();
-
         try
         {
+            base.Dispose();
             ffmpeg.av_freep(&streamIc->buffer);
             var customInputContext = this.streamIc;
             ffmpeg.av_freep(&customInputContext);
