@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <AssemblyName>avctl</AssemblyName>
+    <AssemblyName>avctl</AssemblyName>
     <Authors>Paul Jones</Authors>
     <Company>ne1410s</Company>
     <Description>Av multimedia cli tool, written with Comanche.</Description>

@@ -26,7 +26,7 @@ public unsafe sealed class UStreamInternal : IUStream
     /// </summary>
     /// <param name="source">The input stream.</param>
     /// <param name="byteArrayCopier">A byte array copier.</param>
-    public UStreamInternal(ISimpleReadStream source, IByteArrayCopier byteArrayCopier = null)
+    public UStreamInternal(ISimpleReadStream source, IByteArrayCopier? byteArrayCopier = null)
     {
         this.source = source;
         this.byteArrayCopier = byteArrayCopier ?? new ByteArrayCopier();

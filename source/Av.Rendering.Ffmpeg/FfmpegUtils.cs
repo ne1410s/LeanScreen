@@ -17,7 +17,7 @@ public static class FfmpegUtils
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
-    public static Action<int, string> Logger { get; set; }
+    public static Action<int, string>? Logger { get; set; }
 
     /// <summary>
     /// Gets or sets the log level.

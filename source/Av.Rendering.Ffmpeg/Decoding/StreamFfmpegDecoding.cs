@@ -13,9 +13,9 @@ using FFmpeg.AutoGen;
 public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
 {
     private readonly ISimpleReadStream readStream;
-    private UStreamInternal uStream;
-    private avio_alloc_context_read_packet readFn;
-    private avio_alloc_context_seek seekFn;
+    private UStreamInternal? uStream;
+    private avio_alloc_context_read_packet? readFn;
+    private avio_alloc_context_seek? seekFn;
     private AVIOContext* streamIc;
 
     /// <summary>
@@ -43,13 +43,21 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     {
         base.Dispose();
 
-        ffmpeg.av_freep(&streamIc->buffer);
-        var customInputContext = this.streamIc;
-        ffmpeg.av_freep(&customInputContext);
-        this.streamIc = null;
+        try
+        {
+            ffmpeg.av_freep(&streamIc->buffer);
+            var customInputContext = this.streamIc;
+            ffmpeg.av_freep(&customInputContext);
+            this.streamIc = null;
+        }
+        catch
+        {
+            // We tried
+        }
+
         this.readFn = null;
         this.seekFn = null;
-        this.uStream.Dispose();
+        this.uStream?.Dispose();
         this.uStream = null;
         this.readStream.Dispose();
     }

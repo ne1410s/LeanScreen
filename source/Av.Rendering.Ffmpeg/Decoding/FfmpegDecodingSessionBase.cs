@@ -41,7 +41,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     public string Url { get; }
 
     /// <inheritdoc/>
-    public string CodecName { get; private set; }
+    public string? CodecName { get; private set; }
 
     /// <inheritdoc/>
     public Size2D Dimensions { get; private set; }

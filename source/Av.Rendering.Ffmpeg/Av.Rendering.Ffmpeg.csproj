@@ -1,12 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	  <Authors>Paul Jones</Authors>
-	  <Company>ne1410s</Company>
-	  <Description>Av multimedia ffmpeg video rendering.</Description>
-	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
-	  <IncludeSymbols>True</IncludeSymbols>
+    <Authors>Paul Jones</Authors>
+    <Company>ne1410s</Company>
+    <Description>Av multimedia ffmpeg video rendering.</Description>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IncludeSymbols>True</IncludeSymbols>
+	<Nullable>enable</Nullable>
     <PackageIcon>ICON.png</PackageIcon>
     <PackageIconUrl>ICON.png</PackageIconUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>

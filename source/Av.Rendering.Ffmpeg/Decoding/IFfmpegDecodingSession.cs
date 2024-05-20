@@ -17,7 +17,7 @@ public interface IFfmpegDecodingSession : IDisposable
     /// <summary>
     /// Gets the codec name.
     /// </summary>
-    string CodecName { get; }
+    string? CodecName { get; }
 
     /// <summary>
     /// Gets the dimensions.

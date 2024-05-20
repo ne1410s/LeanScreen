@@ -115,6 +115,21 @@ public class StreamFfmpegDecodingTests
     }
 
     [Fact]
+    public void Dispose_WhenCalledTwice_DoesNotError()
+    {
+        // Arrange
+        var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
+        using var str = new SimpleFileStream(fi);
+        using var sut = new StreamFfmpegDecoding(str);
+
+        // Act
+        var act = sut.Dispose;
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void GetContextInfo_WhenCalled_ReturnsExpected()
     {
         // Arrange

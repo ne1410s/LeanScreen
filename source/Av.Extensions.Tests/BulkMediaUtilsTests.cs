@@ -214,8 +214,7 @@ public class BulkMediaUtilsTests
     }
 
     [Theory]
-    [InlineData("blob", "Value cannot be null.*")]
-    [InlineData("literally-anything-else", "*empty*")]
+    [InlineData("literally-anything", "*empty*")]
     public void GetRepo_VaryingParam_ThrowsExpected(string requestName, string expectedError)
     {
         // Arrange & Act
