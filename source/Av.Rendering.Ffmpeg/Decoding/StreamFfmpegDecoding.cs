@@ -41,22 +41,15 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     /// <inheritdoc/>
     public override void Dispose()
     {
-        try
-        {
-            base.Dispose();
-            ffmpeg.av_freep(&streamIc->buffer);
-            var customInputContext = this.streamIc;
-            ffmpeg.av_freep(&customInputContext);
-            this.streamIc = null;
-        }
-        catch
-        {
-            // We tried
-        }
+        base.Dispose();
 
+        ffmpeg.av_freep(&streamIc->buffer);
+        var customInputContext = this.streamIc;
+        ffmpeg.av_freep(&customInputContext);
+        this.streamIc = null;
         this.readFn = null;
         this.seekFn = null;
-        this.uStream?.Dispose();
+        this.uStream!.Dispose();
         this.uStream = null;
         this.readStream.Dispose();
     }
