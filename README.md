@@ -16,8 +16,8 @@ gci **/StrykerOutput/ | ri -r; dotnet stryker -o;
 $suffix="alpha001"; dotnet pack -c Release -o nu --version-suffix $suffix; dotnet nuget push "nu\*.*$suffix.nupkg" --source localdev; gci nu/ | ri -r; rmdir nu;
 
 # Publish examples
-dotnet publish Av.CliTool -p:PublishSingleFile=true -p:DebugType=Embedded -r win-x64 -c Release --sc false
-dotnet publish Av.CliTool -p:PublishSingleFile=true -p:DebugType=Embedded -r linux-x64 -c Release --self-contained
+dotnet publish LeanScreen.CliTool -p:PublishSingleFile=true -p:DebugType=Embedded -r win-x64 -c Release --sc false
+dotnet publish LeanScreen.CliTool -p:PublishSingleFile=true -p:DebugType=Embedded -r linux-x64 -c Release --self-contained
 
 # Allow execute (Linux)
 sudo chmod +x AvCtl
