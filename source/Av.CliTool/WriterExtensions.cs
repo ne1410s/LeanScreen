@@ -5,8 +5,7 @@
 namespace Av.CliTool;
 
 using System.Text.RegularExpressions;
-using Comanche.Models;
-using Comanche.Services;
+using Comanche;
 
 /// <summary>
 /// Extensions for the output writer.
@@ -16,39 +15,39 @@ public static class WriterExtensions
     /// <summary>
     /// Prepares a key.
     /// </summary>
-    /// <param name="writer">The writer.</param>
+    /// <param name="console">The console.</param>
     /// <param name="keySource">The key source.</param>
     /// <param name="keyRegex">The key regex.</param>
     /// <returns>The key.</returns>
-    public static byte[] PrepareKey(this IOutputWriter writer, string? keySource, string? keyRegex)
+    public static byte[] PrepareKey(this IConsole console, string? keySource, string? keyRegex)
     {
-        writer = writer.NotNull();
+        console = console.NotNull();
         var keyDi = keySource == null ? null : new DirectoryInfo(keySource);
         var keyReg = keyRegex == null ? null : new Regex(keyRegex);
-        var key = keyDi.MakeKey(keyReg, writer.CaptureStrings(mask: '*'), out var checkSum);
-        writer.Write(checkSum, WriteStyle.Highlight2, line: true);
-        writer.CaptureStrings("[Press RETURN to continue]", max: 1);
-        writer.Write(line: true);
+        var key = keyDi.MakeKey(keyReg, console.CaptureStrings(mask: '*'), out var checkSum);
+        console.WriteSecondary(checkSum, true);
+        console.CaptureStrings("[Press RETURN to continue]", max: 1);
+        console.Write(line: true);
         return key.ToArray();
     }
 
     /// <summary>
     /// Gets a progress writer.
     /// </summary>
-    /// <param name="writer">The writer.</param>
+    /// <param name="console">The writer.</param>
     /// <returns>Progress handler.</returns>
-    public static IProgress<double> ProgressHandler(this IOutputWriter writer)
+    public static IProgress<double> ProgressHandler(this IConsole console)
     {
         const int totalBars = 20;
         Action<double> act = d =>
         {
             var bars = (int)(d / 100 * totalBars);
-            writer.Write(new string('\b', 30));
-            writer.Write("|");
-            writer.Write(new string('-', bars), WriteStyle.Highlight1);
-            writer.Write(new string(' ', totalBars - bars) + "| ");
-            writer.Write($"{d:N1}".PadLeft(5, 'x'), WriteStyle.Highlight3);
-            writer.Write(" %");
+            console.Write(new string('\b', 30));
+            console.Write("|");
+            console.WritePrimary(new string('-', bars));
+            console.Write(new string(' ', totalBars - bars) + "| ");
+            console.WriteTertiary($"{d:N1}".PadLeft(5, 'x'));
+            console.Write(" %");
         };
 
         return new Progress<double>(act.Debounce());
