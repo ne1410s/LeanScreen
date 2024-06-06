@@ -54,7 +54,7 @@ public class FfmpegConverterTests
     public void Dispose_WhenCalled_DoesNotError()
     {
         // Arrange
-        FfmpegUtils.SetupBinaries();
+        FfmpegUtils.SetBinariesPath(FfmpegUtils.GetOSBinariesPath());
         var size = new Size2D(1, 1);
         var sut = new FfmpegConverter(size, default, size);
 
@@ -69,7 +69,7 @@ public class FfmpegConverterTests
     public void Dispose_WhenCalled_CanNoLongerRender()
     {
         // Arrange
-        FfmpegUtils.SetupBinaries();
+        FfmpegUtils.SetBinariesPath(FfmpegUtils.GetOSBinariesPath());
         var size = new Size2D { Width = 1, Height = 1 };
         var sut = new FfmpegConverter(size, default, size);
         var dispInfo = sut.GetType().GetField(

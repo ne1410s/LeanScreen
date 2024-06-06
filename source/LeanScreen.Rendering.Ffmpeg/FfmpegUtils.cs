@@ -105,14 +105,24 @@ public static class FfmpegUtils
         : throw new InvalidOperationException(AvStrError(status));
 
     /// <summary>
-    /// Sets up binaries, according to the operating system detected (or
-    /// override value).
+    /// Sets binaries path. See <see cref="GetOSBinariesPath(bool?)"/> for the OS default.
+    /// </summary>
+    /// <param name="path">The binaries path.</param>
+    public static unsafe void SetBinariesPath(string path)
+    {
+        ffmpeg.RootPath = path;
+    }
+
+    /// <summary>
+    /// Gets ffmpeg binaries path, according to the detected OS (or overridden value).
     /// </summary>
     /// <param name="isWindows">True if windows.</param>
-    public static unsafe void SetupBinaries(bool? isWindows = null)
+    /// <returns>Binaries path.</returns>
+    public static string GetOSBinariesPath(bool? isWindows = null)
     {
-        var isWin = isWindows ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        ffmpeg.RootPath = isWin ? "ffmpeg" : "/lib/x86_64-linux-gnu";
+        return isWindows ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? "ffmpeg"
+            : "/lib/x86_64-linux-gnu";
     }
 
     /// <summary>
