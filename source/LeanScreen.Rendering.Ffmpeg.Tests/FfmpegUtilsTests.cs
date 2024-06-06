@@ -10,6 +10,7 @@ using FFmpeg.AutoGen;
 /// <summary>
 /// Tests for <see cref="FfmpegUtils"/>.
 /// </summary>
+[Collection("Sequential")]
 public class FfmpegUtilsTests
 {
     [Theory]

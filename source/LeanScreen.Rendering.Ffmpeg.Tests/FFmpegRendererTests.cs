@@ -14,6 +14,7 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// <summary>
 /// Tests for the <see cref="FfmpegRenderer"/>.
 /// </summary>
+[Collection("Sequential")]
 public class FfmpegRendererTests
 {
     public enum DecodeMode
