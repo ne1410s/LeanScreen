@@ -6,6 +6,7 @@ namespace LeanScreen.Rendering.Ffmpeg.Tests;
 
 using System.Globalization;
 using FFmpeg.AutoGen;
+using LeanScreen.Rendering.Ffmpeg.Decoding;
 
 /// <summary>
 /// Tests for <see cref="FfmpegUtils"/>.
@@ -137,5 +138,24 @@ public class FfmpegUtilsTests
 
         // Reset
         FfmpegUtils.SetupBinaries();
+    }
+
+    [Fact]
+    public void SetupLogging_Disposed_DoesNotThrow()
+    {
+        // Arrange
+        FfmpegUtils.SetupLogging();
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
+        FfmpegUtils.Logger = (_, _) => throw new ArithmeticException();
+
+        // Act
+        var act = () => new PhysicalFfmpegDecoding("Samples/sample.mkv");
+
+        // Assert
+        act.Should().NotThrow();
+
+        // Reset
+        FfmpegUtils.Logger = null;
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
     }
 }

@@ -41,6 +41,10 @@ public class PhysicalFfmpegDecodingTests
 
         // Assert
         writer.ToString().Should().Contain("Starting connection attempt");
+
+        // Reset
+        FfmpegUtils.Logger = null;
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
     }
 
     [Fact]
@@ -58,6 +62,9 @@ public class PhysicalFfmpegDecodingTests
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
+
+        // Reset
+        FfmpegUtils.Logger = null;
     }
 
     [Fact]
@@ -75,5 +82,8 @@ public class PhysicalFfmpegDecodingTests
 
         // Assert
         writer.ToString().Should().NotContain("Starting connection attempt");
+
+        // Reset
+        FfmpegUtils.LogLevel = ffmpeg.AV_LOG_WARNING;
     }
 }
