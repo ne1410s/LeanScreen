@@ -1,4 +1,11 @@
 # LeanScreen
+
+[![Coverage Status](https://coveralls.io/repos/github/ne1410s/LeanScreen/badge.svg?branch=main)](https://coveralls.io/github/ne1410s/LeanScreen?branch=main)
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d229dd8acd714205a1473f7406f46a28)](https://app.codacy.com/gh/ne1410s/LeanScreen/dashboard)
+
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fne1410s%2FLeanScreen%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/ne1410s/LeanScreen/main)
+
 ## Overview
 Provides a set of tools for working with multimedia. Some key features:
 - Extract video data and stills, directly from stream with managed .NET code!
