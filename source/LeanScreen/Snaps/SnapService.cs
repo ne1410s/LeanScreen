@@ -43,13 +43,23 @@ public class SnapService(IRenderingSessionFactory rendererFactory, IImagingServi
         int total = 24,
         int columns = 4,
         int? height = 300,
-        bool border = true)
+        bool compact = false)
     {
         using var renderer = rendererFactory.Create(stream, salt, key, height);
         size = renderer.ThumbSize;
         var times = renderer.Media.Duration.DistributeEvenly(total);
         var frames = times.Select(renderer.RenderAt);
-        var opts = new CollationOptions { Columns = columns, ItemSize = size, UseItemBorder = border };
+        var opts = new CollationOptions { Columns = columns, ItemSize = size };
+        if (compact)
+        {
+            opts.Top = 0;
+            opts.Sides = 0;
+            opts.Bottom = 0;
+            opts.SpaceX = 0;
+            opts.SpaceY = 0;
+            opts.UseItemBorder = false;
+        }
+
         return imager.Collate(frames, opts);
     }
 }

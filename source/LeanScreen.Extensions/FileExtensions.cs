@@ -129,12 +129,20 @@ public static class FileExtensions
     /// <param name="total">The total number of frames.</param>
     /// <param name="columns">The number of columns.</param>
     /// <param name="height">The desired height in pixels.</param>
+    /// <param name="compact">Whether to hide margins, gutters and borders.</param>
     /// <returns>Image stream.</returns>
     public static MemoryStream Collate(
-        this FileInfo fi, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300)
+        this FileInfo fi,
+        byte[] key,
+        out Size2D size,
+        int total = 24,
+        int columns = 4,
+        int? height = 300,
+        bool compact = false)
     {
         using var str = fi.NotNull().OpenRead();
-        return Snapper.Collate(str, fi.IsSecure() ? fi.ToSalt() : [], key, out size, total, columns, height);
+        var salt = fi.IsSecure() ? fi.ToSalt() : [];
+        return Snapper.Collate(str, salt, key, out size, total, columns, height, compact);
     }
 
     /// <summary>

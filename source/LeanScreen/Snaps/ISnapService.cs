@@ -46,7 +46,7 @@ public interface ISnapService
     /// <param name="total">The total number of items.</param>
     /// <param name="columns">The maximum number of columns.</param>
     /// <param name="height">The requested item height.</param>
-    /// <param name="border">Whether to include item borders.</param>
+    /// <param name="compact">Whether to hide margins, gutters and borders.</param>
     /// <returns>Unencrypted image stream.</returns>
     public MemoryStream Collate(
         Stream stream,
@@ -56,5 +56,5 @@ public interface ISnapService
         int total = 24,
         int columns = 4,
         int? height = 300,
-        bool border = true);
+        bool compact = false);
 }
