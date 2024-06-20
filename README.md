@@ -12,10 +12,16 @@ Provides a set of tools for working with multimedia. Some key features:
 - Compiling a collection of stills into a single file
 - Some basic media organisation capability
 
-The extensions package provides default implementation for video and image handling (ffmpeg and sixlabors respectively)..
+The **Extensions** package provides default implementation for video and image handling (ffmpeg and sixlabors respectively)..
 However the abstractions package is designed so that you can roll your own if you so choose.
 
-The (default implementation) is exposed to the command line in the form of a Cli tool named `leanctl`
+In linux-based OS's the extensions package requires the ffmpeg package: e.g. `sudo apt install -y ffmpeg`.
+
+In Windows OS's, the calling assembly needs to ship the ffmpeg dlls in the folder `ffmpeg` in its build output.
+
+
+The extensions are exposed to the command line in the form of a Cli tool named `leanctl`.
+(NB: This tool is currently not published anywhere, and needs to be built from source - see the `dotnet publish ...` commands below for reference).
 ## Further Notes
 ### Handy Commandies
 ```powershell
@@ -32,7 +38,7 @@ rd -r ../**/TestResults/; dotnet test -c Release -s .runsettings; dotnet reportg
 rd -r ../**/StrykerOutput/; dotnet stryker -o;
 
 # Pack and publish a pre-release to a local feed
-$suffix="alpha001"; dotnet pack -c Release -o nu --version-suffix $suffix; dotnet nuget push "nu\*.*$suffix.nupkg" --source localdev; gci nu/ | ri -r; rmdir nu;
+$suffix="alpha001"; dotnet pack -c Release -o nu --version-suffix $suffix; dotnet nuget push "nu\*.*$suffix.nupkg" --source localdev; rd -r ../**/nu/;
 
 # Publish examples
 dotnet publish LeanScreen.CliTool -p:PublishSingleFile=true -p:DebugType=Embedded -r win-x64 -c Release --sc false
