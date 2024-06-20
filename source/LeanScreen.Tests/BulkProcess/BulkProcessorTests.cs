@@ -62,7 +62,8 @@ public class BulkProcessorTests
         Size2D size;
         mocks = new(new Mock<ISnapService>(), new Mock<IMediaRepo>());
         mocks.MockSnapper
-            .Setup(m => m.Collate(It.IsAny<Stream>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), out size, 24, 4, 300))
+            .Setup(m => m.Collate(
+                It.IsAny<Stream>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), out size, 24, 4, 300, true))
             .Returns(new MemoryStream());
         mocks.MockRepo
             .Setup(m => m.FindAsync(It.IsAny<string>()))

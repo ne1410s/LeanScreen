@@ -21,8 +21,9 @@ using LeanScreen.Rendering;
 public class SixLaborsImagingService : IImagingService
 {
     private const int CollationBorderSize = 1;
-    private static readonly Rgb24 CollationBackground = new(255, 255, 255);
-    private static readonly Rgb24 CollationBorderColour = new(0, 0, 0);
+    private static readonly Argb32 White = new(255, 255, 255);
+    private static readonly Argb32 Black = new(0, 0, 0);
+    private static readonly Argb32 Transparent = new(0, 0, 0, 0);
 
     /// <inheritdoc/>
     public async Task<Size2D> GetSize(Stream stream)
@@ -64,11 +65,12 @@ public class SixLaborsImagingService : IImagingService
         var firstItemSize = frameList[0].Dimensions;
         var itemSize = opts.ItemSize == null ? firstItemSize : firstItemSize.ResizeTo(opts.ItemSize.Value);
         var map = opts.GetMap(itemSize, frameList.Count);
-        using var canvas = new Image<Rgb24>(map.CanvasSize.Width, map.CanvasSize.Height, CollationBackground);
-        using var border = new Image<Rgb24>(
+        var borderColour = opts.UseItemBorder ? Black : Transparent;
+        using var canvas = new Image<Argb32>(map.CanvasSize.Width, map.CanvasSize.Height, White);
+        using var border = new Image<Argb32>(
             itemSize.Width + (CollationBorderSize * 2),
             itemSize.Height + (CollationBorderSize * 2),
-            CollationBorderColour);
+            borderColour);
         var iterIndex = 0;
         foreach (var frame in frameList)
         {

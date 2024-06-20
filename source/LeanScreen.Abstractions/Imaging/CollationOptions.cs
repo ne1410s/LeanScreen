@@ -52,6 +52,11 @@ public class CollationOptions
     public Size2D? ItemSize { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether to draw a border around each item.
+    /// </summary>
+    public bool UseItemBorder { get; set; } = true;
+
+    /// <summary>
     /// Generates a map to serve as instructions for how frames can be collated.
     /// </summary>
     /// <param name="itemSize">The dimensions of each item.</param>

@@ -144,4 +144,34 @@ public class SixLaborsImagingServiceTests
         // Assert
         sha256.Should().BeEquivalentTo(expectedSha256);
     }
+
+    [Fact]
+    public void Collate_WithoutBorder_ProducesExpected()
+    {
+        // Arrange
+        var rgb24Bytes = new byte[]
+        {
+            255, 0, 0, 255, 0, 0, 255, 0, 0,
+            232, 162, 0, 232, 162, 0, 232, 162, 0,
+            76, 177, 34, 76, 177, 34, 76, 177, 34,
+            0, 255, 0, 0, 255, 0, 0, 255, 0,
+            0, 0, 255, 0, 0, 255, 0, 0, 255,
+            36, 28, 237, 36, 28, 237, 36, 28, 237,
+        };
+        var frame = new RenderedFrame { Rgb24Bytes = rgb24Bytes, Dimensions = new(18, 1) };
+        var sut = new SixLaborsImagingService();
+        var expectedSha256 = new byte[]
+        {
+            224, 173, 80, 106, 222, 52, 253, 245, 24, 227, 7, 55, 182, 131, 106,
+            205, 234, 244, 142, 187, 159, 197, 124, 111, 64, 99, 181, 3, 25,
+            195, 21, 247,
+        };
+
+        // Act
+        var ms = sut.Collate([frame], new() { UseItemBorder = false });
+        var sha256 = ms.ToArray().Hash(HashType.Sha256);
+
+        // Assert
+        sha256.Should().BeEquivalentTo(expectedSha256);
+    }
 }

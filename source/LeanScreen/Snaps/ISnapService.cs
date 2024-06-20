@@ -46,7 +46,15 @@ public interface ISnapService
     /// <param name="total">The total number of items.</param>
     /// <param name="columns">The maximum number of columns.</param>
     /// <param name="height">The requested item height.</param>
+    /// <param name="border">Whether to include item borders.</param>
     /// <returns>Unencrypted image stream.</returns>
     public MemoryStream Collate(
-        Stream stream, byte[] salt, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300);
+        Stream stream,
+        byte[] salt,
+        byte[] key,
+        out Size2D size,
+        int total = 24,
+        int columns = 4,
+        int? height = 300,
+        bool border = true);
 }

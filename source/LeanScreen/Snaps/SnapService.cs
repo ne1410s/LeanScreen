@@ -36,13 +36,20 @@ public class SnapService(IRenderingSessionFactory rendererFactory, IImagingServi
 
     /// <inheritdoc/>
     public MemoryStream Collate(
-        Stream stream, byte[] salt, byte[] key, out Size2D size, int total = 24, int columns = 4, int? height = 300)
+        Stream stream,
+        byte[] salt,
+        byte[] key,
+        out Size2D size,
+        int total = 24,
+        int columns = 4,
+        int? height = 300,
+        bool border = true)
     {
         using var renderer = rendererFactory.Create(stream, salt, key, height);
         size = renderer.ThumbSize;
         var times = renderer.Media.Duration.DistributeEvenly(total);
         var frames = times.Select(renderer.RenderAt);
-        var opts = new CollationOptions { Columns = columns, ItemSize = size };
+        var opts = new CollationOptions { Columns = columns, ItemSize = size, UseItemBorder = border };
         return imager.Collate(frames, opts);
     }
 }
