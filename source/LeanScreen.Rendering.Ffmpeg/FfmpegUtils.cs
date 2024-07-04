@@ -14,7 +14,7 @@ using FFmpeg.AutoGen;
 /// </summary>
 public static class FfmpegUtils
 {
-    private const string BinariesPath = "ffmpeg";
+    private const string BinariesPath = "ffmpeg/v4";
 
     /// <summary>
     /// Gets or sets the logger.
@@ -119,7 +119,7 @@ public static class FfmpegUtils
     /// </summary>
     public static unsafe void SetupLogging()
     {
-        ffmpeg.av_log_set_level(ffmpeg.AV_LOG_VERBOSE);
+        ffmpeg.av_log_set_level(ffmpeg.AV_LOG_INFO);
         av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
         {
             if (Logger != null && level <= LogLevel)

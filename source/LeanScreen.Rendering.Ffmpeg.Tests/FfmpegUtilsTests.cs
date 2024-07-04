@@ -125,18 +125,23 @@ public class FfmpegUtilsTests
     }
 
     [Fact]
-    public void SetupLogging_Disposed_DoesNotThrow()
+    public void SetupLogging_Disposed_ExceptionSwallowed()
     {
         // Arrange
-        FfmpegUtils.SetupLogging();
+        var hitLogger = false;
         FfmpegUtils.LogLevel = ffmpeg.AV_LOG_VERBOSE;
-        FfmpegUtils.Logger = (_, _) => throw new ArithmeticException();
+        FfmpegUtils.Logger = (_, _) =>
+        {
+            hitLogger = true;
+            throw new ArithmeticException();
+        };
 
         // Act
         var act = () => new PhysicalFfmpegDecoding("Samples/sample.mkv");
 
         // Assert
         act.Should().NotThrow();
+        hitLogger.Should().BeTrue();
 
         // Reset
         FfmpegUtils.Logger = null;
