@@ -37,7 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ffmpeg\*.dll">
+    <None Update="ffmpeg\*.dll" Condition="'$(OS)' != 'Unix'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ffmpeg\*.so.*" Condition="'$(OS)' == 'Unix'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

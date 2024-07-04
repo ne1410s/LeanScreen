@@ -34,7 +34,7 @@ public class FfmpegUtilsTests
     public void ThrowExceptionIfError_IsError_ThrowsException()
     {
         // Arrange
-        FfmpegUtils.SetBinariesPath(FfmpegUtils.GetOSBinariesPath());
+        FfmpegUtils.SetBinariesPath();
         const int code = -3;
 
         // Act
@@ -122,33 +122,6 @@ public class FfmpegUtilsTests
 
         // Assert
         result.Should().Be(TimeSpan.Zero);
-    }
-
-    [Theory]
-    [InlineData(true, "ffmpeg")]
-    [InlineData(false, "/lib/x86_64-linux-gnu")]
-    public void GetOSBinariesPath_VaryingOS_ReturnsExpected(bool isWindows, string expected)
-    {
-        // Arrange & Act
-        var actual = FfmpegUtils.GetOSBinariesPath(isWindows);
-
-        // Assert
-        actual.Should().Be(expected);
-    }
-
-    [Fact]
-    public void SetBinariesPath_LocalValue_SetsExpectedPath()
-    {
-        // Arrange
-        var priorPath = ffmpeg.RootPath;
-        const string localPath = "ffmpeg";
-        FfmpegUtils.SetBinariesPath(localPath);
-
-        // Assert
-        ffmpeg.RootPath.Should().Be(localPath);
-
-        // Reset
-        FfmpegUtils.SetBinariesPath(priorPath);
     }
 
     [Fact]

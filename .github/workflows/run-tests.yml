@@ -6,7 +6,7 @@ on:
   workflow_call:
 jobs:
   run_tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./source
@@ -21,10 +21,6 @@ jobs:
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
     - name: Restore tools
       run: dotnet tool restore
-    - name: Install test prerequisites (linux)
-      run: |
-        sudo apt update
-        sudo apt install -y ffmpeg
     - name: Build for release
       run: dotnet build -c Release
     - name: Generate raw coverage data

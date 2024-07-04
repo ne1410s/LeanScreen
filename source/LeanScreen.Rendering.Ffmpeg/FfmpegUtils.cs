@@ -14,6 +14,8 @@ using FFmpeg.AutoGen;
 /// </summary>
 public static class FfmpegUtils
 {
+    private const string BinariesPath = "ffmpeg";
+
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
@@ -105,24 +107,11 @@ public static class FfmpegUtils
         : throw new InvalidOperationException(AvStrError(status));
 
     /// <summary>
-    /// Sets binaries path. See <see cref="GetOSBinariesPath(bool?)"/> for the OS default.
+    /// Sets binaries path.
     /// </summary>
-    /// <param name="path">The binaries path.</param>
-    public static unsafe void SetBinariesPath(string path)
+    public static unsafe void SetBinariesPath()
     {
-        ffmpeg.RootPath = path;
-    }
-
-    /// <summary>
-    /// Gets ffmpeg binaries path, according to the detected OS (or overridden value).
-    /// </summary>
-    /// <param name="isWindows">True if windows.</param>
-    /// <returns>Binaries path.</returns>
-    public static string GetOSBinariesPath(bool? isWindows = null)
-    {
-        return isWindows ?? RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "ffmpeg"
-            : "/lib/x86_64-linux-gnu";
+        ffmpeg.RootPath = BinariesPath;
     }
 
     /// <summary>

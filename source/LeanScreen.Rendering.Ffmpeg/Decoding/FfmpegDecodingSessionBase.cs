@@ -23,8 +23,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     /// <param name="url">The url (for physical media).</param>
     protected FfmpegDecodingSessionBase(string url)
     {
-        var binariesPath = FfmpegUtils.GetOSBinariesPath();
-        FfmpegUtils.SetBinariesPath(binariesPath);
+        FfmpegUtils.SetBinariesPath();
         FfmpegUtils.SetupLogging();
 
         this.Url = url;

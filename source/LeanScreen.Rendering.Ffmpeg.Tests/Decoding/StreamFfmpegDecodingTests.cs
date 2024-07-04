@@ -16,7 +16,7 @@ public class StreamFfmpegDecodingTests
 {
     public StreamFfmpegDecodingTests()
     {
-        FfmpegUtils.SetBinariesPath(FfmpegUtils.GetOSBinariesPath());
+        FfmpegUtils.SetBinariesPath();
     }
 
     [Fact]
