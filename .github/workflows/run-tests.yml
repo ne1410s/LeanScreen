@@ -23,7 +23,7 @@ jobs:
       run: |
         ffmpegBinSrc="$(realpath $(find . -type d -name ffmpeg))"
         ffmpegBinTrg=${{ github.workspace }}
-        cp $ffmpegBinSrc $ffmpegBinTrg
+        cp -r $ffmpegBinSrc $ffmpegBinTrg
         echo "FFMPEG_BINARIES_PATH=""$ffmpegBinTrg"/ffmpeg"" >> $GITHUB_ENV
     - name: Restore tools
       run: dotnet tool restore
