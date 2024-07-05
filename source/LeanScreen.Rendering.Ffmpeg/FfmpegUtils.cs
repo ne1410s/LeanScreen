@@ -14,8 +14,6 @@ using FFmpeg.AutoGen;
 /// </summary>
 public static class FfmpegUtils
 {
-    private const string BinariesPath = "ffmpeg";
-
     /// <summary>
     /// Gets or sets the logger.
     /// </summary>
@@ -111,7 +109,7 @@ public static class FfmpegUtils
     /// </summary>
     public static unsafe void SetBinariesPath()
     {
-        ffmpeg.RootPath = BinariesPath;
+        ffmpeg.RootPath = new System.IO.DirectoryInfo("ffmpeg").FullName;
     }
 
     /// <summary>
