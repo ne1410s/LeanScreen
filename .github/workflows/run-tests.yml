@@ -19,8 +19,12 @@ jobs:
       env:
         READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
-    - name: Set binaries path
-      run: echo "FFMPEG_BINARIES_PATH="$(realpath $(find . -type d -name ffmpeg))"" >> $GITHUB_ENV
+    - name: Copy ffmpeg binaries and set target in runtime variable
+      run: |
+        ffmpegBinSrc="$(realpath $(find . -type d -name ffmpeg))"
+        ffmpegBinTrg=${{ github.workspace }}
+        cp $ffmpegBinSrc $ffmpegBinTrg
+        echo "FFMPEG_BINARIES_PATH=""$ffmpegBinTrg"/ffmpeg"" >> $GITHUB_ENV
     - name: Restore tools
       run: dotnet tool restore
     - name: Build for release
