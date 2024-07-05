@@ -23,7 +23,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y ffmpeg
-        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
     - name: Restore tools
       run: dotnet tool restore
     - name: Build for release
