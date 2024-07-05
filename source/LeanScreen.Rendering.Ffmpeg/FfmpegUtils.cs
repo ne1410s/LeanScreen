@@ -14,7 +14,7 @@ using FFmpeg.AutoGen;
 /// </summary>
 public static class FfmpegUtils
 {
-    private const string BinariesPath = "ffmpeg/v4";
+    private const string BinariesPath = "ffmpeg";
 
     /// <summary>
     /// Gets or sets the logger.

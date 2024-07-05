@@ -21,6 +21,10 @@
     <VersionPrefix>1.0.3</VersionPrefix>
   </PropertyGroup>
 
+  <PropertyGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="/" Visible="false" />
     <None Include="../../LICENSE" Pack="true" PackagePath="/" Visible="false" />

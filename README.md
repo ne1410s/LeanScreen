@@ -15,10 +15,12 @@ Provides a set of tools for working with multimedia. Some key features:
 The **Extensions** package provides default implementation for video and image handling (ffmpeg and sixlabors respectively)..
 However the abstractions package is designed so that you can roll your own if you so choose.
 
-In linux-based OS's the extensions package requires the ffmpeg package: e.g. `sudo apt install -y ffmpeg`.
+The calling assembly needs to ship the ffmpeg binaries in the folder `ffmpeg` in its build output.
+The x64 versions have already been sourced for both linux and windows and are shipped in the Rendering.Ffmpeg project.
 
-In Windows OS's, the calling assembly needs to ship the ffmpeg dlls in the folder `ffmpeg` in its build output.
+In the case of linux, files in the format `..lib<BINARY>.so.<VERSION>` were obtained from the ffmpeg package and have just been renamed `<BINARY>.<VERSION>`.
 
+In the case of windows, the dlls were obtained from here: https://www.gyan.dev/ffmpeg/builds/
 
 The extensions are exposed to the command line in the form of a Cli tool named `leanctl`.
 (NB: This tool is currently not published anywhere, and needs to be built from source - see the `dotnet publish ...` commands below for reference).
