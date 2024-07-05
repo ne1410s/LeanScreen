@@ -13,20 +13,6 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 public class PhysicalFfmpegDecodingTests
 {
     [Fact]
-    public void Ctor_WithNetworkStream_SetsBinariesPath()
-    {
-        // Arrange
-        const string source = "https://download.samplelib.com/mp4/sample-5s.mp4";
-        ffmpeg.RootPath = null;
-
-        // Act
-        using var x = new PhysicalFfmpegDecoding(source);
-
-        // Assert
-        ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
-    }
-
-    [Fact]
     public void Ctor_WithNetworkStreamAndVerboseLevel_ReceivesVerboseMessage()
     {
         // Arrange

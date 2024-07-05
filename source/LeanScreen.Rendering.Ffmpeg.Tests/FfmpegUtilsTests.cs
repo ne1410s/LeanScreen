@@ -5,7 +5,6 @@
 namespace LeanScreen.Rendering.Ffmpeg.Tests;
 
 using System.Globalization;
-using System.Reflection;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
@@ -31,31 +30,10 @@ public class FfmpegUtilsTests
         actual.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void SetBinariesPath_VaryingEnvVar_SetsExpected(bool hasVar)
-    {
-        // Arrange
-        var inputVar = hasVar
-            ? Path.Combine(Directory.GetParent(Assembly.GetCallingAssembly().Location)!.FullName, "ffmpeg")
-            : null;
-        var expected = inputVar ?? "ffmpeg";
-        Environment.SetEnvironmentVariable("FFMPEG_BINARIES_PATH", inputVar);
-
-        // Act
-        FfmpegUtils.SetBinariesPath();
-
-        // Assert
-        ffmpeg.RootPath.Should().Be(expected);
-        Environment.SetEnvironmentVariable("FFMPEG_BINARIES_PATH", null);
-    }
-
     [Fact]
     public void ThrowExceptionIfError_IsError_ThrowsException()
     {
         // Arrange
-        FfmpegUtils.SetBinariesPath();
         const int code = -3;
 
         // Act

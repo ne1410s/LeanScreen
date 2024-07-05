@@ -105,15 +105,6 @@ public static class FfmpegUtils
         : throw new InvalidOperationException(AvStrError(status));
 
     /// <summary>
-    /// Sets binaries path.
-    /// </summary>
-    public static unsafe void SetBinariesPath()
-    {
-        var path = Environment.GetEnvironmentVariable("FFMPEG_BINARIES_PATH");
-        ffmpeg.RootPath = path ?? "ffmpeg";
-    }
-
-    /// <summary>
     /// Sets up logging.
     /// </summary>
     public static unsafe void SetupLogging()
@@ -140,5 +131,14 @@ public static class FfmpegUtils
         };
 
         ffmpeg.av_log_set_callback(logCallback);
+    }
+
+    /// <summary>
+    /// Sets binaries path.
+    /// </summary>
+    internal static unsafe void SetBinariesPath()
+    {
+        var path = Environment.GetEnvironmentVariable("FFMPEG_BINARIES_PATH");
+        ffmpeg.RootPath = path ?? "ffmpeg";
     }
 }

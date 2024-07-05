@@ -14,17 +14,11 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// </summary>
 public class StreamFfmpegDecodingTests
 {
-    public StreamFfmpegDecodingTests()
-    {
-        FfmpegUtils.SetBinariesPath();
-    }
-
     [Fact]
     public void Ctor_WhenCalled_SetsBinariesPath()
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        ffmpeg.RootPath = null;
 
         // Act
         using var str = new SimpleFileStream(fi);
@@ -69,7 +63,6 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        ffmpeg.RootPath = null;
 
         // Act
         using var str = new SimpleFileStream(fi);

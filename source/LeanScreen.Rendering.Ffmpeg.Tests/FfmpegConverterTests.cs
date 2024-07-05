@@ -54,7 +54,6 @@ public class FfmpegConverterTests
     public void Dispose_WhenCalled_DoesNotError()
     {
         // Arrange
-        FfmpegUtils.SetBinariesPath();
         var size = new Size2D(1, 1);
         var sut = new FfmpegConverter(size, default, size);
 
