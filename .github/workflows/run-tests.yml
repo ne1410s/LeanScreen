@@ -23,7 +23,11 @@ jobs:
       run: dotnet tool restore
     - name: Build for release
       run: dotnet build -c Release
+    - name: Set binaries path
+      run: echo "FFMPEG_BINARIES_PATH=$(find . -type d -name ffmpeg)" >> $GITHUB_ENV
     - name: Generate raw coverage data
+      env:
+        FFMPEG_BINARIES_PATH: ${{ env.FFMPEG_BINARIES_PATH }}
       run: dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:'${{ github.workspace }}/coverage' -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary;cobertura"
     - name: Send to coveralls
       continue-on-error: true
@@ -52,6 +56,8 @@ jobs:
     - name: Get mutation data
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
+      env:
+        FFMPEG_BINARIES_PATH: ${{ env.FFMPEG_BINARIES_PATH }}
       run: dotnet stryker -O ${{ github.workspace }}/drop -r html -r json
     - name: Drop artifact - reports
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
@@ -73,4 +79,3 @@ jobs:
           -d @${{ github.workspace }}/drop/reports/mutation-report.json   
     - name: Fail build warnings
       run: dotnet build -c Release --no-incremental /warnaserror
-

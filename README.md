@@ -15,15 +15,20 @@ Provides a set of tools for working with multimedia. Some key features:
 The **Extensions** package provides default implementation for video and image handling (ffmpeg and sixlabors respectively)..
 However the abstractions package is designed so that you can roll your own if you so choose.
 
-The calling assembly needs to ship the ffmpeg binaries in the folder `ffmpeg` in its build output.
-The x64 versions have already been sourced for both linux and windows and are shipped in the Rendering.Ffmpeg project.
+The extensions are exposed to the command line in the form of a Cli tool named `leanctl`.
+(NB: This tool is currently not published anywhere, and needs to be built from source - see the `dotnet publish ...` commands below for reference).
 
-In the case of linux, files in the format `..lib<BINARY>.so.<VERSION>` were obtained from the ffmpeg package and have just been renamed `<BINARY>.<VERSION>`.
+## Binaries
+The calling assembly needs to have ffmpeg binaries available.
+The x64 versions for the appropriate ffmpeg version are provided for both linux and windows in the Rendering.Ffmpeg project.
+
+In the case of linux, files in the format `..lib<BINARY>.so.<VERSION>` were obtained from the ffmpeg package.
 
 In the case of windows, the dlls were obtained from here: https://www.gyan.dev/ffmpeg/builds/
 
-The extensions are exposed to the command line in the form of a Cli tool named `leanctl`.
-(NB: This tool is currently not published anywhere, and needs to be built from source - see the `dotnet publish ...` commands below for reference).
+The library looks for binaries at runtime. By default, it will be in "ffmpeg" folder, relative to your invocation path.
+To provide control, you can set the environment variable, `FFMPEG_BINARIES_PATH` to an absolute path to override this.
+
 ## Further Notes
 ### Handy Commandies
 ```powershell

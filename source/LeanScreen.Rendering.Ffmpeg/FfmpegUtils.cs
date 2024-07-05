@@ -109,7 +109,8 @@ public static class FfmpegUtils
     /// </summary>
     public static unsafe void SetBinariesPath()
     {
-        ffmpeg.RootPath = new System.IO.DirectoryInfo("ffmpeg").FullName;
+        var path = Environment.GetEnvironmentVariable("FFMPEG_BINARIES_PATH");
+        ffmpeg.RootPath = path ?? "ffmpeg";
     }
 
     /// <summary>
