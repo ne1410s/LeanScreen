@@ -24,7 +24,7 @@ jobs:
     - name: Build for release
       run: dotnet build -c Release
     - name: Set binaries path
-      run: echo "FFMPEG_BINARIES_PATH=$(realpath $(find . -type d -name ffmpeg))" >> $GITHUB_ENV
+      run: echo "FFMPEG_BINARIES_PATH=$(realpath $(find . -type d -name ffmpeg))<<EOF" >> $GITHUB_ENV
     - name: Generate raw coverage data
       env:
         FFMPEG_BINARIES_PATH: ${{ env.FFMPEG_BINARIES_PATH }}
