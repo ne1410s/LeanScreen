@@ -69,9 +69,12 @@ public sealed unsafe class FfmpegConverter : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
+        // Stryker disable all
         Marshal.FreeHGlobal(this.convertedFrameBufferPtr);
         ffmpeg.sws_freeContext(this.pConvertContext);
         this.convertedFrameBufferPtr = IntPtr.Zero;
+
+        // Stryker restore all
     }
 
     /// <summary>

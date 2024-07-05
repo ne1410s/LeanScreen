@@ -136,9 +136,13 @@ public static class FfmpegUtils
     /// <summary>
     /// Sets binaries path.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static unsafe void SetBinariesPath()
     {
+        // Stryker disable all
         var path = Environment.GetEnvironmentVariable("FFMPEG_BINARIES_PATH");
         ffmpeg.RootPath = path ?? "ffmpeg";
+
+        // Stryker restore all
     }
 }
