@@ -30,6 +30,8 @@ jobs:
     - name: Build for release
       run: dotnet build -c Release
     - name: Generate raw coverage data
+      env:
+        FFMPEG_BINARIES_PATH: ${{ env.FFMPEG_BINARIES_PATH }}
       run: dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:'${{ github.workspace }}/coverage' -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary;cobertura"
     - name: Send to coveralls
       continue-on-error: true
