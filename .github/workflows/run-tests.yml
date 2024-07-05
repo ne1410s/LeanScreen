@@ -6,7 +6,7 @@ on:
   workflow_call:
 jobs:
   run_tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: ./source
@@ -19,19 +19,16 @@ jobs:
       env:
         READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
-    - name: Copy ffmpeg binaries and set target in runtime variable
+    - name: Install ffmpeg and set binaries var
       run: |
-        ffmpegBinSrc="$(realpath $(find . -type d -name ffmpeg))"
-        ffmpegBinTrg=${{ github.workspace }}
-        cp -r $ffmpegBinSrc $ffmpegBinTrg
-        echo "FFMPEG_BINARIES_PATH=""$ffmpegBinTrg"/ffmpeg"" >> $GITHUB_ENV
+        sudo apt update
+        sudo apt install -y ffmpeg
+        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
     - name: Restore tools
       run: dotnet tool restore
     - name: Build for release
       run: dotnet build -c Release
     - name: Generate raw coverage data
-      env:
-        FFMPEG_BINARIES_PATH: ${{ env.FFMPEG_BINARIES_PATH }}
       run: dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:'${{ github.workspace }}/coverage' -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary;cobertura"
     - name: Send to coveralls
       continue-on-error: true
