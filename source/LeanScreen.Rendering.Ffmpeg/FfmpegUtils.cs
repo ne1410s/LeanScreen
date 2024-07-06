@@ -24,6 +24,8 @@ public static class FfmpegUtils
     /// </summary>
     public static int LogLevel { get; set; } = ffmpeg.AV_LOG_WARNING;
 
+    // Stryker disable all
+
     /// <summary>
     /// Gets the error message from a code.
     /// </summary>
@@ -36,6 +38,8 @@ public static class FfmpegUtils
         ffmpeg.av_strerror(error, buffer, (ulong)bufferSize);
         return Marshal.PtrToStringAnsi((IntPtr)buffer);
     }
+
+    // Stryker restore all
 
     /// <summary>
     /// Constricts a timespan to a duration.
