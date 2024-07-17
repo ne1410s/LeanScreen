@@ -29,7 +29,7 @@ public sealed class FfmpegRenderer : IRenderingSession
     public FfmpegRenderer(Stream stream, byte[] salt, byte[] key, int? height)
     {
         var readStream = salt?.Length > 0
-            ? new CryptoBlockReadStream(stream, salt, key)
+            ? new CryptoBlockReadStream(stream, salt, key, true)
             : new BlockReadStream(stream);
         var codec = new StreamFfmpegDecoding(readStream);
         this.decoder = codec;
