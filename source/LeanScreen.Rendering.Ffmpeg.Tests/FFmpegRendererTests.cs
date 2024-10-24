@@ -52,11 +52,11 @@ public class FfmpegRendererTests
     }
 
     [Theory]
-    [InlineData(1, "3c820c3da3c2338ebfa6ab8f123eb9d4")]
-    [InlineData(100, "69186884f769afea14402e065e55fceb")]
-    [InlineData(500, "2252faedce7b6e2568ca21b8eb55b9db")]
-    [InlineData(72, "79f4d1aad4e61218528e6c6c8e5a3818")]
-    public void RenderAt_VaryingSize_ReturnsExpected(int height, string expectedMd5Hex)
+    [InlineData(1, "3c820c3da3c2338ebfa6ab8f123eb9d4", 53)]
+    [InlineData(100, "69186884f769afea14402e065e55fceb", 53)]
+    [InlineData(500, "2252faedce7b6e2568ca21b8eb55b9db", 53)]
+    [InlineData(72, "79f4d1aad4e61218528e6c6c8e5a3818", 53)]
+    public void RenderAt_VaryingSize_ReturnsExpected(int height, string expectedMd5Hex, long expectedFrame)
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mkv"));
@@ -70,6 +70,7 @@ public class FfmpegRendererTests
 
         // Assert
         md5Hex.Should().Be(expectedMd5Hex);
+        result.FrameNumber.Should().Be(expectedFrame);
     }
 
     [Theory]
