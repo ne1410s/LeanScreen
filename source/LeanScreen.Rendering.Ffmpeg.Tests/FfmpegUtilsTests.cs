@@ -40,8 +40,8 @@ public class FfmpegUtilsTests
         var act = () => code.avThrowIfError();
 
         // Assert
-        act.Should().ThrowExactly<InvalidOperationException>()
-            .WithMessage("No such process");
+        act.Should().ThrowExactly<NotSupportedException>()
+            .WithMessage("Specified method is not supported.");
     }
 
     [Fact]
