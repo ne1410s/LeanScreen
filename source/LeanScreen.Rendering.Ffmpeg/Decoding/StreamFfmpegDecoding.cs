@@ -32,7 +32,10 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
         var bufLen = this.uStream.BufferLength;
         var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
         this.streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, this.readFn, null, this.seekFn);
-        streamIc->seekable = 1;
+
+        // TODO: Is this ok???
+        //streamIc->seekable = 1;
+
         PtrFormatContext->pb = this.streamIc;
 
         this.OpenInputContext();
