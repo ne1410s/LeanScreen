@@ -133,7 +133,7 @@ public class StreamFfmpegDecodingTests
         var result = sut.Seek(default);
 
         // Assert
-        result.pkt_pos.Should().BeGreaterThanOrEqualTo(0);
+        result.best_effort_timestamp.Should().Be(0);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class StreamFfmpegDecodingTests
         var result = sut.Seek(TimeSpan.FromDays(21));
 
         // Assert
-        result.pkt_pos.Should().BeLessThan(0);
+        result.best_effort_timestamp.Should().BeLessThan(0);
     }
 
     private unsafe sealed class TestDecoding : FfmpegDecodingSessionBase
