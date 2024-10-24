@@ -218,7 +218,6 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         ffmpeg.av_frame_unref(this.PtrFrame);
         ffmpeg.av_frame_unref(this.PtrReceivedFrame);
         int error;
-        long lastPts = -1;
 
         do
         {
@@ -228,13 +227,6 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                 {
                     ffmpeg.av_packet_unref(this.PtrPacket);
                     error = ffmpeg.av_read_frame(this.PtrFormatContext, this.PtrPacket);
-
-                    var currentPts = this.PtrPacket->pts;
-                    if (currentPts > 0 && currentPts == lastPts)
-                    {
-                        break;
-                    }
-
                     if (error == ffmpeg.AVERROR_EOF)
                     {
                         frame = *this.PtrFrame;
@@ -242,7 +234,6 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                     }
 
                     error.avThrowIfError();
-                    lastPts = currentPts;
                 }
                 while (PtrPacket->stream_index != this.StreamIndex);
 
