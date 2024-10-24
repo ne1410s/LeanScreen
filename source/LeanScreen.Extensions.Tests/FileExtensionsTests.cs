@@ -84,7 +84,7 @@ public class FileExtensionsTests
         var imageSource = new FileInfo($"Samples/{name}");
 
         // Act
-        using var stream = await imageSource.ResizeImage([9, 0, 2, 1, 0]);
+        await using var stream = await imageSource.ResizeImage([9, 0, 2, 1, 0]);
         var resultingPosition = stream.Position;
         var actual = stream.Hash(HashType.Md5).Encode(Codec.ByteHex);
 

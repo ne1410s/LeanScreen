@@ -15,8 +15,6 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
 {
     private const byte SeekThresholdMs = 150;
 
-    private readonly AVCodec* ptrCodec;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FfmpegDecodingSessionBase"/> class.
     /// </summary>
@@ -27,8 +25,8 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         FfmpegUtils.SetupLogging();
 
         this.Url = url;
-        this.ptrCodec = null;
-        this.PtrCodecContext = ffmpeg.avcodec_alloc_context3(this.ptrCodec);
+        AVCodec* ptrCodec = null;
+        this.PtrCodecContext = ffmpeg.avcodec_alloc_context3(ptrCodec);
         this.PtrFormatContext = ffmpeg.avformat_alloc_context();
         this.PtrReceivedFrame = ffmpeg.av_frame_alloc();
         this.PtrPacket = ffmpeg.av_packet_alloc();
@@ -99,9 +97,12 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
 
         AVFrame retVal;
         double msAhead;
+
+        var iter = 1;
         double previousMsAhead = double.MinValue;
         while(true)
         {
+            iter++;
             var readOk = this.TryDecodeNextFrame(out retVal);
             var framePosition = ((double)retVal.best_effort_timestamp).ToTimeSpan(this.TimeBase);
             msAhead = (framePosition - position).TotalMilliseconds;
@@ -141,7 +142,8 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         var pPacket = this.PtrPacket;
         ffmpeg.av_packet_free(&pPacket);
 
-        ffmpeg.avcodec_close(this.PtrCodecContext);
+        var pCodecContext = this.PtrCodecContext;
+        ffmpeg.avcodec_free_context(&pCodecContext);
         var pFormatContext = this.PtrFormatContext;
         ffmpeg.avformat_close_input(&pFormatContext);
 
@@ -175,7 +177,10 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     protected void OpenInputContext()
     {
         var pFormatContext = this.PtrFormatContext;
+
+        // NB: This has always been commented-out...
         ////pFormatContext->seek2any = 1;
+
         ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
         ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
         ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
@@ -213,6 +218,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         ffmpeg.av_frame_unref(this.PtrFrame);
         ffmpeg.av_frame_unref(this.PtrReceivedFrame);
         int error;
+        long lastPts = -1;
 
         do
         {
@@ -223,6 +229,12 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                     ffmpeg.av_packet_unref(this.PtrPacket);
                     error = ffmpeg.av_read_frame(this.PtrFormatContext, this.PtrPacket);
 
+                    var currentPts = this.PtrPacket->pts;
+                    if (currentPts > 0 && currentPts == lastPts)
+                    {
+                        break;
+                    }
+
                     if (error == ffmpeg.AVERROR_EOF)
                     {
                         frame = *this.PtrFrame;
@@ -230,6 +242,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                     }
 
                     error.avThrowIfError();
+                    lastPts = currentPts;
                 }
                 while (PtrPacket->stream_index != this.StreamIndex);
 

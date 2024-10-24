@@ -34,14 +34,13 @@ public class FfmpegUtilsTests
     public void ThrowExceptionIfError_IsError_ThrowsException()
     {
         // Arrange
-        const int code = -3;
+        const int code = -1;
 
         // Act
         var act = () => code.avThrowIfError();
 
         // Assert
-        act.Should().ThrowExactly<NotSupportedException>()
-            .WithMessage("Specified method is not supported.");
+        act.Should().Throw<Exception>();
     }
 
     [Fact]

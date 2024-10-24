@@ -33,8 +33,8 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
         var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
         this.streamIc = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, this.readFn, null, this.seekFn);
 
-        // TODO: Is this ok???
-        //streamIc->seekable = 1;
+        // NB: This creates memory issue. .. So it's blindly commented out :D
+        ////streamIc->seekable = 1;
 
         PtrFormatContext->pb = this.streamIc;
 

@@ -48,7 +48,7 @@ public unsafe sealed class UStreamInternal : IUStream
                 this.byteArrayCopier.Copy(read, (IntPtr)buffer, read.Length);
             }
 
-            return read.Length;
+            return read.Length == 0 ? EOF : read.Length;
         });
 
     /// <inheritdoc/>
