@@ -21,6 +21,7 @@ jobs:
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
     - name: Install ffmpeg and set binaries var
       run: |
+        sudo add-apt-repository -y ppa:ubuntuhandbook1/ffmpeg7
         sudo apt update
         sudo apt install -y ffmpeg
         echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
