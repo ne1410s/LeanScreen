@@ -1,8 +1,4 @@
-﻿// <copyright file="FfmpegRemuxer.cs" company="ne1410s">
-// Copyright (c) ne1410s. All rights reserved.
-// </copyright>
-
-namespace LeanScreen.Rendering.Ffmpeg.Remuxing;
+﻿namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
 using System.IO;
@@ -11,7 +7,7 @@ using FFmpeg.AutoGen;
 /// <summary>
 /// Remuxer for Ffmpeg.
 /// </summary>
-public class FfmpegRemuxer
+public class FfmpegFormatConverter_Demo
 {
     /// <summary>
     /// Re-multiplexes streams to another container format (without transcoding).
@@ -163,6 +159,16 @@ public class FfmpegRemuxer
                 continue;
             }
 
+            //// Errrrr maybe somat like this?
+            //if (in_stream->codecpar->codec_type == AVMediaType.AVMEDIA_TYPE_VIDEO)
+            //{
+            //    ret = ffmpeg.avformat_match_stream_specifier(ofmt_ctx, in_stream, "h264_mp4toannexb");
+            //    if (ret < 0)
+            //    {
+            //        goto end;
+            //    }
+            //}
+
             pkt->stream_index = stream_mapping[pkt->stream_index];
             out_stream = ofmt_ctx->streams[pkt->stream_index];
 
@@ -194,7 +200,8 @@ public class FfmpegRemuxer
 
         if (ret < 0 && ret != ffmpeg.AVERROR_EOF)
         {
-            Console.WriteLine($"Error occurred: {FfmpegUtils.AvStrError(ret)}");
+            var errorText = FfmpegUtils.AvStrError(ret);
+            Console.WriteLine($"Error occurred: {errorText}");
             return 1;
         }
 
