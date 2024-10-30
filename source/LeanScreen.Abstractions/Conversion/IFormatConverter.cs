@@ -6,7 +6,6 @@ namespace LeanScreen.Abstractions.Conversion;
 
 using System.IO;
 using CryptoStream.Streams;
-using LeanScreen.Rendering;
 
 /// <summary>
 /// Handles format conversion.
@@ -17,7 +16,7 @@ public interface IFormatConverter
     /// Remultiplexes media into new format (i.e. lightweight conversion, not wholesale transoding).
     /// </summary>
     /// <param name="source">The source.</param>
-    /// <param name="sourceInfo">The source info.</param>
+    /// <param name="targetExt">The target extension.</param>
     /// <returns>The output stream.</returns>
-    public Stream Remux(ISimpleReadStream source, MediaInfo sourceInfo);
+    public Stream Remux(ISimpleReadStream source, string targetExt);
 }

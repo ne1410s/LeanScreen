@@ -13,7 +13,7 @@ public class FfmpegFormatConverter_Demo
     /// Re-multiplexes streams to another container format (without transcoding).
     /// </summary>
     /// <returns>Some number.</returns>
-    public static unsafe int Remux(string fileName)
+    public static unsafe int Remux(string fileName, string targetExt)
     {
         FfmpegUtils.SetBinariesPath();
 
@@ -47,7 +47,7 @@ public class FfmpegFormatConverter_Demo
 
         // These are OK!
         // mkv, asf, mov, vob, flv, mp4, ts
-        out_filename = Path.ChangeExtension(fileName, "mkv");
+        out_filename = $@"C:\temp\~vids\out\111_demo{targetExt}";
 
         pkt = ffmpeg.av_packet_alloc();
         if (pkt == null)
