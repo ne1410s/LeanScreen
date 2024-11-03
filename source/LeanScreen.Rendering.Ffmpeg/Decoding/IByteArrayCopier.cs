@@ -12,10 +12,18 @@ using System;
 public interface IByteArrayCopier
 {
     /// <summary>
+    /// Copies a byte array to a pointer.
+    /// </summary>
+    /// <param name="source">The source buffer.</param>
+    /// <param name="target">The target pointer.</param>
+    /// <param name="length">The length to copy.</param>
+    void Copy(byte[] source, IntPtr target, int length);
+
+    /// <summary>
     /// Copies a pointer to a byte array.
     /// </summary>
+    /// <param name="source">The source pointer.</param>
     /// <param name="target">The target buffer.</param>
-    /// <param name="source">The source buffer.</param>
     /// <param name="length">The length to copy.</param>
-    void Copy(byte[] target, IntPtr source, int length);
+    void Copy(IntPtr source, byte[] target, int length);
 }

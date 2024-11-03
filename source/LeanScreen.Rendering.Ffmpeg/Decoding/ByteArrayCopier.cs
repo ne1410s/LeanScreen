@@ -11,6 +11,10 @@ using System.Runtime.InteropServices;
 internal sealed class ByteArrayCopier : IByteArrayCopier
 {
     /// <inheritdoc/>
-    public void Copy(byte[] target, IntPtr source, int length)
-        => Marshal.Copy(target, 0, source, length);
+    public void Copy(byte[] source, IntPtr target, int length)
+        => Marshal.Copy(source, 0, target, length);
+
+    /// <inheritdoc/>
+    public void Copy(IntPtr source, byte[] target, int length)
+        => Marshal.Copy(source, target, 0, length);
 }

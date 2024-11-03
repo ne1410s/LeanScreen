@@ -7,7 +7,7 @@ using FFmpeg.AutoGen;
 /// <summary>
 /// Remuxer for Ffmpeg.
 /// </summary>
-public class FfmpegFormatConverter_Demo
+public class FfmpegFormatConverter_001_File2File
 {
     /// <summary>
     /// Re-multiplexes streams to another container format (without transcoding).

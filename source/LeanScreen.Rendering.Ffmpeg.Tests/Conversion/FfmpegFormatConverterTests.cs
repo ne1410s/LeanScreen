@@ -8,7 +8,7 @@ using CryptoStream.Streams;
 using LeanScreen.Rendering.Ffmpeg.Conversion;
 
 /// <summary>
-/// Tests for <see cref="FfmpegFormatConverter"/> class.
+/// Tests for <see cref="FfmpegFormatConverter_002_Str2File"/> class.
 /// </summary>
 public class FfmpegFormatConverterTests
 {
@@ -20,13 +20,13 @@ public class FfmpegFormatConverterTests
     [InlineData(TargetExts.Mp4)]
     [InlineData(TargetExts.Ts)]
     [InlineData(TargetExts.Vob)]
-    public void RemuxDemo_WhenCalled_ProducesExpected(string ext)
+    public void RemuxF2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
         const string path = "C:\\temp\\~vids\\1.avi";
 
         // Act
-        var result = FfmpegFormatConverter_Demo.Remux(path, ext);
+        var result = FfmpegFormatConverter_001_File2File.Remux(path, ext);
 
         // Assert
         result.Should().Be(0);
@@ -40,17 +40,38 @@ public class FfmpegFormatConverterTests
     [InlineData(TargetExts.Mp4)]
     [InlineData(TargetExts.Ts)]
     [InlineData(TargetExts.Vob)]
-    public void Remux_WhenCalled_ProducesExpected(string ext)
+    public void RemuxS2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
         var fi = new FileInfo("C:\\temp\\~vids\\1.avi");
         using var srs = new BlockReadStream(fi);
 
         // Act
-        var result = new FfmpegFormatConverter().Remux(srs, ext);
+        var result = new FfmpegFormatConverter_002_Str2File().Remux(srs, ext);
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(TargetExts.Asf)]
+    [InlineData(TargetExts.Flv)]
+    [InlineData(TargetExts.Mkv)]
+    [InlineData(TargetExts.Mov)]
+    [InlineData(TargetExts.Mp4)]
+    [InlineData(TargetExts.Ts)]
+    [InlineData(TargetExts.Vob)]
+    public void RemuxS2S_WhenCalled_ProducesExpected(string ext)
+    {
+        // Arrange
+        using var fsRead = File.OpenRead("C:\\temp\\~vids\\1.avi");
+        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\1.avi" + "_333" + ext, FileMode.Create);
+
+        // Act
+        var result = new FfmpegFormatConverter_003_Str2Str().Remux(fsRead, fsWrite, ext, [], []);
+
+        // Assert
+        result.Should().NotBeNull();
     }
 }
 

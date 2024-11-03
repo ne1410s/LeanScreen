@@ -9,7 +9,7 @@ using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
 /// <summary>
-/// Tests for <see cref="UStreamInternal"/>.
+/// Tests for <see cref="UWriteStreamInternal"/>.
 /// </summary>
 public class UStreamInternalTests
 {

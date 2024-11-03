@@ -12,7 +12,7 @@ using LeanScreen.Abstractions.Conversion;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
 /// <inheritdoc/>
-public class FfmpegFormatConverter : IFormatConverter
+public class FfmpegFormatConverter_002_Str2File : IFormatConverter
 {
     /// <inheritdoc/>
     public unsafe Stream Remux(ISimpleReadStream source, string targetExt)
