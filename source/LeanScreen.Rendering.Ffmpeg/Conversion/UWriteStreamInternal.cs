@@ -55,11 +55,17 @@ public unsafe sealed class UWriteStreamInternal : IUWriteStream
         this.TryManipulateStream(EOF, () =>
         {
             var ss = (SimpleStream)this.target;
-            this.Writes.Add(new() { At = ss.Position, Length = bufferLength });
 
             this.byteArrayCopier.Copy((IntPtr)buffer, this.writeBuffer, bufferLength);
             var span = this.writeBuffer.AsSpan(0, bufferLength).ToArray();
-            return this.target.Write(span);
+            var preLen = ss.Length;
+            var retVal = this.target.Write(span);
+            var isDirty = (ss.Length - preLen) < span.Length;
+
+            this.Writes.Add(new() { At = ss.Position, Length = bufferLength, Dirty = isDirty });
+
+            return retVal;
+
         });
 
     /// <inheritdoc/>
@@ -126,4 +132,9 @@ public record WriteEvent
     /// Gets or sets the length.
     /// </summary>
     public long Length { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a dirty write.
+    /// </summary>
+    public bool Dirty { get; set; }
 }
