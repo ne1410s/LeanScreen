@@ -55,15 +55,14 @@ public unsafe sealed class UWriteStreamInternal : IUWriteStream
         this.TryManipulateStream(EOF, () =>
         {
             this.byteArrayCopier.Copy((IntPtr)buffer, this.writeBuffer, bufferLength);
-            var span = this.writeBuffer.AsSpan(0, bufferLength).ToArray();
             var ogLength = this.target.Length;
             var ogPosition = this.target.Position;
-            this.target.Write(span, 0, span.Length);
-            var isDirty = (this.target.Length - ogLength) < span.Length;
+            this.target.Write(this.writeBuffer, 0, bufferLength);
+            var isDirty = (this.target.Length - ogLength) < bufferLength;
 
             this.Writes.Add(new() { At = ogPosition, Length = bufferLength, Dirty = isDirty });
 
-            return span.Length;
+            return bufferLength;
         });
 
     /// <inheritdoc/>
