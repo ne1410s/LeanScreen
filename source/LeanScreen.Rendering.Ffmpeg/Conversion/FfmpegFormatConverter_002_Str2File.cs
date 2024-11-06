@@ -15,9 +15,9 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 public class FfmpegFormatConverter_002_Str2File : IFormatConverter
 {
     /// <inheritdoc/>
-    public unsafe Stream Remux(ISimpleReadStream source, string targetExt)
+    public unsafe Stream Remux(BlockStream source, string targetExt)
     {
-        var out_filename = $@"C:\temp\~vids\out\111_strwip{targetExt}";
+        var out_filename = $@"C:\temp\media\out\111_strwip{targetExt}";
 
         FfmpegUtils.SetBinariesPath();
         FfmpegUtils.SetupLogging();

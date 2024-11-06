@@ -23,7 +23,7 @@ public class FfmpegFormatConverterTests
     public void RemuxF2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        const string path = "C:\\temp\\~vids\\1.avi";
+        const string path = "C:\\temp\\media\\1.avi";
 
         // Act
         var result = FfmpegFormatConverter_001_File2File.Remux(path, ext);
@@ -43,8 +43,8 @@ public class FfmpegFormatConverterTests
     public void RemuxS2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        var fi = new FileInfo("C:\\temp\\~vids\\1.avi");
-        using var srs = new BlockReadStream(fi);
+        var fi = new FileInfo("C:\\temp\\media\\1.avi");
+        using var srs = fi.OpenSimple();
 
         // Act
         var result = new FfmpegFormatConverter_002_Str2File().Remux(srs, ext);
@@ -64,8 +64,8 @@ public class FfmpegFormatConverterTests
     public void RemuxS2S_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        using var fsRead = File.OpenRead("C:\\temp\\~vids\\1.avi");
-        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\1.avi" + "_333" + ext, FileMode.Create);
+        using var fsRead = File.OpenRead("C:\\temp\\media\\1.avi");
+        using var fsWrite = File.Open("C:\\temp\\media\\out\\1.avi" + "_333" + ext, FileMode.Create);
 
         // Act
         var result = new FfmpegFormatConverter_003_Str2Str().Remux(fsRead, fsWrite, ext, [], []);

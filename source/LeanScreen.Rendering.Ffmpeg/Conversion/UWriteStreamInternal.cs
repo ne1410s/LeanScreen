@@ -12,7 +12,7 @@ using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
 /// <summary>
-/// Wraps <see cref="ISimpleReadStream"/>, exposing the interface to the
+/// Wraps <see cref="BlockStream"/>, exposing the interface to the
 /// internal workings of ffmpeg. This is an unmanaged instance.
 /// </summary>
 public unsafe sealed class UWriteStreamInternal : IUWriteStream
@@ -21,7 +21,7 @@ public unsafe sealed class UWriteStreamInternal : IUWriteStream
     private static readonly int EOF = ffmpeg.AVERROR_EOF;
 
     private readonly object readLock = new();
-    private readonly ISimpleWriteStream target;
+    private readonly BlockStream target;
     private readonly IByteArrayCopier byteArrayCopier;
     private readonly byte[] writeBuffer;
 
@@ -30,7 +30,7 @@ public unsafe sealed class UWriteStreamInternal : IUWriteStream
     /// </summary>
     /// <param name="target">The target stream.</param>
     /// <param name="byteArrayCopier">A byte array copier.</param>
-    public UWriteStreamInternal(ISimpleWriteStream target, IByteArrayCopier? byteArrayCopier = null)
+    public UWriteStreamInternal(BlockStream target, IByteArrayCopier? byteArrayCopier = null)
     {
         this.target = target;
         this.byteArrayCopier = byteArrayCopier ?? new ByteArrayCopier();
@@ -54,30 +54,27 @@ public unsafe sealed class UWriteStreamInternal : IUWriteStream
     public int WriteUnsafe(void* opaque, byte* buffer, int bufferLength) =>
         this.TryManipulateStream(EOF, () =>
         {
-            var ss = (SimpleStream)this.target;
-
             this.byteArrayCopier.Copy((IntPtr)buffer, this.writeBuffer, bufferLength);
             var span = this.writeBuffer.AsSpan(0, bufferLength).ToArray();
-            var preLen = ss.Length;
-            var retVal = this.target.Write(span);
-            var isDirty = (ss.Length - preLen) < span.Length;
+            var ogLength = this.target.Length;
+            var ogPosition = this.target.Position;
+            this.target.Write(span, 0, span.Length);
+            var isDirty = (this.target.Length - ogLength) < span.Length;
 
-            this.Writes.Add(new() { At = ss.Position, Length = bufferLength, Dirty = isDirty });
+            this.Writes.Add(new() { At = ogPosition, Length = bufferLength, Dirty = isDirty });
 
-            return retVal;
-
+            return span.Length;
         });
 
     /// <inheritdoc/>
     public long SeekUnsafe(void* opaque, long offset, int whence) =>
         this.TryManipulateStream(EOF, () =>
         {
-            var ss = (SimpleStream)this.target;
-            this.Seeks.Add(new() { From = ss.Position, To = offset });
+            this.Seeks.Add(new() { From = this.target.Position, To = offset });
 
             return whence == SeekSize
                 ? this.target.Length
-                : ss.Seek(offset, SeekOrigin.Begin);
+                : this.target.Seek(offset, SeekOrigin.Begin);
         });
 
     /// <inheritdoc/>

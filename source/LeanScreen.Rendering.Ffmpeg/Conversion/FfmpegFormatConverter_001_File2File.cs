@@ -47,7 +47,7 @@ public class FfmpegFormatConverter_001_File2File
 
         // These are OK!
         // mkv, asf, mov, vob, flv, mp4, ts
-        out_filename = $@"C:\temp\~vids\out\111_demo{targetExt}";
+        out_filename = $@"C:\temp\media\out\111_demo{targetExt}";
 
         pkt = ffmpeg.av_packet_alloc();
         if (pkt == null)

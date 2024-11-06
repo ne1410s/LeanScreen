@@ -18,5 +18,5 @@ public interface IFormatConverter
     /// <param name="source">The source.</param>
     /// <param name="targetExt">The target extension.</param>
     /// <returns>The output stream.</returns>
-    public Stream Remux(ISimpleReadStream source, string targetExt);
+    public Stream Remux(BlockStream source, string targetExt);
 }

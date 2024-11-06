@@ -5,11 +5,9 @@
 namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CryptoStream.Streams;
-using CryptoStream.Transform;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
@@ -31,20 +29,14 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
     {
         salt ??= [];
         var withCrypto = salt.Length > 0;
-        var metadata = new Dictionary<string, string>();
-        if (withCrypto)
-        {
-            new AesGcmDecryptor().ReadPepper(source, key, true, out _, out metadata);
-        }
-
         using var readStream = withCrypto
-            ? new CryptoBlockReadStream(source, salt, key, true)
-            : new BlockReadStream(source);
+            ? new GcmCryptoStream(source, salt, key)
+            : new BlockStream(source);
         using var writeStream = withCrypto
-            ? new CryptoBlockWriteStream(target, metadata, salt, key)
-            : new BlockWriteStream(target);
+            ? new GcmCryptoStream(target, salt, key, ext)
+            : new BlockStream(target);
 
-        var targetName = writeStream is CryptoBlockWriteStream cbws ? cbws.Name : $"result{ext}";
+        var targetName = writeStream is GcmCryptoStream cs ? cs.Id : $"result{ext}";
 
         FfmpegUtils.SetBinariesPath();
         FfmpegUtils.SetupLogging();

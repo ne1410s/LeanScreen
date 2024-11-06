@@ -29,8 +29,8 @@ public sealed class FfmpegRenderer : IRenderingSession
     public FfmpegRenderer(Stream stream, byte[] salt, byte[] key, int? height)
     {
         var readStream = salt?.Length > 0
-            ? new CryptoBlockReadStream(stream, salt, key, true)
-            : new BlockReadStream(stream);
+            ? new GcmCryptoStream(stream, salt, key)
+            : new BlockStream(stream);
         var codec = new StreamFfmpegDecoding(readStream);
         this.decoder = codec;
         this.ThumbSize = height == null ? codec.Dimensions : codec.Dimensions.ResizeTo(new() { Height = height.Value });

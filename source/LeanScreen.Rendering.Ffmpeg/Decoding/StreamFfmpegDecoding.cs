@@ -12,7 +12,7 @@ using FFmpeg.AutoGen;
 /// </summary>
 public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
 {
-    private readonly ISimpleReadStream readStream;
+    private readonly BlockStream readStream;
     private UStreamInternal? uStream;
     private avio_alloc_context_read_packet? readFn;
     private avio_alloc_context_seek? seekFn;
@@ -22,7 +22,7 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
     /// Initializes a new instance of the <see cref="StreamFfmpegDecoding"/> class.
     /// </summary>
     /// <param name="stream">A stream.</param>
-    public StreamFfmpegDecoding(ISimpleReadStream stream)
+    public StreamFfmpegDecoding(BlockStream stream)
         : base(string.Empty)
     {
         this.readStream = stream;
