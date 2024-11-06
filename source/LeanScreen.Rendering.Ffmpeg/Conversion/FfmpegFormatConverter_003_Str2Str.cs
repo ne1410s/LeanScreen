@@ -6,10 +6,9 @@ namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
 using System.IO;
-using System.Linq;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
-using LeanScreen.Rendering.Ffmpeg.Decoding;
+using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <summary>
 /// Third iteration.
@@ -48,10 +47,10 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
 
         try
         {
-            using var uStream = new UStreamInternal(readStream);
-            avio_alloc_context_read_packet readFn = uStream.ReadUnsafe;
-            avio_alloc_context_seek seekFn = uStream.SeekUnsafe;
-            var bufLen = uStream.BufferLength;
+            using var ffmpegReadStream = new UStreamInternal(readStream);
+            avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
+            avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
+            var bufLen = ffmpegReadStream.BufferLength;
             var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
             ptrInputFmtCtx = ffmpeg.avformat_alloc_context();
             ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
@@ -67,13 +66,12 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
             var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
             stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
 
-            using var wStream = new UWriteStreamInternal(writeStream);
-            avio_alloc_context_write_packet writeFn = wStream.WriteUnsafe;
-            avio_alloc_context_seek seekFn2 = wStream.SeekUnsafe;
-            var wBufLen = wStream.BufferLength;
+            using var ffmpegWriteStream = new UStreamInternal(writeStream);
+            avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
+            avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
+            var wBufLen = ffmpegWriteStream.BufferLength;
             var ptrWBuffer = (byte*)ffmpeg.av_malloc((ulong)wBufLen);
             ptrOutputFmtCtx = ffmpeg.avformat_alloc_context();
-            ////ffmpeg.avformat_alloc_output_context2(&ptrOutputFmtCtx, null, null, targetName).avThrowIfError();
 
             ptrOutputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrWBuffer, wBufLen, 1, null, null, writeFn, seekFn2);
             ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, targetName, null);
@@ -105,9 +103,6 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
             // Write!
             ffmpeg.avformat_write_header(ptrOutputFmtCtx, null).avThrowIfError();
 
-            var postHeaderSeeks = wStream.Seeks.ToList();
-            var postHeaderWrites = wStream.Writes.ToList();
-
             while (true)
             {
                 AVStream* in_stream;
@@ -137,14 +132,12 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
                 ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
             }
 
-            var postBodySeeks = wStream.Seeks.ToList();
-            var postBodyWrites = wStream.Writes.ToList();
-            wStream.Writes.Clear();
+            // Enable buffer mode
+            ffmpegWriteStream.BufferTrailerMode = true;
 
             ffmpeg.av_write_trailer(ptrOutputFmtCtx).avThrowIfError();
 
-            var postTrailerSeeks = wStream.Seeks.ToList();
-            var postTrailerOnlyWrites = wStream.Writes.ToList();
+            ffmpegWriteStream.FinaliseWrite();
 
             return targetName;
         }

@@ -9,7 +9,7 @@ using System.IO;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
 using LeanScreen.Abstractions.Conversion;
-using LeanScreen.Rendering.Ffmpeg.Decoding;
+using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <inheritdoc/>
 public class FfmpegFormatConverter_002_Str2File : IFormatConverter

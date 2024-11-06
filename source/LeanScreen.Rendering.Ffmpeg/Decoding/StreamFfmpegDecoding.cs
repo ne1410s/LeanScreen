@@ -6,6 +6,7 @@ namespace LeanScreen.Rendering.Ffmpeg.Decoding;
 
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
+using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <summary>
 /// Ffmpeg decoding session for stream sources.

@@ -4,6 +4,9 @@
 
 namespace LeanScreen.Rendering.Ffmpeg.Tests.Conversion;
 
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
+using CryptoStream.IO;
 using CryptoStream.Streams;
 using LeanScreen.Rendering.Ffmpeg.Conversion;
 
@@ -72,6 +75,36 @@ public class FfmpegFormatConverterTests
 
         // Assert
         result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void RemuxS2S_Diagnose()
+    {
+        // Arrange
+        var controlRefFi = new FileInfo("C:\\temp\\media\\out\\111_demo.mp4");
+        var testRefFi = new FileInfo("C:\\temp\\media\\out\\1.avi_333.mp4");
+
+        using var controlFi = controlRefFi.OpenRead();
+        using var testFi = testRefFi.OpenRead();
+
+        var matchingBlocks = 0;
+        var buffer = new byte[32768];
+        var testBlocks = (int)Math.Ceiling((double)testRefFi.Length / buffer.Length);
+        for (var block = 0; block < testBlocks; block++)
+        {
+            Array.Clear(buffer);
+            controlFi.Read(buffer, 0, buffer.Length);
+            var ctrl = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+            Array.Clear(buffer);
+            testFi.Read(buffer, 0, buffer.Length);
+            var test = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+            if (ctrl == test)
+            {
+                matchingBlocks++;
+            }
+        }
     }
 }
 

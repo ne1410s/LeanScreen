@@ -7,9 +7,10 @@ namespace LeanScreen.Rendering.Ffmpeg.Tests.Decoding;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
+using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <summary>
-/// Tests for <see cref="UWriteStreamInternal"/>.
+/// Tests for <see cref="UStreamInternal"/>.
 /// </summary>
 public class UStreamInternalTests
 {
@@ -96,18 +97,4 @@ public class UStreamInternalTests
     ////    // Assert
     ////    innerMock.Verify(m => m.Seek(position), Times.Exactly(expectedCalls));
     ////}
-
-    [Fact]
-    public unsafe void Ctor_WithStream_CanSeek()
-    {
-        // Arrange
-        var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
-
-        // Act
-        using var str = fi.OpenSimple();
-        using var sut = new UStreamInternal(str);
-
-        // Assert
-        sut.CanSeek.Should().BeTrue();
-    }
 }

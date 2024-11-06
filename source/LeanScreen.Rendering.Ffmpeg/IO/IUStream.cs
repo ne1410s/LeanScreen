@@ -2,7 +2,7 @@
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
-namespace LeanScreen.Rendering.Ffmpeg.Decoding;
+namespace LeanScreen.Rendering.Ffmpeg.IO;
 
 using System;
 
@@ -15,11 +15,6 @@ internal unsafe interface IUStream : IDisposable
     /// Gets the buffer length.
     /// </summary>
     int BufferLength { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether the stream is seekable.
-    /// </summary>
-    bool CanSeek { get; }
 
     /// <summary>
     /// Reads from the underlying stream and writes up to
@@ -43,4 +38,13 @@ internal unsafe interface IUStream : IDisposable
     /// <param name="whence">The whence.</param>
     /// <returns>The position read; in bytes or time scale.</returns>
     long SeekUnsafe(void* opaque, long offset, int whence);
+
+    /// <summary>
+    /// Writes to the underlying stream.
+    /// </summary>
+    /// <param name="opaque">An FFmpeg provided opaque reference.</param>
+    /// <param name="buffer">The source buffer.</param>
+    /// <param name="bufferLength">The source buffer length.</param>
+    /// <returns>The number of bytes that have been written.</returns>
+    int WriteUnsafe(void* opaque, byte* buffer, int bufferLength);
 }
