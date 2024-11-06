@@ -73,7 +73,6 @@ public unsafe sealed class UStreamInternal(BlockStream blockStr, IByteArrayCopie
         this.TryManipulateStream(EOF, () =>
         {
             this.byteArrayCopier.Copy((IntPtr)buffer, this.buffer, bufferLength);
-            Stream writeTo = this.BufferTrailerMode ? this.trailerWriteBuffer : blockStr;
 
             var headerWrite = blockStr.Position < this.BufferLength;
             var dirtyWrite = blockStr.Position != blockStr.Length;
@@ -84,7 +83,7 @@ public unsafe sealed class UStreamInternal(BlockStream blockStr, IByteArrayCopie
                     this.headerWriteBuffer.Seek(blockStr.Position, SeekOrigin.Begin);
                 }
 
-                var bit = this.buffer.AsSpan((int)blockStr.Position, bufferLength);
+                var bit = this.buffer.AsSpan(0, bufferLength);
                 this.headerWriteBuffer.Write(bit.ToArray(), 0, bufferLength);
             }
 
@@ -104,9 +103,10 @@ public unsafe sealed class UStreamInternal(BlockStream blockStr, IByteArrayCopie
             {
                 var trailerSeek = blockStr.Position - this.trailerStartPosition;
                 this.trailerWriteBuffer.Seek(trailerSeek, SeekOrigin.Begin);
+                this.trailerWriteBuffer.Write(this.buffer, 0, bufferLength);
             }
 
-            writeTo.Write(this.buffer, 0, bufferLength);
+            blockStr.Write(this.buffer, 0, bufferLength);
             return bufferLength;
         });
 
@@ -145,7 +145,7 @@ public unsafe sealed class UStreamInternal(BlockStream blockStr, IByteArrayCopie
             {
                 return operation();
             }
-            catch
+            catch (Exception ex)
             {
                 return fallback;
             }

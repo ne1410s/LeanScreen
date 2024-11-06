@@ -36,7 +36,7 @@
   
   <ItemGroup>
     <PackageReference Include="Analyse" Version="1.0.*" />
-    <PackageReference Include="CryptoStream" Version="1.0.2-alpha003" />
+    <PackageReference Include="CryptoStream" Version="1.0.2-alpha004" />
     <PackageReference Include="System.Memory" Version="4.5.*" />
   </ItemGroup>
 
