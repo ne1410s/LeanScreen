@@ -34,7 +34,7 @@ public class UStreamInternalTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var sut = new UStreamInternal(str, mockCopier.Object);
         sut.SeekUnsafe(default, fi.Length, 0);
 
@@ -54,7 +54,7 @@ public class UStreamInternalTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var sut = new UStreamInternal(str, mockCopier.Object);
 
         // Act
@@ -70,7 +70,7 @@ public class UStreamInternalTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var sut = new UStreamInternal(str);
         var expected = ffmpeg.AVERROR_EOF;
 

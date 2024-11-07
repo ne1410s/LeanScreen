@@ -47,7 +47,7 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var fi = new FileInfo("C:\\temp\\~vids\\1.avi");
-        using var srs = fi.OpenSimple();
+        using var srs = fi.OpenBlockRead();
 
         // Act
         var result = new FfmpegFormatConverter_002_Str2File().Remux(srs, ext);

@@ -44,8 +44,8 @@ public static class FileExtensions
     public static async Task<Size2D> GetImageSize(this FileInfo fi, byte[] key)
     {
         using var readStream = fi.IsSecure()
-            ? fi.OpenRead(key)
-            : fi.OpenSimple();
+            ? fi.OpenCryptoRead(key)
+            : fi.OpenBlockRead();
         return await Imager.GetSize(readStream);
     }
 
@@ -65,8 +65,8 @@ public static class FileExtensions
         }
 
         using var readStream = fi.IsSecure()
-           ? fi.OpenRead(key)
-           : fi.OpenSimple();
+           ? fi.OpenCryptoRead(key)
+           : fi.OpenBlockRead();
 
         var retVal = await Imager.ResizeImage(readStream, new() { Height = height });
         retVal.Seek(0, SeekOrigin.Begin);

@@ -21,7 +21,7 @@ public class StreamFfmpegDecodingTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
 
         // Act
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var x = new StreamFfmpegDecoding(str);
 
         // Assert
@@ -35,7 +35,7 @@ public class StreamFfmpegDecodingTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
 
         // Act
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
@@ -51,7 +51,7 @@ public class StreamFfmpegDecodingTests
         var key = new byte[] { 9, 0, 2, 1, 0 };
 
         // Act
-        using var str = fi.OpenRead(key);
+        using var str = fi.OpenCryptoRead(key);
         using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
@@ -65,7 +65,7 @@ public class StreamFfmpegDecodingTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
 
         // Act
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var decoding = new StreamFfmpegDecoding(str);
 
         // Assert
@@ -77,7 +77,7 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         var sut = new StreamFfmpegDecoding(str);
         var indexInfo = sut.GetType().GetProperty("StreamIndex", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -94,7 +94,7 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         var sut = new StreamFfmpegDecoding(str);
         const BindingFlags fieldFlags = BindingFlags.NonPublic | BindingFlags.Instance;
 
@@ -112,7 +112,7 @@ public class StreamFfmpegDecodingTests
     {
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.mp4"));
-        using var str = fi.OpenSimple();
+        using var str = fi.OpenBlockRead();
         using var sut = new StreamFfmpegDecoding(str);
 
         // Act
