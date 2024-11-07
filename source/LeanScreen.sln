@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeanScreen.Rendering.Ffmpeg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeanScreen.Tests", "LeanScreen.Tests\LeanScreen.Tests.csproj", "{5731B912-92FC-4085-9BEC-8DC08A2B74F7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoStream", "..\..\CryptoStream\source\CryptoStream\CryptoStream.csproj", "{C1EC0FE5-B2D0-4326-88F1-DD00D3092E40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{5731B912-92FC-4085-9BEC-8DC08A2B74F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5731B912-92FC-4085-9BEC-8DC08A2B74F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5731B912-92FC-4085-9BEC-8DC08A2B74F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1EC0FE5-B2D0-4326-88F1-DD00D3092E40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1EC0FE5-B2D0-4326-88F1-DD00D3092E40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1EC0FE5-B2D0-4326-88F1-DD00D3092E40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1EC0FE5-B2D0-4326-88F1-DD00D3092E40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

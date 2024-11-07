@@ -67,8 +67,8 @@ public class FfmpegFormatConverterTests
     public void RemuxS2S_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        using var fsRead = File.OpenRead("C:\\temp\\~vids\\2.avi");
-        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\2.avi" + "_333" + ext, FileMode.Create);
+        using var fsRead = File.OpenRead("C:\\temp\\~vids\\1.avi");
+        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\1.avi" + "_333" + ext, FileMode.Create);
 
         // Act
         var result = new FfmpegFormatConverter_003_Str2Str().Remux(fsRead, fsWrite, ext, [], []);
@@ -81,16 +81,16 @@ public class FfmpegFormatConverterTests
     public void RemuxS2S_Diagnose()
     {
         // Arrange
-        var controlRefFi = new FileInfo("C:\\temp\\~vids\\out\\111_demo.mp4");
-        var testRefFi = new FileInfo("C:\\temp\\~vids\\out\\1.avi_333.mp4");
+        var controlRefFi = new FileInfo("C:\\temp\\~vids\\out\\001_f2f_LEGIT.mp4");
+        var testRefFi = new FileInfo("C:\\temp\\~vids\\out\\001_s2s_LATEST.mp4");
 
         using var controlFi = controlRefFi.OpenRead();
         using var testFi = testRefFi.OpenRead();
 
         var matchingBlocks = 0;
-        var buffer = new byte[32768];
+        var buffer = new byte[36];
         var testBlocks = (int)Math.Ceiling((double)testRefFi.Length / buffer.Length);
-        for (var block = 0; block < testBlocks; block++)
+        for (var block = 0; block < 2; block++)
         {
             Array.Clear(buffer);
             controlFi.Read(buffer, 0, buffer.Length);
