@@ -72,9 +72,10 @@ public unsafe class FfmpegFormatConverter
 
         try
         {
-            // file mode be like:
+            // FILE input be like:
             ////ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
 
+            // STREAM input be like:
             using var ffmpegReadStream = new UStreamInternal(inputStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
