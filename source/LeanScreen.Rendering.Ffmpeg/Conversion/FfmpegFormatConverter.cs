@@ -72,6 +72,9 @@ public unsafe class FfmpegFormatConverter
 
         try
         {
+            // file mode be like:
+            ////ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
+
             using var ffmpegReadStream = new UStreamInternal(inputStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
@@ -79,10 +82,10 @@ public unsafe class FfmpegFormatConverter
             var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
             ptrInputFmtCtx = ffmpeg.avformat_alloc_context();
             ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
+            ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
 
             // Process
             ptrPacket = ffmpeg.av_packet_alloc();
-            ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
             ffmpeg.avformat_find_stream_info(ptrInputFmtCtx, null).avThrowIfError();
             ffmpeg.av_dump_format(ptrInputFmtCtx, 0, string.Empty, 0);
 
