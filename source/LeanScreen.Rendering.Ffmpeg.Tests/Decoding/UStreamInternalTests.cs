@@ -35,7 +35,7 @@ public class UStreamInternalTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
         using var str = fi.OpenBlockRead();
-        using var sut = new UStreamInternal(str, mockCopier.Object);
+        using var sut = new UStreamInternal(str, 333, mockCopier.Object);
         sut.SeekUnsafe(default, fi.Length, 0);
 
         // Act
@@ -55,7 +55,7 @@ public class UStreamInternalTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
         using var str = fi.OpenBlockRead();
-        using var sut = new UStreamInternal(str, mockCopier.Object);
+        using var sut = new UStreamInternal(str, 333, mockCopier.Object);
 
         // Act
         _ = sut.ReadUnsafe(default, default, 1);

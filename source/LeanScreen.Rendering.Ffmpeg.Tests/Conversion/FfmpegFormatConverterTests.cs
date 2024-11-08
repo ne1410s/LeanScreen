@@ -77,14 +77,46 @@ public class FfmpegFormatConverterTests
         result.Should().NotBeNull();
     }
 
+    [Theory]
+    [InlineData(TargetExts.Asf, false, false)]
+    [InlineData(TargetExts.Asf, false, true)]
+    [InlineData(TargetExts.Flv, false, false)]
+    [InlineData(TargetExts.Flv, false, true)]
+    [InlineData(TargetExts.Mkv, false, false)]
+    [InlineData(TargetExts.Mkv, false, true)]
+    [InlineData(TargetExts.Mov, false, false)]
+    [InlineData(TargetExts.Mov, false, true)]
+    [InlineData(TargetExts.Mp4, false, false)]
+    [InlineData(TargetExts.Mp4, false, true)]
+    [InlineData(TargetExts.Ts, false, false)]
+    [InlineData(TargetExts.Ts, false, true)]
+    [InlineData(TargetExts.Vob, false, false)]
+    [InlineData(TargetExts.Vob, false, true)]
+    public void RemuxV2VPlain_WhenCalled_ProducesExpected(string ext, bool fsIn, bool fsOut)
+    {
+        // Arrange
+        var source = new FileInfo("C:\\temp\\~vids\\1.avi");
+
+        // Act
+        var result = new FfmpegFormatConverter().Remux(source, ext, [], fsIn, fsOut);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
     [Fact]
     public void RemuxS2S_Diagnose()
     {
         // Arrange
-        var controlRefFi = new FileInfo("C:\\temp\\~vids\\out\\001_f2f_LEGIT.mp4");
-        var testRefFi = new FileInfo("C:\\temp\\~vids\\out\\001_s2s_LATEST.mp4");
+        var controlRefFi1 = new FileInfo("C:\\temp\\~vids\\out\\f2f v0.1.mp4");
+        var controlRefFi2 = new FileInfo("C:\\temp\\~vids\\out\\s2f v0.2.mp4");
+        var testRefFi = new FileInfo("C:\\temp\\~vids\\out\\1.avi__bs2bs.mp4");
 
-        using var controlFi = controlRefFi.OpenRead();
+        var cHash1 = controlRefFi1.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var cHash2 = controlRefFi2.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var tHash = testRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        using var controlFi1 = controlRefFi1.OpenRead();
         using var testFi = testRefFi.OpenRead();
 
         var matchingBlocks = 0;
@@ -93,14 +125,14 @@ public class FfmpegFormatConverterTests
         for (var block = 0; block < 2; block++)
         {
             Array.Clear(buffer);
-            controlFi.Read(buffer, 0, buffer.Length);
-            var ctrl = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
+            controlFi1.Read(buffer, 0, buffer.Length);
+            var ctrl1 = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
             Array.Clear(buffer);
             testFi.Read(buffer, 0, buffer.Length);
             var test = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
-            if (ctrl == test)
+            if (ctrl1 == test)
             {
                 matchingBlocks++;
             }

@@ -1,4 +1,4 @@
-﻿// <copyright file="FfmpegFormatConverter_003_Str2Str.cs" company="ne1410s">
+﻿// <copyright file="FfmpegFormatConverter.cs" company="ne1410s">
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
@@ -6,36 +6,61 @@ namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
 using System.IO;
+using CryptoStream.IO;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <summary>
-/// Third iteration.
+/// Converts media formats using ffmpeg.
 /// </summary>
-public unsafe class FfmpegFormatConverter_003_Str2Str
+public unsafe class FfmpegFormatConverter
 {
     /// <summary>
-    /// Remultiplexes a source stream to a target.
+    /// Remultiplexes the source into the desired format.
     /// </summary>
-    /// <param name="source">The source stream.</param>
-    /// <param name="target">The target stream.</param>
-    /// <param name="ext">The target extension.</param>
-    /// <param name="salt">The salt.</param>
-    /// <param name="key">The key.</param>
-    /// <returns>Suggested name.</returns>
-    public string Remux(Stream source, Stream target, string ext, byte[] salt, byte[] key)
+    /// <param name="source">The source file.</param>
+    /// <param name="targetExtension">The target extension.</param>
+    /// <param name="userKey">The key.</param>
+    /// <param name="dbgFSI">DEBUG ONLY: uses bare file source.</param>
+    /// <param name="dbgFSO">DEBUG ONLY: uses bare file target.</param>
+    /// <returns>The converted file.</returns>
+    public FileInfo Remux(
+        FileInfo source,
+        string targetExtension,
+        byte[] userKey,
+        bool dbgFSI = false,
+        bool dbgFSO = false)
     {
-        salt ??= [];
-        var withCrypto = salt.Length > 0;
-        using var readStream = withCrypto
-            ? new GcmCryptoStream(source, salt, key)
-            : new BlockStream(source);
-        using var writeStream = withCrypto
-            ? new GcmCryptoStream(target, salt, key, ext)
-            : new BlockStream(target);
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
 
-        var targetName = writeStream is GcmCryptoStream cs ? cs.Id : $"result{ext}";
+        var secure = source.IsSecure();
+        if (secure && dbgFSI)
+        {
+            throw new ArgumentException("Cannot use direct mode on a secure source");
+        }
+
+        var pre = dbgFSI ? "fs" : "bs";
+        var post = dbgFSO ? "fs" : "bs";
+        var targetName = $"{source.Name}__{pre}2{post}{targetExtension}";
+        var targetPath = Path.Combine(source.DirectoryName, "out", targetName);
+        var target = new FileInfo(targetPath);
+        var salt = secure ? source.ToSalt() : [];
+
+        using Stream inputStream = secure
+            ? source.OpenCryptoRead(userKey)
+            : dbgFSI
+                ? source.OpenRead()
+                : source.OpenBlockRead();
+
+        using Stream outputStream = dbgFSO
+            ? target.OpenWrite()
+            : secure
+                ? target.OpenCryptoWrite(salt, userKey, targetExtension)
+                : target.OpenBlockWrite();
 
         FfmpegUtils.SetBinariesPath();
         FfmpegUtils.SetupLogging();
@@ -47,7 +72,7 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
 
         try
         {
-            using var ffmpegReadStream = new UStreamInternal(readStream);
+            using var ffmpegReadStream = new UStreamInternal(inputStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
             var bufLen = ffmpegReadStream.BufferLength;
@@ -66,7 +91,7 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
             var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
             stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
 
-            using var ffmpegWriteStream = new UStreamInternal(writeStream);
+            using var ffmpegWriteStream = new UStreamInternal(outputStream);
             avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
             avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
             var wBufLen = ffmpegWriteStream.BufferLength;
@@ -137,9 +162,16 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
 
             ffmpeg.av_write_trailer(ptrOutputFmtCtx).avThrowIfError();
 
-            //ffmpegWriteStream.FinaliseWrite();
+            if (outputStream is BlockStream bs)
+            {
+                bs.FinaliseWrite();
+                if (bs is GcmCryptoStream)
+                {
+                    target.MoveTo(Path.Combine(target.DirectoryName, bs.Id));
+                }
+            }
 
-            return targetName;
+            return target;
         }
         catch (Exception ex)
         {
