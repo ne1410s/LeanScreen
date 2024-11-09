@@ -29,8 +29,6 @@ public unsafe sealed class FfmpegUStream(
     private readonly IByteArrayCopier byteArrayCopier = byteArrayCopier ?? new ByteArrayCopier();
     private readonly byte[] buffer = new byte[bufferLength];
 
-    private readonly List<string> seeks = [];
-
     /// <inheritdoc/>
     public int BufferLength => bufferLength;
 
