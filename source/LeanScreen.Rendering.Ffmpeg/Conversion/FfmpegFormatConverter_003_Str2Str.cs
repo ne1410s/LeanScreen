@@ -47,7 +47,7 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
 
         try
         {
-            using var ffmpegReadStream = new UStreamInternal(readStream);
+            using var ffmpegReadStream = new FfmpegUStream(readStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
             var bufLen = ffmpegReadStream.BufferLength;
@@ -66,7 +66,7 @@ public unsafe class FfmpegFormatConverter_003_Str2Str
             var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
             stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
 
-            using var ffmpegWriteStream = new UStreamInternal(writeStream);
+            using var ffmpegWriteStream = new FfmpegUStream(writeStream);
             avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
             avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
             var wBufLen = ffmpegWriteStream.BufferLength;

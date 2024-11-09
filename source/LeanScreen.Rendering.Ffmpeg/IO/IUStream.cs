@@ -18,15 +18,15 @@ internal unsafe interface IUStream : IDisposable
 
     /// <summary>
     /// Reads from the underlying stream and writes up to
-    /// <paramref name="bufferLength"/> bytes to the
+    /// <paramref name="count"/> bytes to the
     /// <paramref name="buffer"/>. Returns the number of bytes that
     /// were written.
     /// </summary>
     /// <param name="opaque">An FFmpeg provided opaque reference.</param>
     /// <param name="buffer">The target buffer.</param>
-    /// <param name="bufferLength">The target buffer length.</param>
+    /// <param name="count">The requested read size.</param>
     /// <returns>The number of bytes that have been read.</returns>
-    int ReadUnsafe(void* opaque, byte* buffer, int bufferLength);
+    int ReadUnsafe(void* opaque, byte* buffer, int count);
 
     /// <summary>
     /// Seeks to the specified offset. The offset can be in byte position or
@@ -44,7 +44,7 @@ internal unsafe interface IUStream : IDisposable
     /// </summary>
     /// <param name="opaque">An FFmpeg provided opaque reference.</param>
     /// <param name="buffer">The source buffer.</param>
-    /// <param name="bufferLength">The source buffer length.</param>
+    /// <param name="count">The requested write size.</param>
     /// <returns>The number of bytes that have been written.</returns>
-    int WriteUnsafe(void* opaque, byte* buffer, int bufferLength);
+    int WriteUnsafe(void* opaque, byte* buffer, int count);
 }

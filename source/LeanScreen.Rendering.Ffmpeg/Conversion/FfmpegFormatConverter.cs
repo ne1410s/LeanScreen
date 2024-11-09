@@ -22,14 +22,12 @@ public unsafe class FfmpegFormatConverter
     /// <param name="source">The source file.</param>
     /// <param name="targetExtension">The target extension.</param>
     /// <param name="userKey">The key.</param>
-    /// <param name="dbgFSI">DEBUG ONLY: uses bare file source.</param>
     /// <param name="dbgFSO">DEBUG ONLY: uses bare file target.</param>
     /// <returns>The converted file.</returns>
     public FileInfo Remux(
         FileInfo source,
         string targetExtension,
         byte[] userKey,
-        bool dbgFSI = false,
         bool dbgFSO = false)
     {
         if (source == null)
@@ -38,23 +36,15 @@ public unsafe class FfmpegFormatConverter
         }
 
         var secure = source.IsSecure();
-        if (secure && dbgFSI)
-        {
-            throw new ArgumentException("Cannot use direct mode on a secure source");
-        }
-
-        var pre = dbgFSI ? "fs" : "bs";
         var post = dbgFSO ? "fs" : "bs";
-        var targetName = $"{source.Name}__{pre}2{post}{targetExtension}";
+        var targetName = $"{source.Name}__bs2{post}{targetExtension}";
         var targetPath = Path.Combine(source.DirectoryName, "out", targetName);
         var target = new FileInfo(targetPath);
         var salt = secure ? source.ToSalt() : [];
 
-        using Stream inputStream = secure
+        using BlockStream inputStream = secure
             ? source.OpenCryptoRead(userKey)
-            : dbgFSI
-                ? source.OpenRead()
-                : source.OpenBlockRead();
+            : source.OpenBlockRead();
 
         using Stream outputStream = dbgFSO
             ? target.OpenWrite()
@@ -76,7 +66,7 @@ public unsafe class FfmpegFormatConverter
             ////ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
 
             // STREAM input be like:
-            using var ffmpegReadStream = new UStreamInternal(inputStream);
+            using var ffmpegReadStream = new FfmpegUStream(inputStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
             var bufLen = ffmpegReadStream.BufferLength;
@@ -85,27 +75,35 @@ public unsafe class FfmpegFormatConverter
             ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
             ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
 
+            // NOTE: Strwip (S2F) seems fine! so why does this approach add like 1000 mb to file???!
+
             // Process
             ptrPacket = ffmpeg.av_packet_alloc();
             ffmpeg.avformat_find_stream_info(ptrInputFmtCtx, null).avThrowIfError();
             ffmpeg.av_dump_format(ptrInputFmtCtx, 0, string.Empty, 0);
 
-            // Output: file
-            var streamIndex = 0;
-            var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
-            stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
+            // FILE output be like:
+            ////ffmpeg.avformat_alloc_output_context2(&ptrOutputFmtCtx, null, null, target.FullName).avThrowIfError();
+            ////if ((ptrOutputFmtCtx->oformat->flags & ffmpeg.AVFMT_NOFILE) == 0)
+            ////{
+            ////    // technically this bit was just before avformat_write_header()
+            ////    ffmpeg.avio_open(&ptrOutputFmtCtx->pb, target.FullName, ffmpeg.AVIO_FLAG_WRITE).avThrowIfError();
+            ////}
 
-            using var ffmpegWriteStream = new UStreamInternal(outputStream);
+            // STREAM output be like:
+            using var ffmpegWriteStream = new FfmpegUStream(outputStream);
             avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
             avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
             var wBufLen = ffmpegWriteStream.BufferLength;
             var ptrWBuffer = (byte*)ffmpeg.av_malloc((ulong)wBufLen);
             ptrOutputFmtCtx = ffmpeg.avformat_alloc_context();
-
             ptrOutputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrWBuffer, wBufLen, 1, null, null, writeFn, seekFn2);
             ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, targetName, null);
 
-            // For each input stream
+            // Media channels (aka ffmpeg "streams")
+            var streamIndex = 0;
+            var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
+            stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
             for (var i = 0; i < stream_mapping_size; i++)
             {
                 AVStream* out_stream;

@@ -14,7 +14,7 @@ using LeanScreen.Rendering.Ffmpeg.IO;
 public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
 {
     private readonly BlockStream readStream;
-    private UStreamInternal? uStream;
+    private FfmpegUStream? uStream;
     private avio_alloc_context_read_packet? readFn;
     private avio_alloc_context_seek? seekFn;
     private AVIOContext* streamIc;
@@ -27,7 +27,7 @@ public sealed unsafe class StreamFfmpegDecoding : FfmpegDecodingSessionBase
         : base(string.Empty)
     {
         this.readStream = stream;
-        this.uStream = new UStreamInternal(stream);
+        this.uStream = new FfmpegUStream(stream);
         this.readFn = this.uStream.ReadUnsafe;
         this.seekFn = this.uStream.SeekUnsafe;
         var bufLen = this.uStream.BufferLength;

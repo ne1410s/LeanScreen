@@ -30,7 +30,7 @@ public class FfmpegFormatConverter_002_Str2File : IFormatConverter
 
         try
         {
-            using var uStream = new UStreamInternal(source);
+            using var uStream = new FfmpegUStream(source);
             avio_alloc_context_read_packet readFn = uStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = uStream.SeekUnsafe;
             var bufLen = uStream.BufferLength;

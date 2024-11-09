@@ -10,7 +10,7 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 using LeanScreen.Rendering.Ffmpeg.IO;
 
 /// <summary>
-/// Tests for <see cref="UStreamInternal"/>.
+/// Tests for <see cref="FfmpegUStream"/>.
 /// </summary>
 public class UStreamInternalTests
 {
@@ -35,7 +35,7 @@ public class UStreamInternalTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
         using var str = fi.OpenBlockRead();
-        using var sut = new UStreamInternal(str, 333, mockCopier.Object);
+        using var sut = new FfmpegUStream(str, 333, mockCopier.Object);
         sut.SeekUnsafe(default, fi.Length, 0);
 
         // Act
@@ -55,7 +55,7 @@ public class UStreamInternalTests
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         var mockCopier = new Mock<IByteArrayCopier>();
         using var str = fi.OpenBlockRead();
-        using var sut = new UStreamInternal(str, 333, mockCopier.Object);
+        using var sut = new FfmpegUStream(str, 333, mockCopier.Object);
 
         // Act
         _ = sut.ReadUnsafe(default, default, 1);
@@ -71,7 +71,7 @@ public class UStreamInternalTests
         // Arrange
         var fi = new FileInfo(Path.Combine("Samples", "sample.flv"));
         using var str = fi.OpenBlockRead();
-        using var sut = new UStreamInternal(str);
+        using var sut = new FfmpegUStream(str);
         var expected = ffmpeg.AVERROR_EOF;
 
         // Act

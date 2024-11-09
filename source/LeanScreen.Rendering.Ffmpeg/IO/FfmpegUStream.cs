@@ -5,7 +5,10 @@
 namespace LeanScreen.Rendering.Ffmpeg.IO;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using CryptoStream.Encoding;
+using CryptoStream.Hashing;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
@@ -16,7 +19,7 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// <param name="input">The input stream.</param>
 /// <param name="bufferLength">The buffer length.</param>
 /// <param name="byteArrayCopier">A byte array copier.</param>
-public unsafe sealed class UStreamInternal(
+public unsafe sealed class FfmpegUStream(
     Stream input, int bufferLength = 32768, IByteArrayCopier? byteArrayCopier = null) : IUStream
 {
     private const int SeekSize = ffmpeg.AVSEEK_SIZE;
@@ -26,11 +29,13 @@ public unsafe sealed class UStreamInternal(
     private readonly IByteArrayCopier byteArrayCopier = byteArrayCopier ?? new ByteArrayCopier();
     private readonly byte[] buffer = new byte[bufferLength];
 
+    private readonly List<string> seeks = [];
+
     /// <inheritdoc/>
     public int BufferLength => bufferLength;
 
     /// <inheritdoc/>
-    public int ReadUnsafe(void* opaque, byte* buffer, int bufferLength) =>
+    public int ReadUnsafe(void* opaque, byte* buffer, int count) =>
         this.TryManipulateStream(EOF, () =>
         {
             var read = input.Read(this.buffer, 0, bufferLength);
@@ -44,12 +49,15 @@ public unsafe sealed class UStreamInternal(
 
     /// <inheritdoc/>
     public long SeekUnsafe(void* opaque, long offset, int whence) =>
-        this.TryManipulateStream(EOF, () => whence == SeekSize
-            ? input.Length
-            : input.Seek(offset, SeekOrigin.Begin));
+        this.TryManipulateStream(EOF, () =>
+        {
+            return whence == SeekSize
+                ? input.Length
+                : input.Seek(offset, SeekOrigin.Begin);
+        });
 
     /// <inheritdoc/>
-    public int WriteUnsafe(void* opaque, byte* buffer, int bufferLength) =>
+    public int WriteUnsafe(void* opaque, byte* buffer, int count) =>
         this.TryManipulateStream(EOF, () =>
         {
             this.byteArrayCopier.Copy((IntPtr)buffer, this.buffer, bufferLength);
