@@ -1,14 +1,11 @@
-﻿// <copyright file="UStreamInternal.cs" company="ne1410s">
+﻿// <copyright file="FfmpegUStream.cs" company="ne1410s">
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 
 namespace LeanScreen.Rendering.Ffmpeg.IO;
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using CryptoStream.Encoding;
-using CryptoStream.Hashing;
 using FFmpeg.AutoGen;
 using LeanScreen.Rendering.Ffmpeg.Decoding;
 
@@ -58,9 +55,9 @@ public unsafe sealed class FfmpegUStream(
     public int WriteUnsafe(void* opaque, byte* buffer, int count) =>
         this.TryManipulateStream(EOF, () =>
         {
-            this.byteArrayCopier.Copy((IntPtr)buffer, this.buffer, bufferLength);
-            input.Write(this.buffer, 0, bufferLength);
-            return bufferLength;
+            this.byteArrayCopier.Copy((IntPtr)buffer, this.buffer, count);
+            input.Write(this.buffer, 0, count);
+            return count;
         });
 
     /// <inheritdoc/>
@@ -77,7 +74,7 @@ public unsafe sealed class FfmpegUStream(
             {
                 return operation();
             }
-            catch (Exception ex)
+            catch
             {
                 return fallback;
             }

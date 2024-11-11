@@ -26,7 +26,7 @@ public class FfmpegFormatConverterTests
     public void RemuxF2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        const string path = "C:\\temp\\~vids\\1.avi";
+        const string path = "C:\\temp\\~vids\\3.avi";
 
         // Act
         var result = FfmpegFormatConverter_001_File2File.Remux(path, ext);
@@ -36,17 +36,17 @@ public class FfmpegFormatConverterTests
     }
 
     [Theory]
-    //[InlineData(TargetExts.Asf)]
-    //[InlineData(TargetExts.Flv)]
-    //[InlineData(TargetExts.Mkv)]
-    //[InlineData(TargetExts.Mov)]
+    [InlineData(TargetExts.Asf)]
+    [InlineData(TargetExts.Flv)]
+    [InlineData(TargetExts.Mkv)]
+    [InlineData(TargetExts.Mov)]
     [InlineData(TargetExts.Mp4)]
-    //[InlineData(TargetExts.Ts)]
-    //[InlineData(TargetExts.Vob)]
+    [InlineData(TargetExts.Ts)]
+    [InlineData(TargetExts.Vob)]
     public void RemuxS2F_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        var fi = new FileInfo("C:\\temp\\~vids\\1.avi");
+        var fi = new FileInfo("C:\\temp\\~vids\\3.avi");
         using var srs = fi.OpenBlockRead();
 
         // Act
@@ -67,8 +67,8 @@ public class FfmpegFormatConverterTests
     public void RemuxS2S_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        using var fsRead = File.OpenRead("C:\\temp\\~vids\\1.avi");
-        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\1.avi" + "_333" + ext, FileMode.Create);
+        using var fsRead = File.OpenRead("C:\\temp\\~vids\\3.avi");
+        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\3.avi" + "_333" + ext, FileMode.Create);
 
         // Act
         var result = new FfmpegFormatConverter_003_Str2Str().Remux(fsRead, fsWrite, ext, [], []);
@@ -78,27 +78,20 @@ public class FfmpegFormatConverterTests
     }
 
     [Theory]
-    ////[InlineData(TargetExts.Asf, false)]
-    ////[InlineData(TargetExts.Asf, true)]
-    ////[InlineData(TargetExts.Flv, false)]
-    ////[InlineData(TargetExts.Flv, true)]
-    ////[InlineData(TargetExts.Mkv, false)]
-    ////[InlineData(TargetExts.Mkv, true)]
-    ////[InlineData(TargetExts.Mov, false)]
-    ////[InlineData(TargetExts.Mov, true)]
-    [InlineData(TargetExts.Mp4, false)]
-    [InlineData(TargetExts.Mp4, true)]
-    ////[InlineData(TargetExts.Ts, false)]
-    ////[InlineData(TargetExts.Ts, true)]
-    ////[InlineData(TargetExts.Vob, false)]
-    ////[InlineData(TargetExts.Vob, true)]
-    public void RemuxV2VPlain_WhenCalled_ProducesExpected(string ext, bool fsOut)
+    [InlineData(TargetExts.Asf)]
+    [InlineData(TargetExts.Flv)]
+    [InlineData(TargetExts.Mkv)]
+    [InlineData(TargetExts.Mov)]
+    [InlineData(TargetExts.Mp4)]
+    [InlineData(TargetExts.Ts)]
+    [InlineData(TargetExts.Vob)]
+    public void RemuxV2VPlain_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
-        var source = new FileInfo("C:\\temp\\~vids\\1.avi");
+        var source = new FileInfo("C:\\temp\\~vids\\3.avi");
 
         // Act
-        var result = new FfmpegFormatConverter().Remux(source, ext, [], fsOut);
+        var result = FfmpegFormatConverter.Remux(source, ext, []);
 
         // Assert
         result.Should().NotBeNull();

@@ -14,43 +14,21 @@ using LeanScreen.Rendering.Ffmpeg.IO;
 /// <summary>
 /// Converts media formats using ffmpeg.
 /// </summary>
-public unsafe class FfmpegFormatConverter
+public static unsafe class FfmpegFormatConverter
 {
     /// <summary>
     /// Remultiplexes the source into the desired format.
     /// </summary>
     /// <param name="source">The source file.</param>
-    /// <param name="targetExtension">The target extension.</param>
-    /// <param name="userKey">The key.</param>
-    /// <param name="dbgFSO">DEBUG ONLY: uses bare file target.</param>
+    /// <param name="ext">The target extension.</param>
+    /// <param name="key">The key.</param>
     /// <returns>The converted file.</returns>
-    public FileInfo Remux(
-        FileInfo source,
-        string targetExtension,
-        byte[] userKey,
-        bool dbgFSO = false)
+    public static FileInfo Remux(FileInfo source, string ext, byte[] key)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        var secure = source.IsSecure();
-        var post = dbgFSO ? "fs" : "bs";
-        var targetName = $"{source.Name}__bs2{post}{targetExtension}";
+        source = source ?? throw new ArgumentNullException(nameof(source));
+        var targetName = $"{source.Name}__BS-2-BS__x{ext}";
         var targetPath = Path.Combine(source.DirectoryName, "out", targetName);
         var target = new FileInfo(targetPath);
-        var salt = secure ? source.ToSalt() : [];
-
-        using BlockStream inputStream = secure
-            ? source.OpenCryptoRead(userKey)
-            : source.OpenBlockRead();
-
-        using Stream outputStream = dbgFSO
-            ? target.OpenWrite()
-            : secure
-                ? target.OpenCryptoWrite(salt, userKey, targetExtension)
-                : target.OpenBlockWrite();
 
         FfmpegUtils.SetBinariesPath();
         FfmpegUtils.SetupLogging();
@@ -66,6 +44,9 @@ public unsafe class FfmpegFormatConverter
             ////ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
 
             // STREAM input be like:
+            using BlockStream inputStream = source.IsSecure()
+                ? source.OpenCryptoRead(key)
+                : source.OpenBlockRead();
             using var ffmpegReadStream = new FfmpegUStream(inputStream);
             avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
             avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
@@ -74,8 +55,6 @@ public unsafe class FfmpegFormatConverter
             ptrInputFmtCtx = ffmpeg.avformat_alloc_context();
             ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
             ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
-
-            // NOTE: Strwip (S2F) seems fine! so why does this approach add like 1000 mb to file???!
 
             // Process
             ptrPacket = ffmpeg.av_packet_alloc();
@@ -91,6 +70,9 @@ public unsafe class FfmpegFormatConverter
             ////}
 
             // STREAM output be like:
+            using var outputStream = source.IsSecure()
+                ? target.OpenCryptoWrite(source.ToSalt(), key, target.Extension)
+                : target.OpenBlockWrite();
             using var ffmpegWriteStream = new FfmpegUStream(outputStream);
             avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
             avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
@@ -98,7 +80,7 @@ public unsafe class FfmpegFormatConverter
             var ptrWBuffer = (byte*)ffmpeg.av_malloc((ulong)wBufLen);
             ptrOutputFmtCtx = ffmpeg.avformat_alloc_context();
             ptrOutputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrWBuffer, wBufLen, 1, null, null, writeFn, seekFn2);
-            ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, targetName, null);
+            ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, target.FullName, null);
 
             // Media channels (aka ffmpeg "streams")
             var streamIndex = 0;
@@ -189,4 +171,20 @@ public unsafe class FfmpegFormatConverter
             ffmpeg.av_freep(&stream_mapping);
         }
     }
+}
+
+/// <summary>
+/// Remux to.
+/// </summary>
+public enum RemuxTo
+{
+    /// <summary>
+    /// File stream.
+    /// </summary>
+    FS,
+
+    /// <summary>
+    /// Block stream.
+    /// </summary>
+    BS,
 }
