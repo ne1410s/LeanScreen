@@ -149,6 +149,7 @@ public static unsafe class FfmpegFormatConverter
             if (outputStream is BlockStream bs)
             {
                 bs.FinaliseWrite();
+                bs.Dispose();
                 if (bs is GcmCryptoStream)
                 {
                     target.MoveTo(Path.Combine(target.DirectoryName, bs.Id));

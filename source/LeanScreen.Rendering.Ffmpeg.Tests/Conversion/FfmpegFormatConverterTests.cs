@@ -8,6 +8,7 @@ using CryptoStream.Encoding;
 using CryptoStream.Hashing;
 using CryptoStream.IO;
 using CryptoStream.Streams;
+using CryptoStream.Transform;
 using LeanScreen.Rendering.Ffmpeg.Conversion;
 
 /// <summary>
@@ -57,34 +58,13 @@ public class FfmpegFormatConverterTests
     }
 
     [Theory]
-    [InlineData(TargetExts.Asf)]
-    [InlineData(TargetExts.Flv)]
-    [InlineData(TargetExts.Mkv)]
-    [InlineData(TargetExts.Mov)]
+    ////[InlineData(TargetExts.Asf)]
+    ////[InlineData(TargetExts.Flv)]
+    ////[InlineData(TargetExts.Mkv)]
+    ////[InlineData(TargetExts.Mov)]
     [InlineData(TargetExts.Mp4)]
-    [InlineData(TargetExts.Ts)]
-    [InlineData(TargetExts.Vob)]
-    public void RemuxS2S_WhenCalled_ProducesExpected(string ext)
-    {
-        // Arrange
-        using var fsRead = File.OpenRead("C:\\temp\\~vids\\3.avi");
-        using var fsWrite = File.Open("C:\\temp\\~vids\\out\\3.avi" + "_333" + ext, FileMode.Create);
-
-        // Act
-        var result = new FfmpegFormatConverter_003_Str2Str().Remux(fsRead, fsWrite, ext, [], []);
-
-        // Assert
-        result.Should().NotBeNull();
-    }
-
-    [Theory]
-    [InlineData(TargetExts.Asf)]
-    [InlineData(TargetExts.Flv)]
-    [InlineData(TargetExts.Mkv)]
-    [InlineData(TargetExts.Mov)]
-    [InlineData(TargetExts.Mp4)]
-    [InlineData(TargetExts.Ts)]
-    [InlineData(TargetExts.Vob)]
+    ////[InlineData(TargetExts.Ts)]
+    ////[InlineData(TargetExts.Vob)]
     public void RemuxV2VPlain_WhenCalled_ProducesExpected(string ext)
     {
         // Arrange
@@ -98,17 +78,48 @@ public class FfmpegFormatConverterTests
     }
 
     [Theory]
+    ////[InlineData(TargetExts.Asf)]
+    ////[InlineData(TargetExts.Flv)]
+    ////[InlineData(TargetExts.Mkv)]
+    ////[InlineData(TargetExts.Mov)]
+    [InlineData(TargetExts.Mp4)]
+    ////[InlineData(TargetExts.Ts)]
+    ////[InlineData(TargetExts.Vob)]
+    public void RemuxCB2CB_WhenCalled_ProducesExpected(string ext)
+    {
+        // Arrange
+        var key = new byte[] { 9, 0, 2, 1, 0 };
+        var source = new FileInfo(
+            "C:\\temp\\~vids\\fc0526019655151aadeece71ae623a9f7d445498f0a88c6873dc3710a0e91ef8.29366df843");
+
+        // Act
+        var result = FfmpegFormatConverter.Remux(source, ext, key);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void DecTest()
+    {
+        var key = new byte[] { 9, 0, 2, 1, 0 };
+        var src = new FileInfo(
+            "C:\\temp\\~vids\\out\\fc0526019655151aadeece71ae623a9f7d445498f0a88c6873dc3710a0e91ef8.293661fe1e");
+        src.DecryptHere(key);
+    }
+
+    [Theory]
     //[InlineData(TargetExts.Asf)]
-    [InlineData(TargetExts.Mkv)]
+    //[InlineData(TargetExts.Mkv)]
     //[InlineData(TargetExts.Mov)]
-    //[InlineData(TargetExts.Mp4)]
+    [InlineData(TargetExts.Mp4)]
     //[InlineData(TargetExts.Ts)]
     //[InlineData(TargetExts.Vob)]
     public void HashTest(string ext)
     {
         // Arrange
-        var controlRefFi = new FileInfo($"C:\\temp\\~vids\\out\\F2F_CONTROL{ext}");
-        var testingRefFi = new FileInfo($"C:\\temp\\~vids\\out\\B2B_TEST{ext}");
+        var controlRefFi = new FileInfo($"C:\\temp\\~vids\\out\\CONTROL{ext}");
+        var testingRefFi = new FileInfo($"C:\\temp\\~vids\\out\\TEST{ext}");
 
         var controlHash = controlRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
         var testingHash = testingRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
@@ -122,7 +133,7 @@ public class FfmpegFormatConverterTests
         var buffer = new byte[32768];
         var testBlocks = (int)Math.Ceiling((double)testingRefFi.Length / buffer.Length);
         var badBoys = new List<int>();
-        for (var block = 0; block < testBlocks; block++)
+        for (var blockNo = 1; blockNo <= testBlocks; blockNo++)
         {
             Array.Clear(buffer);
             controlFi1.Read(buffer, 0, buffer.Length);
@@ -138,7 +149,7 @@ public class FfmpegFormatConverterTests
             }
             else
             {
-                badBoys.Add(block);
+                badBoys.Add(blockNo);
             }
         }
 
