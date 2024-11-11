@@ -141,19 +141,16 @@ public static unsafe class FfmpegFormatConverter
                 ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
             }
 
-            // Enable buffer mode
-            ////ffmpegWriteStream.BufferTrailerMode = true;
+            // Enable trailer cache!
+            outputStream.CacheTrailer = true;
 
             ffmpeg.av_write_trailer(ptrOutputFmtCtx).avThrowIfError();
 
-            if (outputStream is BlockStream bs)
+            outputStream.FinaliseWrite();
+            outputStream.Dispose();
+            if (outputStream is GcmCryptoStream)
             {
-                bs.FinaliseWrite();
-                bs.Dispose();
-                if (bs is GcmCryptoStream)
-                {
-                    target.MoveTo(Path.Combine(target.DirectoryName, bs.Id));
-                }
+                target.MoveTo(Path.Combine(target.DirectoryName, outputStream.Id));
             }
 
             return target;

@@ -12,7 +12,7 @@ using CryptoStream.Transform;
 using LeanScreen.Rendering.Ffmpeg.Conversion;
 
 /// <summary>
-/// Tests for <see cref="FfmpegFormatConverter_002_Str2File"/> class.
+/// Tests for the <see cref="FfmpegFormatConverter"/> class.
 /// </summary>
 public class FfmpegFormatConverterTests
 {
@@ -34,27 +34,6 @@ public class FfmpegFormatConverterTests
 
         // Assert
         result.Should().Be(0);
-    }
-
-    [Theory]
-    [InlineData(TargetExts.Asf)]
-    [InlineData(TargetExts.Flv)]
-    [InlineData(TargetExts.Mkv)]
-    [InlineData(TargetExts.Mov)]
-    [InlineData(TargetExts.Mp4)]
-    [InlineData(TargetExts.Ts)]
-    [InlineData(TargetExts.Vob)]
-    public void RemuxS2F_WhenCalled_ProducesExpected(string ext)
-    {
-        // Arrange
-        var fi = new FileInfo("C:\\temp\\~vids\\3.avi");
-        using var srs = fi.OpenBlockRead();
-
-        // Act
-        var result = new FfmpegFormatConverter_002_Str2File().Remux(srs, ext);
-
-        // Assert
-        result.Should().BeNull();
     }
 
     [Theory]
@@ -133,15 +112,20 @@ public class FfmpegFormatConverterTests
         var buffer = new byte[32768];
         var testBlocks = (int)Math.Ceiling((double)testingRefFi.Length / buffer.Length);
         var badBoys = new List<int>();
+        var b1ControlBytes = "";
+        var b1TestingBytes = "";
+
         for (var blockNo = 1; blockNo <= testBlocks; blockNo++)
         {
             Array.Clear(buffer);
             controlFi1.Read(buffer, 0, buffer.Length);
             var ctrl1 = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
+            if (blockNo == 1) b1ControlBytes = string.Join("\r\n", buffer);
 
             Array.Clear(buffer);
             testFi.Read(buffer, 0, buffer.Length);
             var test = buffer.Hash(HashType.Md5).Encode(Codec.ByteHex);
+            if (blockNo == 1) b1TestingBytes = string.Join("\r\n", buffer);
 
             if (ctrl1 == test)
             {
