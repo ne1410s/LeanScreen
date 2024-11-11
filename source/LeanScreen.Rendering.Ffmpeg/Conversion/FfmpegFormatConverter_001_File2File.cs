@@ -1,19 +1,18 @@
 ﻿namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
-using System.IO;
 using FFmpeg.AutoGen;
 
 /// <summary>
 /// Remuxer for Ffmpeg.
 /// </summary>
-public class FfmpegFormatConverter_001_File2File
+public static class FfmpegFormatConverter_001_File2File
 {
     /// <summary>
     /// Re-multiplexes streams to another container format (without transcoding).
     /// </summary>
     /// <returns>Some number.</returns>
-    public static unsafe int Remux(string fileName, string targetExt)
+    public static unsafe int Remux(string sourcePath, string targetExt)
     {
         FfmpegUtils.SetBinariesPath();
 
@@ -56,7 +55,7 @@ public class FfmpegFormatConverter_001_File2File
             return 1;
         }
 
-        if ((ret = ffmpeg.avformat_open_input(&ifmt_ctx, fileName, null, null)) < 0)
+        if ((ret = ffmpeg.avformat_open_input(&ifmt_ctx, sourcePath, null, null)) < 0)
         {
             Console.WriteLine($"Could not open input file");
             goto end;
@@ -68,7 +67,7 @@ public class FfmpegFormatConverter_001_File2File
             goto end;
         }
 
-        ffmpeg.av_dump_format(ifmt_ctx, 0, fileName, 0);
+        ffmpeg.av_dump_format(ifmt_ctx, 0, sourcePath, 0);
 
         ffmpeg.avformat_alloc_output_context2(&ofmt_ctx, null, null, out_filename);
         if (ofmt_ctx == null)

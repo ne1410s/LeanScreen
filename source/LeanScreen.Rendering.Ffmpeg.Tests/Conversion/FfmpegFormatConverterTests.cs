@@ -97,25 +97,32 @@ public class FfmpegFormatConverterTests
         result.Should().NotBeNull();
     }
 
-    [Fact]
-    public void RemuxS2S_Diagnose()
+    [Theory]
+    //[InlineData(TargetExts.Asf)]
+    [InlineData(TargetExts.Mkv)]
+    //[InlineData(TargetExts.Mov)]
+    //[InlineData(TargetExts.Mp4)]
+    //[InlineData(TargetExts.Ts)]
+    //[InlineData(TargetExts.Vob)]
+    public void HashTest(string ext)
     {
         // Arrange
-        var controlRefFi1 = new FileInfo("C:\\temp\\~vids\\out\\1.avi__TOTALFF2fs.mp4");
-        var controlRefFi2 = new FileInfo("C:\\temp\\~vids\\out\\1.avi__TOTALFF2bs.mp4");
-        var testRefFi = new FileInfo("C:\\temp\\~vids\\out\\1.avi__OLDBS2fs.mp4");
+        var controlRefFi = new FileInfo($"C:\\temp\\~vids\\out\\F2F_CONTROL{ext}");
+        var testingRefFi = new FileInfo($"C:\\temp\\~vids\\out\\B2B_TEST{ext}");
 
-        var cHash1 = controlRefFi1.Hash(HashType.Md5).Encode(Codec.ByteHex);
-        var cHash2 = controlRefFi2.Hash(HashType.Md5).Encode(Codec.ByteHex);
-        var tHash = testRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var controlHash = controlRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var testingHash = testingRefFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
-        using var controlFi1 = controlRefFi1.OpenRead();
-        using var testFi = testRefFi.OpenRead();
+        ////testingHash.Should().Be(controlHash);
+
+        using var controlFi1 = controlRefFi.OpenRead();
+        using var testFi = testingRefFi.OpenRead();
 
         var matchingBlocks = 0;
-        var buffer = new byte[36];
-        var testBlocks = (int)Math.Ceiling((double)testRefFi.Length / buffer.Length);
-        for (var block = 0; block < 2; block++)
+        var buffer = new byte[32768];
+        var testBlocks = (int)Math.Ceiling((double)testingRefFi.Length / buffer.Length);
+        var badBoys = new List<int>();
+        for (var block = 0; block < testBlocks; block++)
         {
             Array.Clear(buffer);
             controlFi1.Read(buffer, 0, buffer.Length);
@@ -129,7 +136,13 @@ public class FfmpegFormatConverterTests
             {
                 matchingBlocks++;
             }
+            else
+            {
+                badBoys.Add(block);
+            }
         }
+
+        matchingBlocks.Should().Be(testBlocks);
     }
 }
 
