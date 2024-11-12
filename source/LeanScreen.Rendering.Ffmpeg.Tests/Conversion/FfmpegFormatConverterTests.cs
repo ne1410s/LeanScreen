@@ -15,6 +15,64 @@ using LeanScreen.Rendering.Ffmpeg.Conversion;
 public class FfmpegFormatConverterTests
 {
     [Theory]
+    [InlineData("sample2.avi", ".mp4")]
+    public void RemuxCryptoE2E_VaryingFile_MatchesDirect(string fileName, string ext)
+    {
+        // Obtain a control conversion by remuxing plain source via "direct mode"
+        var di = Directory.CreateDirectory($"{Guid.NewGuid()}");
+        var srcFi = new FileInfo(Path.Combine(di.FullName, fileName));
+        File.Copy(Path.Combine("Samples", fileName), srcFi.FullName);
+        var controlFi = FfmpegFormatConverter.Remux(srcFi, ext, [], true);
+
+        // Churn the plain source before obtaining a gcm conversion
+        var key = new byte[] { 9, 0, 2, 1, 0 };
+        srcFi.EncryptInSitu(key);
+        var cryptFi = FfmpegFormatConverter.Remux(srcFi, ext, key);
+        var testingFi = cryptFi.DecryptHere(key);
+        testingFi.MoveTo(Path.Combine(di.FullName, $"{fileName}__B2B-rt{ext}"));
+        srcFi.Delete();
+        cryptFi.Delete();
+
+        // Assert
+        var controlHash = controlFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
+        var testingHash = testingFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        using var controlFs = controlFi.OpenRead();
+        using var testingFs = testingFi.OpenRead();
+
+        var matchingBlocks = 0;
+        var buffer = new byte[32768];
+        var testBlocks = (int)Math.Ceiling((double)testingFi.Length / buffer.Length);
+        var badBoys = new List<int>();
+        var b1ControlBytes = "";
+        var b1TestingBytes = "";
+
+        for (var blockNo = 1; blockNo <= testBlocks; blockNo++)
+        {
+            Array.Clear(buffer);
+            var read = controlFs.Read(buffer, 0, buffer.Length);
+            var ctrl1 = buffer.AsSpan(0, read).ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
+            if (blockNo == testBlocks) b1ControlBytes = string.Join("\r\n", buffer);
+
+            Array.Clear(buffer);
+            read = testingFs.Read(buffer, 0, buffer.Length);
+            var test = buffer.AsSpan(0, read).ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
+            if (blockNo == testBlocks) b1TestingBytes = string.Join("\r\n", buffer);
+
+            if (ctrl1 == test)
+            {
+                matchingBlocks++;
+            }
+            else
+            {
+                badBoys.Add(blockNo);
+            }
+        }
+
+        matchingBlocks.Should().Be(testBlocks);
+    }
+
+    [Theory]
     [InlineData(TargetExts.Asf)]
     [InlineData(TargetExts.Flv)]
     [InlineData(TargetExts.Mkv)]

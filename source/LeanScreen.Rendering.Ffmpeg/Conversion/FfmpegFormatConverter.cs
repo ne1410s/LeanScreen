@@ -22,12 +22,21 @@ public static unsafe class FfmpegFormatConverter
     /// <param name="source">The source file.</param>
     /// <param name="ext">The target extension.</param>
     /// <param name="key">The key.</param>
+    /// <param name="directFile">If true then ffmpeg is sent only file path(s)
+    /// from which format contexts are populated, instead of streams.</param>
     /// <returns>The converted file.</returns>
-    public static FileInfo Remux(FileInfo source, string ext, byte[] key)
+    public static FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false)
     {
         source = source ?? throw new ArgumentNullException(nameof(source));
-        var targetName = $"{source.Name}__BS-2-BS__x{ext}";
-        var targetPath = Path.Combine(source.DirectoryName, "out", targetName);
+        var isSecure = source.IsSecure();
+        if (isSecure && directFile)
+        {
+            throw new ArgumentException("Direct file mode not supported for secure sources", nameof(directFile));
+        }
+
+        var mid = directFile ? "F2F" : "B2B";
+        var targetName = $"{source.Name}__{mid}{ext}";
+        var targetPath = Path.Combine(source.DirectoryName, targetName);
         var target = new FileInfo(targetPath);
 
         FfmpegUtils.SetBinariesPath();
@@ -38,49 +47,63 @@ public static unsafe class FfmpegFormatConverter
         AVFormatContext* ptrOutputFmtCtx = null;
         int* stream_mapping = null;
 
+        BlockStream inputStream = null!;
+        BlockStream outputStream = null!;
+        FfmpegUStream ffmpegReadStream = null!;
+        FfmpegUStream ffmpegWriteStream = null!;
+
         try
         {
-            // FILE input be like:
-            ////ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
-
-            // STREAM input be like:
-            using BlockStream inputStream = source.IsSecure()
-                ? source.OpenCryptoRead(key)
-                : source.OpenBlockRead();
-            using var ffmpegReadStream = new FfmpegUStream(inputStream);
-            avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
-            avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
-            var bufLen = ffmpegReadStream.BufferLength;
-            var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
-            ptrInputFmtCtx = ffmpeg.avformat_alloc_context();
-            ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
-            ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
+            if (directFile)
+            {
+                // Populate input format context from file path
+                ffmpeg.avformat_open_input(&ptrInputFmtCtx, source.FullName, null, null).avThrowIfError();
+            }
+            else
+            {
+                // Populate input format context from stream
+                inputStream = source.IsSecure()
+                    ? source.OpenCryptoRead(key)
+                    : source.OpenBlockRead();
+                ffmpegReadStream = new FfmpegUStream(inputStream);
+                avio_alloc_context_read_packet readFn = ffmpegReadStream.ReadUnsafe;
+                avio_alloc_context_seek seekFn = ffmpegReadStream.SeekUnsafe;
+                var bufLen = ffmpegReadStream.BufferLength;
+                var ptrBuffer = (byte*)ffmpeg.av_malloc((ulong)bufLen);
+                ptrInputFmtCtx = ffmpeg.avformat_alloc_context();
+                ptrInputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrBuffer, bufLen, 0, null, readFn, null, seekFn);
+                ffmpeg.avformat_open_input(&ptrInputFmtCtx, string.Empty, null, null).avThrowIfError();
+            }
 
             // Process
             ptrPacket = ffmpeg.av_packet_alloc();
             ffmpeg.avformat_find_stream_info(ptrInputFmtCtx, null).avThrowIfError();
             ffmpeg.av_dump_format(ptrInputFmtCtx, 0, string.Empty, 0);
 
-            // FILE output be like:
-            ////ffmpeg.avformat_alloc_output_context2(&ptrOutputFmtCtx, null, null, target.FullName).avThrowIfError();
-            ////if ((ptrOutputFmtCtx->oformat->flags & ffmpeg.AVFMT_NOFILE) == 0)
-            ////{
-            ////    // technically this bit was just before avformat_write_header()
-            ////    ffmpeg.avio_open(&ptrOutputFmtCtx->pb, target.FullName, ffmpeg.AVIO_FLAG_WRITE).avThrowIfError();
-            ////}
-
-            // STREAM output be like:
-            using var outputStream = source.IsSecure()
-                ? target.OpenCryptoWrite(source.ToSalt(), key, target.Extension)
-                : target.OpenBlockWrite();
-            using var ffmpegWriteStream = new FfmpegUStream(outputStream);
-            avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
-            avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
-            var wBufLen = ffmpegWriteStream.BufferLength;
-            var ptrWBuffer = (byte*)ffmpeg.av_malloc((ulong)wBufLen);
-            ptrOutputFmtCtx = ffmpeg.avformat_alloc_context();
-            ptrOutputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrWBuffer, wBufLen, 1, null, null, writeFn, seekFn2);
-            ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, target.FullName, null);
+            if (directFile)
+            {
+                // Populate output format context from file path
+                ffmpeg.avformat_alloc_output_context2(&ptrOutputFmtCtx, null, null, target.FullName).avThrowIfError();
+                if ((ptrOutputFmtCtx->oformat->flags & ffmpeg.AVFMT_NOFILE) == 0)
+                {
+                    ffmpeg.avio_open(&ptrOutputFmtCtx->pb, target.FullName, ffmpeg.AVIO_FLAG_WRITE).avThrowIfError();
+                }
+            }
+            else
+            {
+                // Populate output format context from stream
+                outputStream = source.IsSecure()
+                    ? target.OpenCryptoWrite(source.ToSalt(), key, target.Extension)
+                    : target.OpenBlockWrite();
+                ffmpegWriteStream = new FfmpegUStream(outputStream);
+                avio_alloc_context_write_packet writeFn = ffmpegWriteStream.WriteUnsafe;
+                avio_alloc_context_seek seekFn2 = ffmpegWriteStream.SeekUnsafe;
+                var wBufLen = ffmpegWriteStream.BufferLength;
+                var ptrWBuffer = (byte*)ffmpeg.av_malloc((ulong)wBufLen);
+                ptrOutputFmtCtx = ffmpeg.avformat_alloc_context();
+                ptrOutputFmtCtx->pb = ffmpeg.avio_alloc_context(ptrWBuffer, wBufLen, 1, null, null, writeFn, seekFn2);
+                ptrOutputFmtCtx->oformat = ffmpeg.av_guess_format(null, target.FullName, null);
+            }
 
             // Media channels (aka ffmpeg "streams")
             var streamIndex = 0;
@@ -141,16 +164,22 @@ public static unsafe class FfmpegFormatConverter
                 ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
             }
 
-            // Enable trailer cache!
-            outputStream.CacheTrailer = true;
+            if (!directFile)
+            {
+                // Enable trailer cache!
+                outputStream.CacheTrailer = true;
+            }
 
             ffmpeg.av_write_trailer(ptrOutputFmtCtx).avThrowIfError();
 
-            outputStream.FinaliseWrite();
-            outputStream.Dispose();
+            outputStream?.FinaliseWrite();
+            outputStream?.Close();
+
             if (outputStream is GcmCryptoStream)
             {
-                target.MoveTo(Path.Combine(target.DirectoryName, outputStream.Id));
+                var moveTo = Path.Combine(target.DirectoryName, outputStream.Id);
+                File.Delete(moveTo);
+                target.MoveTo(moveTo);
             }
 
             return target;
@@ -167,22 +196,11 @@ public static unsafe class FfmpegFormatConverter
             ffmpeg.avio_closep(&ptrOutputFmtCtx->pb);
             ffmpeg.avformat_free_context(ptrOutputFmtCtx);
             ffmpeg.av_freep(&stream_mapping);
+
+            ffmpegWriteStream?.Dispose();
+            outputStream?.Dispose();
+            ffmpegReadStream?.Dispose();
+            inputStream?.Dispose();
         }
     }
-}
-
-/// <summary>
-/// Remux to.
-/// </summary>
-public enum RemuxTo
-{
-    /// <summary>
-    /// File stream.
-    /// </summary>
-    FS,
-
-    /// <summary>
-    /// Block stream.
-    /// </summary>
-    BS,
 }
