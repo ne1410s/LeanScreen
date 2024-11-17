@@ -36,11 +36,8 @@
   
   <ItemGroup>
     <PackageReference Include="Analyse" Version="1.0.*" />
-    <PackageReference Include="System.Memory" Version="4.5.*" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\CryptoStream\source\CryptoStream\CryptoStream.csproj" />
+    <PackageReference Include="CryptoStream" Version="1.1.1" />
+    <PackageReference Include="System.Memory" Version="4.6.*" />
   </ItemGroup>
 
 </Project>

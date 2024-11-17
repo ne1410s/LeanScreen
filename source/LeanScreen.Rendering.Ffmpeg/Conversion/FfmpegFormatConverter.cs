@@ -52,6 +52,26 @@ public static unsafe class FfmpegFormatConverter
         FfmpegUStream ffmpegReadStream = null!;
         FfmpegUStream ffmpegWriteStream = null!;
 
+        // This from some example I found once
+        //// For sample video: sample-10s.mp4
+        //// avi: H.264 bitstream malformed, no startcode found, use the video bitstream filter 'h264_mp4toannexb' to fix it ('-bsf:v h264_mp4toannexb' option with ffmpeg)
+        ////      Error muxing packet
+        ////      Error occurred: Invalid data found when processing input
+        //// vob: [svcd @ 000001ecb820b380] VBV buffer size not set, using default size of 230KB
+        ////      If you want the mpeg file to be compliant to some specification
+        ////      Like DVD, VCD or others, make sure you set the correct buffer size
+        ////      [svcd @ 000001ecb820b380] Unsupported audio codec.Must be one of mp1, mp2, mp3, 16 - bit pcm_dvd, pcm_s16be, ac3 or dts.
+        ////      Error occurred when opening output file
+        ////      Error occurred: Invalid argument
+        //// mpeg: [mpeg @ 0000020de269b380] VBV buffer size not set, using default size of 230KB
+        ////      If you want the mpeg file to be compliant to some specification
+        ////      Like DVD, VCD or others, make sure you set the correct buffer size
+        ////      [mpeg @ 0000020de269b380] Unsupported audio codec.Must be one of mp1, mp2, mp3, 16 - bit pcm_dvd, pcm_s16be, ac3 or dts.
+        ////      Error occurred when opening output file
+        ////      Error occurred: Invalid argument
+        //// These are OK!
+        //// mkv, asf, mov, vob, flv, mp4, ts
+
         try
         {
             if (directFile)
