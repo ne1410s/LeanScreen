@@ -4,6 +4,7 @@
 
 namespace LeanScreen.Rendering.Ffmpeg.Tests.Conversion;
 
+using CryptoStream;
 using CryptoStream.Encoding;
 using CryptoStream.Hashing;
 using CryptoStream.IO;
@@ -14,6 +15,77 @@ using LeanScreen.Rendering.Ffmpeg.Conversion;
 /// </summary>
 public class FfmpegFormatConverterTests
 {
+    [Fact]
+    public void Remux_NullSource_ThrowsException()
+    {
+        // Arrange
+        var source = (FileInfo)null!;
+
+        // Act
+        var act = () => FfmpegFormatConverter.Remux(source, ".avi", []);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(source));
+    }
+
+    [Fact]
+    public void Remux_DirectModeOnSecure_ThrowsException()
+    {
+        // Arrange
+        const string secureName = "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881";
+        const string secureExt = ".0123456789";
+        var secureFi = new FileInfo(secureName + secureExt);
+
+        // Act
+        var act = () => FfmpegFormatConverter.Remux(secureFi, ".avi", [], directFile: true);
+
+        // Assert
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("Direct file mode not supported for secure sources*")
+            .WithParameterName("directFile");
+    }
+
+    [Fact]
+    public void Remux_PlainFile_ProducesExpected()
+    {
+        // Arrange
+        var source = new FileInfo(Path.Combine("Samples", "sample.flv"));
+
+        // Act
+        var target = FfmpegFormatConverter.Remux(source, ".mov", []);
+        var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        // Assert
+        resultHash.Should().Be("018c976a75c5fd24d38ff7cec60c394a");
+    }
+
+    [Fact]
+    public void Remux_NoAudio_ProducesExpected()
+    {
+        // Arrange
+        var source = new FileInfo(Path.Combine("Samples", "no-audio.mp4"));
+
+        // Act
+        var target = FfmpegFormatConverter.Remux(source, ".mov", []);
+        var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
+
+        // Assert
+        resultHash.Should().Be("bca83d7903c7eaf44cf405c8f5518724");
+    }
+
+    [Fact]
+    public void Remux_BadTargetExt_ThrowsExpected()
+    {
+        // Arrange
+        var source = new FileInfo(Path.Combine("Samples", "sample.mkv"));
+
+        // Act
+        var act = () => FfmpegFormatConverter.Remux(source, ".ogg", []);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>();
+    }
+
     [Theory]
     [InlineData("sample.avi", TargetExts.Asf)]
     [InlineData("sample.avi", TargetExts.Mov)]

@@ -5,7 +5,10 @@
 namespace LeanScreen.Rendering.Ffmpeg.Conversion;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using CryptoStream.IO;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
@@ -45,7 +48,6 @@ public static unsafe class FfmpegFormatConverter
         AVPacket* ptrPacket = null;
         AVFormatContext* ptrInputFmtCtx = null;
         AVFormatContext* ptrOutputFmtCtx = null;
-        int* stream_mapping = null;
 
         BlockStream inputStream = null!;
         BlockStream outputStream = null!;
@@ -128,26 +130,26 @@ public static unsafe class FfmpegFormatConverter
             // Media channels (aka ffmpeg "streams")
             var streamIndex = 0;
             var stream_mapping_size = (int)ptrInputFmtCtx->nb_streams;
-            stream_mapping = (int*)ffmpeg.av_calloc((ulong)stream_mapping_size, 4);
+            var usefulStreamTypes = new HashSet<AVMediaType>(
+            [
+                AVMediaType.AVMEDIA_TYPE_AUDIO,
+                AVMediaType.AVMEDIA_TYPE_VIDEO,
+                AVMediaType.AVMEDIA_TYPE_SUBTITLE,
+            ]);
+
+            var stream_mapping = Enumerable.Range(0, stream_mapping_size).ToList();
             for (var i = 0; i < stream_mapping_size; i++)
             {
                 AVStream* out_stream;
                 var in_stream = ptrInputFmtCtx->streams[i];
                 var in_codecpar = in_stream->codecpar;
-
-                if (in_codecpar->codec_type != AVMediaType.AVMEDIA_TYPE_AUDIO &&
-                    in_codecpar->codec_type != AVMediaType.AVMEDIA_TYPE_VIDEO &&
-                    in_codecpar->codec_type != AVMediaType.AVMEDIA_TYPE_SUBTITLE)
+                if (usefulStreamTypes.Contains(in_codecpar->codec_type))
                 {
-                    stream_mapping[i] = -1;
-                    continue;
+                    stream_mapping[i] = streamIndex++;
+                    out_stream = ffmpeg.avformat_new_stream(ptrOutputFmtCtx, null);
+                    ffmpeg.avcodec_parameters_copy(out_stream->codecpar, in_codecpar).avThrowIfError();
+                    out_stream->codecpar->codec_tag = 0;
                 }
-
-                stream_mapping[i] = streamIndex++;
-
-                out_stream = ffmpeg.avformat_new_stream(ptrOutputFmtCtx, null);
-                ffmpeg.avcodec_parameters_copy(out_stream->codecpar, in_codecpar).avThrowIfError();
-                out_stream->codecpar->codec_tag = 0;
             }
 
             ffmpeg.av_dump_format(ptrOutputFmtCtx, 0, null, 1);
@@ -157,9 +159,6 @@ public static unsafe class FfmpegFormatConverter
 
             while (true)
             {
-                AVStream* in_stream;
-                AVStream* out_stream;
-
                 var read = ffmpeg.av_read_frame(ptrInputFmtCtx, ptrPacket);
                 if (read == ffmpeg.AVERROR_EOF)
                 {
@@ -167,21 +166,8 @@ public static unsafe class FfmpegFormatConverter
                 }
 
                 read.avThrowIfError();
-
-                in_stream = ptrInputFmtCtx->streams[ptrPacket->stream_index];
-                if (ptrPacket->stream_index >= stream_mapping_size || stream_mapping[ptrPacket->stream_index] < 0)
-                {
-                    ffmpeg.av_packet_unref(ptrPacket);
-                    continue;
-                }
-
-                ptrPacket->stream_index = stream_mapping[ptrPacket->stream_index];
-                out_stream = ptrOutputFmtCtx->streams[ptrPacket->stream_index];
-
-                ffmpeg.av_packet_rescale_ts(ptrPacket, in_stream->time_base, out_stream->time_base);
-                ptrPacket->pos = -1;
-
-                ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
+                var in_stream = ptrInputFmtCtx->streams[ptrPacket->stream_index];
+                WritePacket(stream_mapping, ptrOutputFmtCtx, in_stream, ptrPacket);
             }
 
             if (!directFile)
@@ -215,12 +201,29 @@ public static unsafe class FfmpegFormatConverter
             ffmpeg.avformat_close_input(&ptrInputFmtCtx);
             ffmpeg.avio_closep(&ptrOutputFmtCtx->pb);
             ffmpeg.avformat_free_context(ptrOutputFmtCtx);
-            ffmpeg.av_freep(&stream_mapping);
 
             ffmpegWriteStream?.Dispose();
             outputStream?.Dispose();
             ffmpegReadStream?.Dispose();
             inputStream?.Dispose();
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
+    private static void WritePacket(
+        List<int> streamMapping, AVFormatContext* ptrOutputFmtCtx, AVStream* in_stream, AVPacket* ptrPacket)
+    {
+        if (!streamMapping.Contains(ptrPacket->stream_index))
+        {
+            ffmpeg.av_packet_unref(ptrPacket);
+        }
+        else
+        {
+            ptrPacket->stream_index = streamMapping[ptrPacket->stream_index];
+            var out_stream = ptrOutputFmtCtx->streams[ptrPacket->stream_index];
+            ffmpeg.av_packet_rescale_ts(ptrPacket, in_stream->time_base, out_stream->time_base);
+            ptrPacket->pos = -1;
+            ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
         }
     }
 }
