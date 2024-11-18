@@ -1,4 +1,4 @@
-﻿// <copyright file="UStreamInternalTests.cs" company="ne1410s">
+﻿// <copyright file="FfmpegUStreamTests.cs" company="ne1410s">
 // Copyright (c) ne1410s. All rights reserved.
 // </copyright>
 

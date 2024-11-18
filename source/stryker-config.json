@@ -1,5 +1,6 @@
 {
   "stryker-config": {
+    "configuration": "Release",
     "ignore-methods": [
       "av*",
       "sws*",

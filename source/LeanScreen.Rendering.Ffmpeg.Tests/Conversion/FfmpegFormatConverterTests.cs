@@ -46,6 +46,26 @@ public class FfmpegFormatConverterTests
     }
 
     [Fact]
+    public void Remux_MultipleSecure_ReplacesExisting()
+    {
+        // Arrange
+        var testKey = new byte[] { 9, 0, 2, 1, 0 };
+        var fi = new FileInfo(Path.Combine("Samples", "no-audio.mp4"));
+        var copyFi = fi.CopyTo(Path.Combine("Samples", "no-audio-copy.mp4"), true);
+        copyFi.EncryptInSitu(testKey);
+
+        // Act
+        var act = () =>
+        {
+            FfmpegFormatConverter.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+            FfmpegFormatConverter.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+        };
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void Remux_PlainFile_ProducesExpected()
     {
         // Arrange
@@ -56,6 +76,7 @@ public class FfmpegFormatConverterTests
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
+        target.Name.Should().Contain("__B2B.");
         resultHash.Should().Be("018c976a75c5fd24d38ff7cec60c394a");
     }
 
@@ -125,7 +146,7 @@ public class FfmpegFormatConverterTests
         // Assert
         var controlHash = controlFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
         var testingHash = testingFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
-
+        controlFi.Name.Should().Contain("__F2F.");
         testingHash.Should().Be(controlHash);
         di.Delete(true);
 

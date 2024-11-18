@@ -190,11 +190,13 @@ public static unsafe class FfmpegFormatConverter
 
             return target;
         }
+#if DEBUG
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
             throw;
         }
+#endif
         finally
         {
             ffmpeg.av_packet_free(&ptrPacket);
