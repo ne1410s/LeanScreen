@@ -7,7 +7,7 @@ namespace LeanScreen.Common;
 /// <summary>
 /// Media type information.
 /// </summary>
-public struct MediaTypeInfo
+public readonly struct MediaTypeInfo
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaTypeInfo"/> struct.

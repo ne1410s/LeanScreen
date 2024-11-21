@@ -32,7 +32,7 @@
   </ItemGroup>  
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.*" />
+    <PackageReference Include="Analyse" Version="1.0.1" />
     <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
   </ItemGroup>
 

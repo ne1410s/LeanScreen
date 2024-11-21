@@ -100,7 +100,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
 
         var iter = 1;
         double previousMsAhead = double.MinValue;
-        while(true)
+        while (true)
         {
             iter++;
             var readOk = this.TryDecodeNextFrame(out retVal);

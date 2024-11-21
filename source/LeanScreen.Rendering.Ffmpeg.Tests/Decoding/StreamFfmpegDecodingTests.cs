@@ -150,7 +150,7 @@ public class StreamFfmpegDecodingTests
         result.best_effort_timestamp.Should().BeLessThan(0);
     }
 
-    private unsafe sealed class TestDecoding : FfmpegDecodingSessionBase
+    private sealed unsafe class TestDecoding : FfmpegDecodingSessionBase
     {
         public TestDecoding(string url)
             : base(url)

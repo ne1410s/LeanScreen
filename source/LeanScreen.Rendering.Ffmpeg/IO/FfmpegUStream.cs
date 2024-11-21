@@ -16,7 +16,7 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// <param name="input">The input stream.</param>
 /// <param name="bufferLength">The buffer length.</param>
 /// <param name="byteArrayCopier">A byte array copier.</param>
-public unsafe sealed class FfmpegUStream(
+public sealed unsafe class FfmpegUStream(
     Stream input, int bufferLength = 32768, IByteArrayCopier? byteArrayCopier = null) : IUStream
 {
     private const int SeekSize = ffmpeg.AVSEEK_SIZE;
