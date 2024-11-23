@@ -20,9 +20,10 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var source = (FileInfo)null!;
+        var sut = new FfmpegFormatConverter();
 
         // Act
-        var act = () => FfmpegFormatConverter.Remux(source, ".avi", []);
+        var act = () => sut.Remux(source, ".avi", []);
 
         // Assert
         act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(source));
@@ -35,9 +36,10 @@ public class FfmpegFormatConverterTests
         const string secureName = "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881";
         const string secureExt = ".0123456789";
         var secureFi = new FileInfo(secureName + secureExt);
+        var sut = new FfmpegFormatConverter();
 
         // Act
-        var act = () => FfmpegFormatConverter.Remux(secureFi, ".avi", [], directFile: true);
+        var act = () => sut.Remux(secureFi, ".avi", [], directFile: true);
 
         // Assert
         act.Should().Throw<ArgumentException>()
@@ -50,6 +52,7 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var testKey = new byte[] { 9, 0, 2, 1, 0 };
+        var sut = new FfmpegFormatConverter();
         var fi = new FileInfo(Path.Combine("Samples", "no-audio.mp4"));
         var copyFi = fi.CopyTo(Path.Combine("Samples", "no-audio-copy.mp4"), true);
         copyFi.EncryptInSitu(testKey);
@@ -57,8 +60,8 @@ public class FfmpegFormatConverterTests
         // Act
         var act = () =>
         {
-            FfmpegFormatConverter.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
-            FfmpegFormatConverter.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+            sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+            sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
         };
 
         // Assert
@@ -70,9 +73,10 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var source = new FileInfo(Path.Combine("Samples", "sample.flv"));
+        var sut = new FfmpegFormatConverter();
 
         // Act
-        var target = FfmpegFormatConverter.Remux(source, ".mov", []);
+        var target = sut.Remux(source, ".mov", []);
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
@@ -85,9 +89,10 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var source = new FileInfo(Path.Combine("Samples", "no-audio.mp4"));
+        var sut = new FfmpegFormatConverter();
 
         // Act
-        var target = FfmpegFormatConverter.Remux(source, ".mov", []);
+        var target = sut.Remux(source, ".mov", []);
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
@@ -99,9 +104,10 @@ public class FfmpegFormatConverterTests
     {
         // Arrange
         var source = new FileInfo(Path.Combine("Samples", "sample.mkv"));
+        var sut = new FfmpegFormatConverter();
 
         // Act
-        var act = () => FfmpegFormatConverter.Remux(source, ".ogg", []);
+        var act = () => sut.Remux(source, ".ogg", []);
 
         // Assert
         act.Should().Throw<InvalidOperationException>();
@@ -129,15 +135,16 @@ public class FfmpegFormatConverterTests
     public void RemuxCryptoE2E_VaryingFile_MatchesDirect(string fileName, string ext)
     {
         // Obtain a control conversion by remuxing plain source via "direct mode"
+        var sut = new FfmpegFormatConverter();
         var di = Directory.CreateDirectory($"{new FileInfo(fileName).Extension}2{ext}--{Guid.NewGuid()}");
         var srcFi = new FileInfo(Path.Combine(di.FullName, fileName));
         File.Copy(Path.Combine("Samples", fileName), srcFi.FullName);
-        var controlFi = FfmpegFormatConverter.Remux(srcFi, ext, [], true);
+        var controlFi = sut.Remux(srcFi, ext, [], true);
 
         // Churn the plain source before obtaining a gcm conversion
         var key = new byte[] { 9, 0, 2, 1, 0 };
         srcFi.EncryptInSitu(key);
-        var cryptFi = FfmpegFormatConverter.Remux(srcFi, ext, key);
+        var cryptFi = sut.Remux(srcFi, ext, key);
         var testingFi = cryptFi.DecryptHere(key);
         testingFi.MoveTo(Path.Combine(di.FullName, $"{fileName}__B2B-rt{ext}"));
         srcFi.Delete();

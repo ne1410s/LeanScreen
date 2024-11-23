@@ -5,7 +5,6 @@
 namespace LeanScreen.Abstractions.Conversion;
 
 using System.IO;
-using CryptoStream.Streams;
 
 /// <summary>
 /// Handles format conversion.
@@ -13,10 +12,13 @@ using CryptoStream.Streams;
 public interface IFormatConverter
 {
     /// <summary>
-    /// Remultiplexes media into new format (i.e. lightweight conversion, not wholesale transoding).
+    /// Remultiplexes media into new format container (ie. not transcoded).
     /// </summary>
     /// <param name="source">The source.</param>
-    /// <param name="targetExt">The target extension.</param>
-    /// <returns>The output stream.</returns>
-    public Stream Remux(BlockStream source, string targetExt);
+    /// <param name="ext">The target extension.</param>
+    /// <param name="key">The key, if required.</param>
+    /// <param name="directFile">If true then ffmpeg is sent only file path(s)
+    /// from which format contexts are populated, instead of streams.</param>
+    /// <returns>The output file.</returns>
+    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false);
 }

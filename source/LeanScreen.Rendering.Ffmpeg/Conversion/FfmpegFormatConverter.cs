@@ -12,23 +12,14 @@ using System.Linq;
 using CryptoStream.IO;
 using CryptoStream.Streams;
 using FFmpeg.AutoGen;
+using LeanScreen.Abstractions.Conversion;
 using LeanScreen.Rendering.Ffmpeg.IO;
 
-/// <summary>
-/// Converts media formats using ffmpeg.
-/// </summary>
-public static unsafe class FfmpegFormatConverter
+/// <inheritdoc cref="IFormatConverter"/>
+public unsafe class FfmpegFormatConverter : IFormatConverter
 {
-    /// <summary>
-    /// Remultiplexes the source into the desired format.
-    /// </summary>
-    /// <param name="source">The source file.</param>
-    /// <param name="ext">The target extension.</param>
-    /// <param name="key">The key.</param>
-    /// <param name="directFile">If true then ffmpeg is sent only file path(s)
-    /// from which format contexts are populated, instead of streams.</param>
-    /// <returns>The converted file.</returns>
-    public static FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false)
+    /// <inheritdoc/>
+    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false)
     {
         source = source ?? throw new ArgumentNullException(nameof(source));
         var isSecure = source.IsSecure();
