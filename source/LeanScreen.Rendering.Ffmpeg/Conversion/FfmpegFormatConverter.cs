@@ -19,7 +19,7 @@ using LeanScreen.Rendering.Ffmpeg.IO;
 public unsafe class FfmpegFormatConverter : IFormatConverter
 {
     /// <inheritdoc/>
-    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false)
+    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false, bool deleteSource = false)
     {
         source = source ?? throw new ArgumentNullException(nameof(source));
         var isSecure = source.IsSecure();
@@ -178,8 +178,6 @@ public unsafe class FfmpegFormatConverter : IFormatConverter
                 File.Delete(moveTo);
                 target.MoveTo(moveTo);
             }
-
-            return target;
         }
 #if DEBUG
         catch (Exception ex)
@@ -200,6 +198,34 @@ public unsafe class FfmpegFormatConverter : IFormatConverter
             ffmpegReadStream?.Dispose();
             inputStream?.Dispose();
         }
+
+        var success = false;
+        if (target.Exists && target.Length > 0)
+        {
+            var salt = target.IsSecure() ? target.ToSalt() : [];
+            try
+            {
+                using var targetRead = target.OpenRead();
+                using var renderer = new FfmpegRenderer(targetRead, salt, key, null);
+                success = renderer.Media.Duration > TimeSpan.Zero;
+            }
+            catch
+            {
+                // Nothing to do
+            }
+        }
+
+        if (success && deleteSource)
+        {
+            source.Delete();
+        }
+        else if (!success)
+        {
+            target.Delete();
+            throw new InvalidOperationException("Remux result did not produce readable media.");
+        }
+
+        return target;
     }
 
     [ExcludeFromCodeCoverage]

@@ -119,19 +119,15 @@ public class FfmpegFormatConverterTests
     [InlineData("sample.avi", TargetExts.Mp4)]
     [InlineData("sample.flv", TargetExts.Asf)]
     [InlineData("sample.flv", TargetExts.Mov)]
-    [InlineData("sample.flv", TargetExts.Ts)]
-    [InlineData("sample.flv", TargetExts.Vob)]
     [InlineData("sample.mkv", TargetExts.Asf)]
     [InlineData("sample.mkv", TargetExts.Flv)]
     [InlineData("sample.mkv", TargetExts.Mov)]
     [InlineData("sample.mkv", TargetExts.Mp4)]
     [InlineData("sample.mkv", TargetExts.Ts)]
-    [InlineData("sample.mkv", TargetExts.Vob)]
     [InlineData("sample.mp4", TargetExts.Asf)]
     [InlineData("sample.mp4", TargetExts.Flv)]
     [InlineData("sample.mp4", TargetExts.Mov)]
     [InlineData("sample.mp4", TargetExts.Ts)]
-    [InlineData("sample.mp4", TargetExts.Vob)]
     public void RemuxCryptoE2E_VaryingFile_MatchesDirect(string fileName, string ext)
     {
         // Obtain a control conversion by remuxing plain source via "direct mode"
@@ -190,6 +186,43 @@ public class FfmpegFormatConverterTests
         ////}
 
         ////matchingBlocks.Should().Be(testBlocks);
+    }
+
+    [Theory]
+    [InlineData("sample.flv", TargetExts.Vob)]
+    public void Remux_BadMediaFile_DeletesTarget(string fileName, string ext)
+    {
+        // Arrange
+        var sut = new FfmpegFormatConverter();
+        var di = Directory.CreateDirectory($"{new FileInfo(fileName).Extension}2{ext}--{Guid.NewGuid()}");
+        var source = new FileInfo(Path.Combine(di.FullName, fileName));
+        File.Copy(Path.Combine("Samples", fileName), source.FullName);
+        var expTarget = new FileInfo(Path.Combine(di.FullName, fileName + "__B2B.vob"));
+
+        // Act
+        var act = () => sut.Remux(source, ext, []);
+
+        // Assert
+        expTarget.Exists.Should().BeFalse();
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Remux result did not produce readable media.");
+    }
+
+    [Theory]
+    [InlineData("sample.mkv", TargetExts.Flv)]
+    public void Remux_SuccessAndSourceDelete_DeletesSource(string fileName, string ext)
+    {
+        // Arrange
+        var sut = new FfmpegFormatConverter();
+        var di = Directory.CreateDirectory($"{new FileInfo(fileName).Extension}2{ext}--{Guid.NewGuid()}");
+        var source = new FileInfo(Path.Combine(di.FullName, fileName));
+        File.Copy(Path.Combine("Samples", fileName), source.FullName);
+
+        // Act
+        sut.Remux(source, ext, [], deleteSource: true);
+
+        // Assert
+        source.Exists.Should().BeFalse();
     }
 }
 

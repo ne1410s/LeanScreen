@@ -19,6 +19,8 @@ public interface IFormatConverter
     /// <param name="key">The key, if required.</param>
     /// <param name="directFile">If true then ffmpeg is sent only file path(s)
     /// from which format contexts are populated, instead of streams.</param>
+    /// <param name="deleteSource">If true and the process succeeds, the source
+    /// file is deleted.</param>
     /// <returns>The output file.</returns>
-    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false);
+    public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false, bool deleteSource = false);
 }
