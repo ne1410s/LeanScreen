@@ -27,7 +27,8 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
         byte[] key,
         DirectoryInfo source,
         bool recurse,
-        bool purgeNonMedia,
+        bool ingestNonMedia,
+        bool purgeNonMatching,
         bool applySnap,
         IProgress<double>? onProgress = null)
     {
@@ -41,11 +42,11 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
         {
             var typeInfo = file.GetMediaTypeInfo();
             var isSecure = file.IsSecure();
-            var pertinent = MediaTypes.AnyMedia.HasFlag(typeInfo.MediaType);
+            var pertinent = MediaTypes.AnyMedia.HasFlag(typeInfo.MediaType) || ingestNonMedia;
             if (!pertinent)
             {
                 retVal.Unmatched++;
-                if (purgeNonMedia)
+                if (purgeNonMatching)
                 {
                     file.Delete();
                 }

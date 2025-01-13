@@ -19,7 +19,8 @@ public interface IBulkProcessor
     /// <param name="key">The key.</param>
     /// <param name="source">The source directory.</param>
     /// <param name="recurse">Whether to include subdirectories.</param>
-    /// <param name="purgeNonMedia">Whether to delete non-media files.</param>
+    /// <param name="ingestNonMedia">Whether to ingest non-media files.</param>
+    /// <param name="purgeNonMatching">Whether to delete non-matching source files.</param>
     /// <param name="applySnap">Whether to apply a snapshot on ingest.</param>
     /// <param name="onProgress">Progress handler.</param>
     /// <returns>The response.</returns>
@@ -27,7 +28,8 @@ public interface IBulkProcessor
         byte[] key,
         DirectoryInfo source,
         bool recurse,
-        bool purgeNonMedia,
+        bool ingestNonMedia,
+        bool purgeNonMatching,
         bool applySnap,
         IProgress<double>? onProgress = null);
 

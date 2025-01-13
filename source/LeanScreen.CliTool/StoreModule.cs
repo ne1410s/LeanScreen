@@ -14,7 +14,7 @@ using LeanScreen.Extensions;
 public class StoreModule(IConsole console) : IModule
 {
     /// <summary>
-    /// Finds media on disk and ingests it into a store.
+    /// Finds files on disk and ingests it into a store.
     /// </summary>
     /// <param name="source">The source directory.</param>
     /// <param name="storeParam">The store parameter.</param>
@@ -23,6 +23,7 @@ public class StoreModule(IConsole console) : IModule
     /// <param name="keySource">The key source directory.</param>
     /// <param name="keyRegex">The key source regular expression.</param>
     /// <param name="recurse">Whether to recurse.</param>
+    /// <param name="nonMedia">Whether to include non-media files.</param>
     /// <param name="purge">Whether to delete non-pertinent files.</param>
     /// <returns>Process summary.</returns>
     public async Task<BulkResponse> Ingest(
@@ -33,11 +34,13 @@ public class StoreModule(IConsole console) : IModule
         [Alias("ks")] string? keySource = null,
         [Alias("kr")] string? keyRegex = null,
         [Alias("r")] bool recurse = true,
+        [Alias("nm")] bool nonMedia = false,
         [Alias("p")] bool purge = false)
     {
         var di = new DirectoryInfo(source);
         var key = console.PrepareKey(keySource, keyRegex);
-        var result = await di.Ingest(key, storeParam, storeType, applySnap, recurse, purge, console.ProgressHandler());
+        var result = await di.Ingest(
+            key, storeParam, storeType, applySnap, recurse, nonMedia, purge, console.ProgressHandler());
         await Task.Delay(1000);
         console.WriteLine();
         return result;

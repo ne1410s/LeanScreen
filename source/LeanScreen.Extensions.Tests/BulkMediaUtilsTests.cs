@@ -97,7 +97,7 @@ public class BulkMediaUtilsTests
         await File.WriteAllTextAsync(nonMediaPath, "non-perinent!");
 
         // Act
-        await sourceDir.Ingest([], targetDir.FullName, purgeNonMedia: purge);
+        await sourceDir.Ingest([], targetDir.FullName, purgeNonMatching: purge);
 
         // Assert
         new FileInfo(nonMediaPath).Exists.Should().Be(!purge);

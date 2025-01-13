@@ -25,7 +25,7 @@ public class BulkProcessorTests
         const string derivative = "3122188888*";
 
         // Act
-        await sut.IngestAsync([], di, false, false, false);
+        await sut.IngestAsync([], di, false, false, false, false);
 
         // Assert
         di.GetFiles(sourceImage).Length.Should().Be(0);
@@ -45,7 +45,7 @@ public class BulkProcessorTests
             .ReturnsAsync(["101fe0480635e03536b17760cb8526f6b039f28f228140eea5ce4a3d7653a15c.47f14f5297"]);
 
         // Act
-        var result = await sut.IngestAsync([], di, true, true, true);
+        var result = await sut.IngestAsync([], di, true, false, true, true);
 
         // Assert
         di.Delete(true);
