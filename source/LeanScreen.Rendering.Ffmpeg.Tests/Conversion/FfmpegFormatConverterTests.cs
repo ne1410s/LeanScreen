@@ -26,7 +26,7 @@ public class FfmpegFormatConverterTests
         var act = () => sut.Remux(source, ".avi", []);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithParameterName(nameof(source));
+        act.ShouldThrow<ArgumentNullException>().ParamName.ShouldBe(nameof(source));
     }
 
     [Fact]
@@ -42,9 +42,9 @@ public class FfmpegFormatConverterTests
         var act = () => sut.Remux(secureFi, ".avi", [], directFile: true);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("Direct file mode not supported for secure sources*")
-            .WithParameterName("directFile");
+        act.ShouldThrow<ArgumentException>().ShouldSatisfyAllConditions(
+            ex => ex.Message.ShouldMatch("Direct file mode not supported for secure sources.*"),
+            ex => ex.ParamName.ShouldBe("directFile"));
     }
 
     [Fact]
@@ -55,17 +55,17 @@ public class FfmpegFormatConverterTests
         var sut = new FfmpegFormatConverter();
         var fi = new FileInfo(Path.Combine("Samples", "no-audio.mp4"));
         var copyFi = fi.CopyTo(Path.Combine("Samples", "no-audio-copy.mp4"), true);
-        copyFi.EncryptInSitu(testKey);
+        _ = copyFi.EncryptInSitu(testKey);
 
         // Act
         var act = () =>
         {
-            sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
-            sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+            _ = sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
+            _ = sut.Remux(copyFi, ".mov", [9, 0, 2, 1, 0]);
         };
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -80,8 +80,8 @@ public class FfmpegFormatConverterTests
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        target.Name.Should().Contain("__B2B.");
-        resultHash.Should().Be("018c976a75c5fd24d38ff7cec60c394a");
+        target.Name.ShouldContain("__B2B.");
+        resultHash.ShouldBe("018c976a75c5fd24d38ff7cec60c394a");
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class FfmpegFormatConverterTests
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        resultHash.Should().Be("bca83d7903c7eaf44cf405c8f5518724");
+        resultHash.ShouldBe("bca83d7903c7eaf44cf405c8f5518724");
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class FfmpegFormatConverterTests
         var act = () => sut.Remux(source, ".ogg", []);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>();
+        _ = act.ShouldThrow<InvalidOperationException>();
     }
 
     [Theory]
@@ -139,7 +139,7 @@ public class FfmpegFormatConverterTests
 
         // Churn the plain source before obtaining a gcm conversion
         var key = new byte[] { 9, 0, 2, 1, 0 };
-        srcFi.EncryptInSitu(key);
+        _ = srcFi.EncryptInSitu(key);
         var cryptFi = sut.Remux(srcFi, ext, key);
         var testingFi = cryptFi.DecryptHere(key);
         testingFi.MoveTo(Path.Combine(di.FullName, $"{fileName}__B2B-rt{ext}"));
@@ -149,8 +149,8 @@ public class FfmpegFormatConverterTests
         // Assert
         var controlHash = controlFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
         var testingHash = testingFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
-        controlFi.Name.Should().Contain("__F2F.");
-        testingHash.Should().Be(controlHash);
+        controlFi.Name.ShouldContain("__F2F.");
+        testingHash.ShouldBe(controlHash);
         di.Delete(true);
 
         ////using var controlFs = controlFi.OpenRead();
@@ -185,7 +185,7 @@ public class FfmpegFormatConverterTests
         ////    }
         ////}
 
-        ////matchingBlocks.Should().Be(testBlocks);
+        ////matchingBlocks.ShouldBe(testBlocks);
     }
 
     [Theory]
@@ -203,9 +203,9 @@ public class FfmpegFormatConverterTests
         var act = () => sut.Remux(source, ext, []);
 
         // Assert
-        expTarget.Exists.Should().BeFalse();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Remux result did not produce readable media.");
+        expTarget.Exists.ShouldBeFalse();
+        act.ShouldThrow<InvalidOperationException>()
+            .Message.ShouldBe("Remux result did not produce readable media.");
     }
 
     [Theory]
@@ -219,14 +219,14 @@ public class FfmpegFormatConverterTests
         File.Copy(Path.Combine("Samples", fileName), source.FullName);
 
         // Act
-        sut.Remux(source, ext, [], deleteSource: true);
+        _ = sut.Remux(source, ext, [], deleteSource: true);
 
         // Assert
-        source.Exists.Should().BeFalse();
+        source.Exists.ShouldBeFalse();
     }
 }
 
-public static class TargetExts
+internal static class TargetExts
 {
     public const string Asf = ".asf";
 

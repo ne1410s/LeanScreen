@@ -98,10 +98,10 @@ public static class FileExtensions
         var sb = new StringBuilder();
         for (var r = 0; r < Math.Max(primary.Length, remaining.Length); r++)
         {
-            sb.Append(primary[r % primary.Length]);
+            _ = sb.Append(primary[r % primary.Length]);
             if (remaining.Length != 0)
             {
-                sb.Append(remaining[r % remaining.Length]);
+                _ = sb.Append(remaining[r % remaining.Length]);
             }
         }
 

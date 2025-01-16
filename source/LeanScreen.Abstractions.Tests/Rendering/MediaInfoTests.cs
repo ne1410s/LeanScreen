@@ -25,9 +25,9 @@ public class MediaInfoTests
         var sut = new MediaInfo(duration, dimensions, totalFrames, frameRate);
 
         // Assert
-        sut.Duration.Should().Be(duration);
-        sut.Dimensions.Should().Be(dimensions);
-        sut.TotalFrames.Should().Be(totalFrames);
-        sut.FrameRate.Should().Be(frameRate);
+        sut.Duration.ShouldBe(duration);
+        sut.Dimensions.ShouldBe(dimensions);
+        sut.TotalFrames.ShouldBe(totalFrames);
+        sut.FrameRate.ShouldBe(frameRate);
     }
 }

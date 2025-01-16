@@ -25,7 +25,7 @@ public static class CryptoExtensions
             .Encrypt(stream, stream, key, [])
             .Encode(Codec.ByteHex)
             .ToLowerInvariant();
-        stream.NotNull().Seek(0, SeekOrigin.Begin);
+        _ = stream.NotNull().Seek(0, SeekOrigin.Begin);
         return retVal;
     }
 }

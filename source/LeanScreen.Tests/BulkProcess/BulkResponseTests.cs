@@ -20,7 +20,7 @@ public class BulkResponseTests
         var result = new BulkResponse(100) { Processed = processed };
 
         // Assert
-        result.Percent.Should().Be(expected);
+        result.Percent.ShouldBe(expected);
     }
 
     [Fact]
@@ -30,6 +30,6 @@ public class BulkResponseTests
         var result = new BulkResponse(100) { Processed = 10, Unmatched = 40, Skipped = 10 };
 
         // Assert
-        result.Percent.Should().Be(60);
+        result.Percent.ShouldBe(60);
     }
 }

@@ -242,7 +242,7 @@ public unsafe class FfmpegFormatConverter : IFormatConverter
             var out_stream = ptrOutputFmtCtx->streams[ptrPacket->stream_index];
             ffmpeg.av_packet_rescale_ts(ptrPacket, in_stream->time_base, out_stream->time_base);
             ptrPacket->pos = -1;
-            ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
+            _ = ffmpeg.av_interleaved_write_frame(ptrOutputFmtCtx, ptrPacket).avThrowIfError();
         }
     }
 }

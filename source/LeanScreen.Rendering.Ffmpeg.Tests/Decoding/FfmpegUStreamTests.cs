@@ -23,10 +23,10 @@ public class FfmpegUStreamTests
 
         // Act
         sut.Dispose();
-        var act = () => _ = mockInner.Length;
+        Action act = () => _ = mockInner.Length;
 
         // Assert
-        act.Should().Throw<ObjectDisposedException>();
+        _ = act.ShouldThrow<ObjectDisposedException>();
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class FfmpegUStreamTests
         var act = sut.Dispose;
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -51,13 +51,13 @@ public class FfmpegUStreamTests
         var mockCopier = new Mock<IByteArrayCopier>();
         using var str = fi.OpenBlockRead();
         using var sut = new FfmpegUStream(str, 333, mockCopier.Object);
-        sut.SeekUnsafe(default, fi.Length, 0);
+        _ = sut.SeekUnsafe(default, fi.Length, 0);
 
         // Act
         var result = sut.ReadUnsafe(default, default, 1);
 
         // Assert
-        result.Should().BeLessThan(1);
+        result.ShouldBeLessThan(1);
         mockCopier.Verify(
             m => m.Copy(It.IsAny<byte[]>(), It.IsAny<IntPtr>(), It.IsAny<int>()),
             Times.Never());
@@ -93,7 +93,7 @@ public class FfmpegUStreamTests
         var result = sut.SeekUnsafe(default, long.MinValue, 17);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     ////[Theory]

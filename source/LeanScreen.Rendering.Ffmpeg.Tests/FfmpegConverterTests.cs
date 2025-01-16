@@ -27,8 +27,8 @@ public class FfmpegConverterTests
         var act = () => new FfmpegConverter(sourceSize, default, validDestSize);
 
         // Assert
-        act.Should().ThrowExactly<ArgumentException>()
-            .WithMessage("The size is invalid. (Parameter 'sourceSize')");
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("The size is invalid. (Parameter 'sourceSize')");
     }
 
     [Theory]
@@ -46,8 +46,8 @@ public class FfmpegConverterTests
         var act = () => new FfmpegConverter(validSourceSize, default, destSize);
 
         // Assert
-        act.Should().ThrowExactly<ArgumentException>()
-            .WithMessage("The size is invalid. (Parameter 'destinationSize')");
+        act.ShouldThrow<ArgumentException>()
+            .Message.ShouldBe("The size is invalid. (Parameter 'destinationSize')");
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class FfmpegConverterTests
         sut.Dispose();
 
         // Assert
-        1.Should().Be(1);
+        1.ShouldBe(1);
     }
 
     [Fact]
@@ -78,6 +78,6 @@ public class FfmpegConverterTests
         var result = (IntPtr)dispInfo!.GetValue(sut)!;
 
         // Assert
-        result.Should().Be(IntPtr.Zero);
+        result.ShouldBe(IntPtr.Zero);
     }
 }

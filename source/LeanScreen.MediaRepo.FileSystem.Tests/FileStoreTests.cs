@@ -4,6 +4,7 @@
 
 namespace LeanScreen.MediaRepo.FileSystem.Tests;
 
+using System.Diagnostics.CodeAnalysis;
 using CryptoStream.IO;
 using LeanScreen.MediaRepo.FileSystem;
 
@@ -13,17 +14,23 @@ using LeanScreen.MediaRepo.FileSystem;
 public class FileStoreTests
 {
     [Fact]
+    [ExcludeFromCodeCoverage]
     public async Task AddMedia_IsSecure_DoesNotThrow()
     {
         // Arrange
         var file = new string('0', 64) + ".4c26c413c2";
         var sut = new FileStore("dir");
 
-        // Act
-        var act = () => sut.AddMedia(new MemoryStream(), file);
-
-        // Assert
-        await act.Should().NotThrowAsync<InvalidOperationException>();
+        try
+        {
+            // Act
+            await sut.AddMedia(new MemoryStream(), file);
+        }
+        catch (Exception ex)
+        {
+            // Assert
+            ex.ShouldNotBeOfType<InvalidOperationException>();
+        }
     }
 
     [Fact]
@@ -36,8 +43,8 @@ public class FileStoreTests
         var act = () => sut.AddMedia(new MemoryStream(), "123");
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Source is not secure.");
+        (await act.ShouldThrowAsync<InvalidOperationException>())
+            .Message.ShouldBe("Source is not secure.");
     }
 
     [Fact]
@@ -50,8 +57,8 @@ public class FileStoreTests
         var act = () => sut.AddCaps(new MemoryStream(), "123456789012", "123456789012");
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Source is not secure.");
+        (await act.ShouldThrowAsync<InvalidOperationException>())
+            .Message.ShouldBe("Source is not secure.");
     }
 
     [Fact]
@@ -64,8 +71,8 @@ public class FileStoreTests
         var act = () => sut.AddCaps(new MemoryStream(), "123", "123456789012");
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Source name is not consistent with parent.");
+        (await act.ShouldThrowAsync<InvalidOperationException>())
+            .Message.ShouldBe("Source name is not consistent with parent.");
     }
 
     [Fact]
@@ -76,7 +83,7 @@ public class FileStoreTests
         new DirectoryInfo(dir).Create();
         var fi = new FileInfo($"{dir}/{Guid.NewGuid()}.avi");
         await File.WriteAllTextAsync(fi.FullName, "hello");
-        fi.EncryptInSitu([9, 0, 2, 1, 0]);
+        _ = fi.EncryptInSitu([9, 0, 2, 1, 0]);
         var capExt = fi.ToSecureExtension(".avi");
         var capName = $"{fi.DirectoryName}/{fi.Name[..12]}.0123" + capExt;
         await File.WriteAllTextAsync(capName, "world");
@@ -86,7 +93,7 @@ public class FileStoreTests
         var todos = await sut.NextUncapped();
 
         // Assert
-        todos.Should().BeEmpty();
+        todos.ShouldBeEmpty();
         Directory.Delete(fi.DirectoryName!, true);
     }
 }

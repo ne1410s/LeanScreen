@@ -73,7 +73,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
                 {
                     if (!isSecure)
                     {
-                        file.EncryptInSitu(key, Encryptor);
+                        _ = file.EncryptInSitu(key, Encryptor);
                         isSecure = true;
                     }
 

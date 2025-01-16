@@ -35,7 +35,7 @@ public static class FfmpegUtils
     {
         const int bufferSize = 1024;
         var buffer = stackalloc byte[bufferSize];
-        ffmpeg.av_strerror(error, buffer, bufferSize);
+        _ = ffmpeg.av_strerror(error, buffer, bufferSize);
         return Marshal.PtrToStringAnsi((IntPtr)buffer);
     }
 

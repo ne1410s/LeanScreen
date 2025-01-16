@@ -25,11 +25,11 @@ public class BulkProcessorTests
         const string derivative = "3122188888*";
 
         // Act
-        await sut.IngestAsync([], di, false, false, false, false);
+        _ = await sut.IngestAsync([], di, false, false, false, false);
 
         // Assert
-        di.GetFiles(sourceImage).Length.Should().Be(0);
-        di.GetFiles(derivative).Length.Should().Be(0);
+        di.GetFiles(sourceImage).Length.ShouldBe(0);
+        di.GetFiles(derivative).Length.ShouldBe(0);
         di.Delete(true);
     }
 
@@ -40,7 +40,7 @@ public class BulkProcessorTests
         var sut = GetSut(out var mocks);
         var di = TestHelper.CopySamples();
         var expected = new BulkResponse(4) { Unmatched = 1, Processed = 3 };
-        mocks.MockRepo
+        _ = mocks.MockRepo
             .Setup(m => m.FindAsync(It.IsAny<string>()))
             .ReturnsAsync(["101fe0480635e03536b17760cb8526f6b039f28f228140eea5ce4a3d7653a15c.47f14f5297"]);
 
@@ -49,7 +49,7 @@ public class BulkProcessorTests
 
         // Assert
         di.Delete(true);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
         mocks.MockRepo.Verify(
             m => m.AddCaps(
                 It.IsAny<Stream>(),
@@ -61,11 +61,11 @@ public class BulkProcessorTests
     {
         Size2D size;
         mocks = new(new Mock<ISnapService>(), new Mock<IMediaRepo>());
-        mocks.MockSnapper
+        _ = mocks.MockSnapper
             .Setup(m => m.Collate(
                 It.IsAny<Stream>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), out size, 24, 4, 300, It.IsAny<bool>()))
             .Returns(new MemoryStream());
-        mocks.MockRepo
+        _ = mocks.MockRepo
             .Setup(m => m.FindAsync(It.IsAny<string>()))
             .ReturnsAsync([]);
         return new(

@@ -26,7 +26,7 @@ public static class WriterExtensions
         var keyReg = keyRegex == null ? null : new Regex(keyRegex);
         var key = keyDi.MakeKey(keyReg, console.CaptureStrings(mask: '*'), out var checkSum);
         console.WriteSecondary(checkSum, true);
-        console.CaptureStrings("[Press RETURN to continue]", max: 1);
+        _ = console.CaptureStrings("[Press RETURN to continue]", max: 1);
         console.Write(line: true);
         return key.ToArray();
     }
@@ -68,7 +68,7 @@ public static class WriterExtensions
             }
 
             cancelTokenSource = new CancellationTokenSource();
-            Task.Delay(milliseconds, cancelTokenSource.Token)
+            _ = Task.Delay(milliseconds, cancelTokenSource.Token)
                 .ContinueWith(
                     t =>
                     {

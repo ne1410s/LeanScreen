@@ -69,7 +69,7 @@ public static class FileExtensions
            : fi.OpenBlockRead();
 
         var retVal = await Imager.ResizeImage(readStream, new() { Height = height });
-        retVal.Seek(0, SeekOrigin.Begin);
+        _ = retVal.Seek(0, SeekOrigin.Begin);
         return retVal;
     }
 

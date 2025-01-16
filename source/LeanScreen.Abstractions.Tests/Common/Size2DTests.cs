@@ -23,11 +23,10 @@ public class Size2DTests
         var target = new Size2D(100, 50);
 
         // Act
-        var act = () => source.ResizeTo(target);
+        Action act = () => source.ResizeTo(target);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("Source dimensions invalid.");
+        act.ShouldThrow<ArgumentException>().Message.ShouldBe("Source dimensions invalid.");
     }
 
     [Theory]
@@ -41,11 +40,10 @@ public class Size2DTests
         var target = new Size2D(width, height);
 
         // Act
-        var act = () => source.ResizeTo(target);
+        Action act = () => source.ResizeTo(target);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("Target dimensions invalid. (Parameter 'target')");
+        act.ShouldThrow<ArgumentException>().Message.ShouldBe("Target dimensions invalid. (Parameter 'target')");
     }
 
     [Theory]
@@ -63,6 +61,6 @@ public class Size2DTests
         var result = source.ResizeTo(target);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 }

@@ -31,7 +31,7 @@ public class FormatExtensionsTests
         var actual = timeSpan.FormatConcise();
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Theory]
@@ -46,7 +46,7 @@ public class FormatExtensionsTests
         var result = bytes.FormatSize();
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -101,7 +101,7 @@ public class FormatExtensionsTests
         var result = plainFile.GetMediaTypeInfo();
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -116,8 +116,8 @@ public class FormatExtensionsTests
         var result = plainFile.GetMediaTypeInfo();
 
         // Assert
-        result.MediaType.Should().Be(MediaTypes.Archive);
-        result.MimeType.Should().Be("application/zip");
+        result.MediaType.ShouldBe(MediaTypes.Archive);
+        result.MimeType.ShouldBe("application/zip");
     }
 
     [Theory]
@@ -136,7 +136,7 @@ public class FormatExtensionsTests
         var result = plainFile.GetMediaTypeInfo();
 
         // Assert
-        result.MimeType.Should().Be(null);
+        result.MimeType.ShouldBe(null);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class FormatExtensionsTests
         var result = fi.GetMediaTypeInfo();
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -160,10 +160,10 @@ public class FormatExtensionsTests
         var fi = (FileInfo)null!;
 
         // Act
-        var act = () => fi.GetMediaTypeInfo();
+        Action act = () => fi.GetMediaTypeInfo();
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        _ = act.ShouldThrow<ArgumentNullException>();
     }
 
     [Fact]
@@ -171,12 +171,12 @@ public class FormatExtensionsTests
     {
         // Arrange
         var mockDecryptor = new Mock<IGcmDecryptor>();
-        mockDecryptor
+        _ = mockDecryptor
             .Setup(m => m.DecryptBlock(It.IsAny<GcmEncryptedBlock>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), false))
             .Returns([]);
 
         // Act
-        new FileInfo(new string('a', 64) + ".0123456789").GetMediaTypeInfo(mockDecryptor.Object);
+        _ = new FileInfo(new string('a', 64) + ".0123456789").GetMediaTypeInfo(mockDecryptor.Object);
 
         // Assert
         mockDecryptor.Verify(
@@ -201,7 +201,7 @@ public class FormatExtensionsTests
         var extensions = mediaType.GetExtensions();
 
         // Assert
-        extensions.Count.Should().Be(expectedCount);
+        extensions.Count.ShouldBe(expectedCount);
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class FormatExtensionsTests
         var result = input.GetUpperBoundFormat();
 
         // Assert
-        result.Should().Be("D6");
+        result.ShouldBe("D6");
     }
 
     [Fact]
@@ -228,6 +228,6 @@ public class FormatExtensionsTests
         var result = value.DistributeEvenly(3);
 
         // Assert
-        result.Should().BeEquivalentTo(expected);
+        result.ShouldBeEquivalentTo(expected);
     }
 }

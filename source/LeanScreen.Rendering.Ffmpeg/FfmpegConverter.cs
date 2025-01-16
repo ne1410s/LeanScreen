@@ -56,7 +56,7 @@ public sealed unsafe class FfmpegConverter : IDisposable
         this.dstData = default;
         this.dstLinesize = default;
 
-        ffmpeg.av_image_fill_arrays(
+        _ = ffmpeg.av_image_fill_arrays(
             ref this.dstData,
             ref this.dstLinesize,
             (byte*)this.convertedFrameBufferPtr,
@@ -85,7 +85,7 @@ public sealed unsafe class FfmpegConverter : IDisposable
     /// <returns>Frame data.</returns>
     public RawFrame RenderRawFrame(AVFrame sourceFrame)
     {
-        ffmpeg.sws_scale(
+        _ = ffmpeg.sws_scale(
             this.pConvertContext,
             sourceFrame.data,
             sourceFrame.linesize,

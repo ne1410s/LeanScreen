@@ -15,12 +15,12 @@ public static class TestHelper
 
         foreach (var di in source.GetDirectories())
         {
-            CopyAll(di, target.CreateSubdirectory(di.Name));
+            _ = CopyAll(di, target.CreateSubdirectory(di.Name));
         }
 
         foreach (var fi in source.GetFiles())
         {
-            fi.CopyTo(Path.Combine(target.FullName, fi.Name));
+            _ = fi.CopyTo(Path.Combine(target.FullName, fi.Name));
         }
 
         return target;

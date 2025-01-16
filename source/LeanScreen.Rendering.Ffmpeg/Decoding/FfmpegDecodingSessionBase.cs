@@ -93,7 +93,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
     public AVFrame Seek(TimeSpan position)
     {
         var ts = position.ToLong(this.TimeBase);
-        ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0);
+        _ = ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, ts, ts, 0);
 
         AVFrame retVal;
         double msAhead;
@@ -120,7 +120,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                 previousMsAhead = msAhead;
                 var seekPos = (position - TimeSpan.FromSeconds(1)).Clamp(this.Duration);
                 var newTs = seekPos.ToLong(this.TimeBase);
-                ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, newTs, newTs, 0)
+                _ = ffmpeg.avformat_seek_file(this.PtrFormatContext, this.StreamIndex, long.MinValue, newTs, newTs, 0)
                     .avThrowIfError();
             }
             else
@@ -181,18 +181,18 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         // NB: This has always been commented-out...
         ////pFormatContext->seek2any = 1;
 
-        ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
+        _ = ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
         ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
-        ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
+        _ = ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
         AVCodec* codec = null;
 
         this.StreamIndex = ffmpeg
             .av_find_best_stream(this.PtrFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
             .avThrowIfError();
-        ffmpeg.avcodec_parameters_to_context(
+        _ = ffmpeg.avcodec_parameters_to_context(
             this.PtrCodecContext, PtrFormatContext->streams[this.StreamIndex]->codecpar)
                 .avThrowIfError();
-        ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
+        _ = ffmpeg.avcodec_open2(this.PtrCodecContext, codec, null).avThrowIfError();
 
         var frameRate = PtrFormatContext->streams[this.StreamIndex]->avg_frame_rate;
         this.FrameRate = (double)frameRate.num / frameRate.den;
@@ -233,11 +233,11 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
                         return false;
                     }
 
-                    error.avThrowIfError();
+                    _ = error.avThrowIfError();
                 }
                 while (PtrPacket->stream_index != this.StreamIndex);
 
-                ffmpeg.avcodec_send_packet(this.PtrCodecContext, this.PtrPacket).avThrowIfError();
+                _ = ffmpeg.avcodec_send_packet(this.PtrCodecContext, this.PtrPacket).avThrowIfError();
             }
             finally
             {
@@ -248,7 +248,7 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         }
         while (error == ffmpeg.AVERROR(ffmpeg.EAGAIN));
 
-        error.avThrowIfError();
+        _ = error.avThrowIfError();
 
         // Can we select a hw device automatically?
         // ... and does it improve frame capture??

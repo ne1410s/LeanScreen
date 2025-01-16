@@ -11,7 +11,7 @@ using LeanScreen.Common;
 /// <summary>
 /// Collation options.
 /// </summary>
-public class CollationOptions
+public record CollationOptions
 {
     /// <summary>
     /// Gets or sets the total number of columns in the collation.

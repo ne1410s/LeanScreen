@@ -24,8 +24,8 @@ public class CollationMapTests
         var sut = new CollationMap(canvasSize, itemSize, coordinates);
 
         // Assert
-        sut.CanvasSize.Should().Be(canvasSize);
-        sut.ItemSize.Should().Be(itemSize);
-        sut.Coordinates.Should().BeEquivalentTo(coordinates);
+        sut.CanvasSize.ShouldBe(canvasSize);
+        sut.ItemSize.ShouldBe(itemSize);
+        sut.Coordinates.ShouldBeEquivalentTo(coordinates);
     }
 }

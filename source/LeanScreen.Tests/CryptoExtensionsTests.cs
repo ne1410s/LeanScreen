@@ -17,9 +17,9 @@ public class CryptoExtensionsTests
         stream.Write([1, 2, 3]);
 
         // Act
-        stream.Encrypt([4, 5, 6]);
+        _ = stream.Encrypt([4, 5, 6]);
 
         // Assert
-        stream.Position.Should().Be(0);
+        stream.Position.ShouldBe(0);
     }
 }

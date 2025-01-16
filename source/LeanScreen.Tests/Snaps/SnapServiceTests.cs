@@ -30,21 +30,21 @@ public class SnapServiceTests
         };
 
         // Act
-        sut.Collate(new MemoryStream(), [], [], out _, compact: true);
+        _ = sut.Collate(new MemoryStream(), [], [], out _, compact: true);
 
         // Assert
         mockImager.Verify(m => m.Collate(
             It.IsAny<IEnumerable<RenderedFrame>>(),
-            It.Is<CollationOptions>(o => o.Should().BeEquivalentTo(expectedOpts, null) != null)));
+            It.Is<CollationOptions>(o => o == expectedOpts)));
     }
 
     private static SnapService GetSut(out Mock<IImagingService> mockImager)
     {
         var mockRenderer = new Mock<IRenderingSession>();
-        mockRenderer.Setup(m => m.Media).Returns(new MediaInfo(default, default, default, default));
+        _ = mockRenderer.Setup(m => m.Media).Returns(new MediaInfo(default, default, default, default));
 
         var mockRendererFactory = new Mock<IRenderingSessionFactory>();
-        mockRendererFactory
+        _ = mockRendererFactory
             .Setup(m => m.Create(It.IsAny<Stream>(), It.IsAny<byte[]>(), It.IsAny<byte[]>(), It.IsAny<int?>()))
             .Returns(mockRenderer.Object);
 

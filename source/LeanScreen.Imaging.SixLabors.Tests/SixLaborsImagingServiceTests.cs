@@ -29,8 +29,8 @@ public class SixLaborsImagingServiceTests
         var encoded = result.ToArray();
 
         // Assert
-        encoded.Length.Should().Be(658);
-        encoded.Take(10).Should().BeEquivalentTo(new byte[] { 255, 216, 255, 224, 0, 16, 74, 70, 73, 70 });
+        encoded.Length.ShouldBe(658);
+        encoded.Take(10).ToArray().ShouldBeEquivalentTo(new byte[] { 255, 216, 255, 224, 0, 16, 74, 70, 73, 70 });
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class SixLaborsImagingServiceTests
         var bytes = result.ToArray();
 
         // Assert
-        bytes.Take(5).Should().BeEquivalentTo(new byte[] { 66, 77, 70, 0, 0 });
+        bytes.Take(5).ToArray().ShouldBeEquivalentTo(new byte[] { 66, 77, 70, 0, 0 });
     }
 
     [Fact]
@@ -63,9 +63,9 @@ public class SixLaborsImagingServiceTests
         var act = () => sut.Collate([]);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("No frames found.*")
-            .WithParameterName("frames");
+        act.ShouldThrow<ArgumentException>().ShouldSatisfyAllConditions(
+            ex => ex.Message.ShouldMatch("No frames found.*"),
+            ex => ex.ParamName.ShouldBe("frames"));
     }
 
     [Fact]
@@ -78,9 +78,9 @@ public class SixLaborsImagingServiceTests
         var act = () => sut.Collate(null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("No frames found.*")
-            .WithParameterName("frames");
+        act.ShouldThrow<ArgumentException>().ShouldSatisfyAllConditions(
+            ex => ex.Message.ShouldMatch("No frames found.*"),
+            ex => ex.ParamName.ShouldBe("frames"));
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class SixLaborsImagingServiceTests
         var sha256 = ms.ToArray().Hash(HashType.Sha256);
 
         // Assert
-        sha256.Should().BeEquivalentTo(expectedSha256);
+        sha256.ShouldBeEquivalentTo(expectedSha256);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class SixLaborsImagingServiceTests
         var sha256 = ms.ToArray().Hash(HashType.Sha256);
 
         // Assert
-        sha256.Should().BeEquivalentTo(expectedSha256);
+        sha256.ShouldBeEquivalentTo(expectedSha256);
     }
 
     [Fact]
@@ -172,6 +172,6 @@ public class SixLaborsImagingServiceTests
         var sha256 = ms.ToArray().Hash(HashType.Sha256);
 
         // Assert
-        sha256.Should().BeEquivalentTo(expectedSha256);
+        sha256.ShouldBeEquivalentTo(expectedSha256);
     }
 }

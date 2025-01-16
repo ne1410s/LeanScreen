@@ -27,7 +27,7 @@ public class FfmpegUtilsTests
         var actual = position.Clamp(duration);
 
         // Assert
-        actual.Should().Be(expected);
+        actual.ShouldBe(expected);
     }
 
     [Fact]
@@ -37,10 +37,10 @@ public class FfmpegUtilsTests
         const int code = -1;
 
         // Act
-        var act = () => code.avThrowIfError();
+        Action act = () => code.avThrowIfError();
 
         // Assert
-        act.Should().Throw<Exception>();
+        _ = act.ShouldThrow<Exception>();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class FfmpegUtilsTests
         var act = () => code.avThrowIfError();
 
         // Assert
-        act.Should().NotThrow();
+        _ = act.ShouldNotThrow();
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class FfmpegUtilsTests
         var result = value.ToLong(timebase);
 
         // Assert
-        result.Should().Be(25);
+        result.ShouldBe(25);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class FfmpegUtilsTests
         var result = value.ToTimeSpan(new AVRational { num = 2, den = 5 }).TotalSeconds;
 
         // Assert
-        result.Should().Be(4);
+        result.ShouldBe(4);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class FfmpegUtilsTests
         var result = ((double)noOptsValue).ToTimeSpan(new AVRational { num = 1, den = 12 });
 
         // Assert
-        result.Should().Be(TimeSpan.Zero);
+        result.ShouldBe(TimeSpan.Zero);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class FfmpegUtilsTests
         var result = pts.ToTimeSpan(new AVRational { num = 1, den = 0 });
 
         // Assert
-        result.Should().Be(TimeSpan.FromSeconds(1));
+        result.ShouldBe(TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class FfmpegUtilsTests
         var result = noOptsValue.ToTimeSpan(new AVRational { num = 1, den = 25 });
 
         // Assert
-        result.Should().Be(TimeSpan.Zero);
+        result.ShouldBe(TimeSpan.Zero);
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class FfmpegUtilsTests
         var act = () => new PhysicalFfmpegDecoding("Samples/sample.mkv");
 
         // Assert
-        act.Should().NotThrow();
-        hitLogger.Should().BeTrue();
+        _ = act.ShouldNotThrow();
+        hitLogger.ShouldBeTrue();
 
         // Reset
         FfmpegUtils.Logger = null;

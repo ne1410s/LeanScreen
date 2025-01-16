@@ -25,7 +25,7 @@ public class StreamFfmpegDecodingTests
         using var x = new StreamFfmpegDecoding(str);
 
         // Assert
-        ffmpeg.RootPath.Should().NotBeNullOrWhiteSpace();
+        ffmpeg.RootPath.ShouldNotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class StreamFfmpegDecodingTests
         using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
-        sut.Url.Should().BeEmpty();
+        sut.Url.ShouldBeEmpty();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class StreamFfmpegDecodingTests
         using var sut = new StreamFfmpegDecoding(str);
 
         // Assert
-        sut.FrameRate.Should().BeApproximately(23.962, 0.001);
+        sut.FrameRate.ShouldBeInRange(23.961, 23.963);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class StreamFfmpegDecodingTests
         using var decoding = new StreamFfmpegDecoding(str);
 
         // Assert
-        decoding.Duration.Ticks.Should().Be(100000000);
+        decoding.Duration.Ticks.ShouldBe(100000000);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class StreamFfmpegDecodingTests
         var index = (int?)indexInfo!.GetValue(sut);
 
         // Assert
-        index.Should().Be(-1);
+        index.ShouldBe(-1);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class StreamFfmpegDecodingTests
         // Assert
         var fnInfo = sut.GetType().GetField("readFn", fieldFlags);
         var fnValue = fnInfo!.GetValue(sut);
-        fnValue.Should().BeNull();
+        fnValue.ShouldBeNull();
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class StreamFfmpegDecodingTests
         var info = sut.GetContextInfo();
 
         // Assert
-        info.Should().NotBeEmpty();
+        info.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class StreamFfmpegDecodingTests
         var result = sut.Seek(default);
 
         // Assert
-        result.best_effort_timestamp.Should().Be(0);
+        result.best_effort_timestamp.ShouldBe(0);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class StreamFfmpegDecodingTests
         var result = sut.Seek(TimeSpan.FromDays(21));
 
         // Assert
-        result.best_effort_timestamp.Should().BeLessThan(0);
+        result.best_effort_timestamp.ShouldBeLessThan(0);
     }
 
     private sealed unsafe class TestDecoding : FfmpegDecodingSessionBase

@@ -19,7 +19,7 @@ public class CollationOptionsTests
         var sut = new CollationOptions { Columns = 4, Top = 50 };
         var itemSize = new Size2D(200, 150);
         var itemCount = (sut.Columns * 2) + 1;
-        var expectedCoords = new Point2D[]
+        var expectedCoords = new List<Point2D>
         {
             new(10, 50),
             new(220, 50),
@@ -36,6 +36,6 @@ public class CollationOptionsTests
         var result = sut.GetMap(itemSize, itemCount);
 
         // Assert
-        result.Should().BeEquivalentTo(new CollationMap(new(850, 530), itemSize, expectedCoords));
+        result.ShouldBeEquivalentTo(new CollationMap(new(850, 530), itemSize, expectedCoords));
     }
 }

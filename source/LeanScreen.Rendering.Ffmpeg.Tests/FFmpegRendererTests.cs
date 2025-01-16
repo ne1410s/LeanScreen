@@ -16,7 +16,7 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// </summary>
 public class FfmpegRendererTests
 {
-    public enum DecodeMode
+    internal enum DecodeMode
     {
         /// <summary>Cryto mode.</summary>
         Crypto,
@@ -48,7 +48,7 @@ public class FfmpegRendererTests
         var md5Hex = sut.RenderAt(ts).Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().NotBeEmpty();
+        md5Hex.ShouldNotBeEmpty();
     }
 
     [Theory]
@@ -69,8 +69,8 @@ public class FfmpegRendererTests
         var md5Hex = result.Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().Be(expectedMd5Hex);
-        result.FrameNumber.Should().Be(expectedFrame);
+        md5Hex.ShouldBe(expectedMd5Hex);
+        result.FrameNumber.ShouldBe(expectedFrame);
     }
 
     [Theory]
@@ -88,7 +88,7 @@ public class FfmpegRendererTests
         var md5Hex = frame.Rgb24Bytes.ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().Be(expectedMd5Hex);
+        md5Hex.ShouldBe(expectedMd5Hex);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class FfmpegRendererTests
         var result = sut.RenderAt(ts).FrameNumber;
 
         // Assert
-        result.Should().BeCloseTo(expectedFrame, 10);
+        result.ShouldBeInRange(expectedFrame - 5, expectedFrame + 5);
     }
 
     /// <summary>
@@ -149,8 +149,8 @@ public class FfmpegRendererTests
         // Assert
         ////mean.Should().BeLessThanOrEqualTo(75);
         ////worst.delta.Should().BeLessThanOrEqualTo(100);
-        sut.Media.TotalFrames.Should().Be(expectedTotalFrames);
-        actualFrames.Should().BeEquivalentTo(expectedFrames);
+        sut.Media.TotalFrames.ShouldBe(expectedTotalFrames);
+        actualFrames.ShouldBeEquivalentTo(expectedFrames.ToList());
     }
 
     [Theory]
@@ -170,6 +170,6 @@ public class FfmpegRendererTests
         var decoder = (IFfmpegDecodingSession)decoderInfo!.GetValue(sut)!;
 
         // Assert
-        decoder.Should().BeOfType(expectedType);
+        decoder.ShouldBeOfType(expectedType);
     }
 }

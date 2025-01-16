@@ -26,7 +26,7 @@ public class FileExtensionsTests
         var act = () => fi.EnumerateMedia(MediaTypes.AnyMedia);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        _ = act.ShouldThrow<ArgumentNullException>();
     }
 
     [Theory]
@@ -44,7 +44,7 @@ public class FileExtensionsTests
         var media = di.EnumerateMedia(types, recurse: true);
 
         // Assert
-        media.Count().Should().Be(expectedCount);
+        media.Count().ShouldBe(expectedCount);
         di.Delete(true);
     }
 
@@ -61,7 +61,7 @@ public class FileExtensionsTests
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, secure, true);
 
         // Assert
-        media.Count().Should().Be(expectedCount);
+        media.Count().ShouldBe(expectedCount);
         di.Delete(true);
     }
 
@@ -77,7 +77,7 @@ public class FileExtensionsTests
         var media = di.EnumerateMedia(MediaTypes.AnyMedia, recurse: recurse);
 
         // Assert
-        media.Count().Should().Be(expectedCount);
+        media.Count().ShouldBe(expectedCount);
         di.Delete(true);
     }
 
@@ -88,10 +88,10 @@ public class FileExtensionsTests
         var fakeDir = new DirectoryInfo(Guid.NewGuid().ToString());
 
         // Act
-        var act = () => fakeDir.MakeKey(null, [], out _);
+        Action act = () => fakeDir.MakeKey(null, [], out _);
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithMessage("Directory not found*");
+        act.ShouldThrow<ArgumentException>().Message.ShouldMatch("Directory not found.*");
     }
 
     [Theory]
@@ -104,10 +104,10 @@ public class FileExtensionsTests
         var entropy = entropyCsv?.Split(',');
 
         // Act
-        LeanScreen.FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
+        _ = LeanScreen.FileExtensions.MakeKey(null, null, entropy!, out var checkSum);
 
         // Assert
-        checkSum.Should().Be(expectedSum);
+        checkSum.ShouldBe(expectedSum);
     }
 
     [Theory]
@@ -123,7 +123,7 @@ public class FileExtensionsTests
         var md5Hex = di.MakeKey(regex, [], out _).ToArray().Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().Be(expectedHash);
+        md5Hex.ShouldBe(expectedHash);
     }
 
     [Theory]
@@ -140,6 +140,6 @@ public class FileExtensionsTests
         var actualDir = fi.QualifyDestination(dest).Name;
 
         // Assert
-        actualDir.Should().Be(expectedDir);
+        actualDir.ShouldBe(expectedDir);
     }
 }

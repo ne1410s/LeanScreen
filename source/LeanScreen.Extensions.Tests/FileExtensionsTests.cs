@@ -25,7 +25,7 @@ public class FileExtensionsTests
         var act = () => fi.GetMediaInfo([]);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        _ = act.ShouldThrow<ArgumentNullException>();
     }
 
     [Theory]
@@ -41,7 +41,7 @@ public class FileExtensionsTests
         var info = fi.GetMediaInfo([9, 0, 2, 1, 0]);
 
         // Assert
-        info.Should().BeEquivalentTo(expected);
+        info.ShouldBeEquivalentTo(expected);
     }
 
     [Theory]
@@ -57,7 +57,7 @@ public class FileExtensionsTests
         var actualSize = await fi.GetImageSize([9, 0, 2, 1, 0]);
 
         // Assert
-        actualSize.Should().Be(expectedSize);
+        actualSize.ShouldBe(expectedSize);
     }
 
     [Fact]
@@ -70,7 +70,8 @@ public class FileExtensionsTests
         var act = () => fakeVid.ResizeImage([]);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>().WithMessage("Media type must be: Image*");
+        (await act.ShouldThrowAsync<ArgumentException>())
+            .Message.ShouldMatch("Media type must be: Image.*");
     }
 
     [Theory]
@@ -89,8 +90,8 @@ public class FileExtensionsTests
         var actual = stream.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        resultingPosition.Should().Be(0);
-        actual.Should().Be(expectedHash);
+        resultingPosition.ShouldBe(0);
+        actual.ShouldBe(expectedHash);
     }
 
     [Theory]
@@ -100,7 +101,7 @@ public class FileExtensionsTests
         // Arrange
         var source = new FileInfo(Path.Combine("Samples", sourceName));
         var fi = new FileInfo($"{source.DirectoryName}/{Guid.NewGuid()}{source.Extension}");
-        source.CopyTo(fi.FullName);
+        _ = source.CopyTo(fi.FullName);
 
         // Act
         var path = fi.SnapHere([9, 0, 2, 1, 0], out _);
@@ -108,7 +109,7 @@ public class FileExtensionsTests
         var md5Hex = snapFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().Be(expectedMd5);
+        md5Hex.ShouldBe(expectedMd5);
     }
 
     [Theory]
@@ -125,7 +126,7 @@ public class FileExtensionsTests
         var actualName = new FileInfo(fi.SnapHere([9, 0, 2, 1, 0], out _, .55, 24)).Name;
 
         // Assert
-        actualName.Should().Be(expectedName);
+        actualName.ShouldBe(expectedName);
     }
 
     [Theory]
@@ -135,7 +136,7 @@ public class FileExtensionsTests
         // Arrange
         var source = new FileInfo(Path.Combine("Samples", sourceName));
         var fi = new FileInfo($"{source.DirectoryName}/{Guid.NewGuid()}{source.Extension}");
-        source.CopyTo(fi.FullName);
+        _ = source.CopyTo(fi.FullName);
 
         // Act
         var path = fi.CollateHere([9, 0, 2, 1, 0], out _);
@@ -143,7 +144,7 @@ public class FileExtensionsTests
         var md5Hex = snapFi.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        md5Hex.Should().Be(expectedMd5);
+        md5Hex.ShouldBe(expectedMd5);
     }
 
     [Theory]
@@ -161,6 +162,6 @@ public class FileExtensionsTests
         var actualName = new FileInfo(fi.CollateHere([9, 0, 2, 1, 0], out _, 6, 2, 200)).Name;
 
         // Assert
-        actualName.Should().Be(expectedName);
+        actualName.ShouldBe(expectedName);
     }
 }
