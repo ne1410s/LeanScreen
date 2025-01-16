@@ -19,6 +19,14 @@ using LeanScreen.Rendering.Ffmpeg.IO;
 public unsafe class FfmpegFormatConverter : IFormatConverter
 {
     /// <inheritdoc/>
+    public FileInfo Transcode(
+        FileInfo source, string ext, byte[] key, bool directFile = false, bool deleteSource = false)
+    {
+        // https://gist.github.com/Ruslan-B/43d3a4219f39b99f0c9685290dcd23cc
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     public FileInfo Remux(FileInfo source, string ext, byte[] key, bool directFile = false, bool deleteSource = false)
     {
         source = source ?? throw new ArgumentNullException(nameof(source));
