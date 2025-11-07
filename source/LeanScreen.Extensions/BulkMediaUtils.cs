@@ -5,9 +5,11 @@
 namespace LeanScreen.Extensions;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using LeanScreen.BulkProcess;
+using LeanScreen.Common;
 using LeanScreen.Imaging.SixLabors;
 using LeanScreen.MediaRepo;
 using LeanScreen.MediaRepo.FileSystem;
@@ -69,6 +71,50 @@ public static class BulkMediaUtils
     {
         var processor = new BulkProcessor(Snapper, GetRepo(mediaRepoName, mediaRepoParam));
         return await processor.EnsureCapped(key, max, onProgress);
+    }
+
+    /// <summary>
+    /// Iterates a directory for non-secure files, ensuring caps are provided.
+    /// </summary>
+    /// <param name="di">The source directory.</param>
+    /// <param name="target">Optional target directory. If not provided, caps are inlined.</param>
+    /// <param name="recurse">Whether to look in source sub-directories.</param>
+    /// <param name="onProgress">Progress handler.</param>
+    /// <returns>The number of new caps added.</returns>
+    public static async Task<int> ApplyCaps(
+        this DirectoryInfo di,
+        DirectoryInfo? target = null,
+        bool recurse = true,
+        IProgress<double>? onProgress = null)
+    {
+        var todo = new List<FileInfo>();
+        foreach (var vidInfo in di.EnumerateMedia(MediaTypes.Video, false, recurse))
+        {
+            var realTarget = target ?? vidInfo.Directory;
+            var capPath = Path.Combine(realTarget!.FullName, vidInfo.Name + ".24_4_300.jpg");
+            if (!File.Exists(capPath))
+            {
+                todo.Add(vidInfo);
+            }
+        }
+
+        var capped = 0;
+        onProgress?.Report(0);
+        foreach (var vidInfo in todo)
+        {
+            var realTarget = target ?? vidInfo.Directory;
+            using var vidStream = vidInfo.OpenRead();
+            using var capStream = Snapper.Collate(vidStream, [], [], out _, 24, 4, 300);
+            var capPath = Path.Combine(realTarget!.FullName, vidInfo.Name + ".24_4_300.jpg");
+            using var ss = File.OpenWrite(capPath);
+            await capStream.CopyToAsync(ss);
+
+            capped++;
+            onProgress?.Report(100.0 * capped / todo.Count);
+        }
+
+        onProgress?.Report(100);
+        return capped;
     }
 
     /// <summary>

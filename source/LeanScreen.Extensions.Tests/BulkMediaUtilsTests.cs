@@ -129,6 +129,53 @@ public class BulkMediaUtilsTests
     }
 
     [Fact]
+    public async Task ApplyCaps_PlainModeWithTarget_CapsExpected()
+    {
+        // Arrange
+        var ogDir = new DirectoryInfo("Samples");
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
+        File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
+        await File.WriteAllTextAsync($"{targetDir}/1.mkv.24_4_300.jpg", "fake");
+
+        // Act
+        var total = await sourceDir.ApplyCaps(targetDir);
+
+        // Assert
+        total.ShouldBe(1);
+        var fi = new FileInfo($"{targetDir}/sample.flv.24_4_300.jpg");
+        fi.Exists.ShouldBeTrue();
+        fi.Length.ShouldBeGreaterThan(0);
+        sourceDir.Delete(true);
+        targetDir.Delete(true);
+    }
+
+    [Fact]
+    public async Task ApplyCaps_PlainModeNoTarget_CapsInlined()
+    {
+        // Arrange
+        var mockProgress = new Mock<IProgress<double>>();
+        var ogDir = new DirectoryInfo("Samples");
+        var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
+        File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
+        File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
+
+        // Act
+        var total = await sourceDir.ApplyCaps(onProgress: mockProgress.Object);
+
+        // Assert
+        total.ShouldBe(2);
+        var fi = new FileInfo($"{sourceDir}/sample.flv.24_4_300.jpg");
+        fi.Exists.ShouldBeTrue();
+        fi.Length.ShouldBeGreaterThan(0);
+        sourceDir.Delete(true);
+        mockProgress.Verify(m => m.Report(0));
+        mockProgress.Verify(m => m.Report(50));
+        mockProgress.Verify(m => m.Report(100), Times.Exactly(2));
+    }
+
+    [Fact]
     public async Task ApplyCaps_WithProgress_InvokesAction()
     {
         // Arrange
