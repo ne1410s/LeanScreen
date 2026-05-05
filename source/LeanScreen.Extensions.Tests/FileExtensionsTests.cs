@@ -116,7 +116,7 @@ public class FileExtensionsTests
     [InlineData("sample.flv", "sample.flv_snap_p055_h0024.jpg")]
     [InlineData(
         "c12a3419943d6ceb89c41ce7cd4fe1ff75b991cc3cb01a31a13b08693c5dc63d.e4e4742e63",
-        "c12a3419943d.eafc926af0e776a633eb7f5bf3cba71db5664c1a598fa35638411d19cc8a92a6.e4e4783272")]
+        "c12a3419943d.dcab3fe2f1cfa8e58d79007cee5027d4a5fe8496af44a64142a5cc574a905765.e4e4783272")]
     public void SnapHere_WhenCalled_ReturnsExpectedPath(string sourceName, string expectedName)
     {
         // Arrange

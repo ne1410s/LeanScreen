@@ -41,7 +41,7 @@ public sealed unsafe class FfmpegConverter : IDisposable
             destinationSize.Width,
             destinationSize.Height,
             DestinationPixelFormat,
-            ffmpeg.SWS_FAST_BILINEAR,
+            (int)SwsFlags.SWS_FAST_BILINEAR,
             null,
             null,
             null);

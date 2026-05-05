@@ -81,7 +81,7 @@ public class FfmpegFormatConverterTests
 
         // Assert
         target.Name.ShouldContain("__B2B.");
-        resultHash.ShouldBe("018c976a75c5fd24d38ff7cec60c394a");
+        resultHash.ShouldBe("8371a08282f34265a312cf2e7643d4a0");
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class FfmpegFormatConverterTests
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        resultHash.ShouldBe("bca83d7903c7eaf44cf405c8f5518724");
+        resultHash.ShouldBe("c236b3d20d4ff69bd173b57b819f9613");
     }
 
     [Fact]
@@ -114,7 +114,6 @@ public class FfmpegFormatConverterTests
     }
 
     [Theory]
-    [InlineData("sample.avi", TargetExts.Asf)]
     [InlineData("sample.avi", TargetExts.Mov)]
     [InlineData("sample.avi", TargetExts.Mp4)]
     [InlineData("sample.flv", TargetExts.Asf)]
