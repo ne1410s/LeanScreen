@@ -13,6 +13,13 @@ jobs:
       run:
         working-directory: ./source
     steps:
+    - name: Install basics
+      run: sudo apt update && sudo apt install -y curl
+    - name: Install ffmpeg and set binaries var
+      run: |
+        sudo apt update
+        sudo apt install -y ffmpeg
+        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
     - uses: actions/checkout@v4
     - uses: actions/setup-dotnet@v4
       with:
@@ -21,11 +28,6 @@ jobs:
       env:
         READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
       run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
-    - name: Install ffmpeg and set binaries var
-      run: |
-        sudo apt update
-        sudo apt install -y ffmpeg
-        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
     - name: Restore tools
       run: dotnet tool restore
     - name: Build for release
