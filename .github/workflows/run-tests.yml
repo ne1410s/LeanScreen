@@ -13,14 +13,13 @@ jobs:
       run:
         working-directory: ./source
     steps:
-    - name: Install basics
-      run: sudo apt update && sudo apt install -y curl
-    - name: Install ffmpeg and set binaries var
-      run: |
-        sudo apt update
-        sudo apt install -y ffmpeg
-        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
     - uses: actions/checkout@v4
+    - name: Install dependencies
+      working-directory: /
+      run: |
+        apt update
+        apt install -y curl git ffmpeg
+        echo "FFMPEG_BINARIES_PATH=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
