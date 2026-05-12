@@ -17,8 +17,8 @@ jobs:
     - name: Install dependencies
       working-directory: /
       run: |
-        apt update
-        apt install -y curl git ffmpeg
+        apt-get update
+        apt-get install -y curl git ffmpeg ca-certificates libicu-dev
         echo "FFMPEG_BINARIES_PATH=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
     - uses: actions/setup-dotnet@v4
       with:
