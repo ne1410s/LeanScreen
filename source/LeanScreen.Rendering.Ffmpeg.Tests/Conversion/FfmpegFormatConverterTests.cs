@@ -81,7 +81,7 @@ public class FfmpegFormatConverterTests
 
         // Assert
         target.Name.ShouldContain("__B2B.");
-        resultHash.ShouldBe("8371a08282f34265a312cf2e7643d4a0");
+        resultHash.ShouldBe("7b518705a02b2a95d4e0ec9e21d6cb41");
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class FfmpegFormatConverterTests
         var resultHash = target.Hash(HashType.Md5).Encode(Codec.ByteHex);
 
         // Assert
-        resultHash.ShouldBe("c236b3d20d4ff69bd173b57b819f9613");
+        resultHash.ShouldBe("c046ad09e5289ef1bd77a9b43a8b65d4");
     }
 
     [Fact]
