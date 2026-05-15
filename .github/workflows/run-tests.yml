@@ -11,6 +11,7 @@ jobs:
       image: ubuntu:26.04
     defaults:
       run:
+        shell: bash -O globstar {0}
         working-directory: ./source
     steps:
     - uses: actions/checkout@v4
