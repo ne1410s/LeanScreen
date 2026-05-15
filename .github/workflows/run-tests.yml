@@ -49,7 +49,7 @@ jobs:
         line=${{ fromJson(env.COVERAGE_JSON).summary.linecoverage }}
         branch=${{ fromJson(env.COVERAGE_JSON).summary.branchcoverage }}
         method=${{ fromJson(env.COVERAGE_JSON).summary.methodcoverage }}
-        [ "$line" == 100 ] && ([ "$branch" == "" ] || [ "$branch" == 100 ]) && [ "$method" == 100 ] && exit 0
+        [ "$line" = 100 ] && { [ -z "$branch" ] || [ "$branch" = "100" ]; } && [ "$method" = 100 ] && exit 0
         exit 1
     - name: Process coverage report
       if: success() || steps.check_coverage.outcome == 'failure'
