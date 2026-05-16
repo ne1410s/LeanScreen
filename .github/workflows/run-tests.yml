@@ -62,12 +62,19 @@ jobs:
       id: gen_mutation
       if: success() || steps.check_coverage.outcome == 'failure'
       run: dotnet stryker -O ${{ github.workspace }}/drop -r html -r json
+    - name: Debug artifact paths
+      if: always()
+      run: |
+        pwd
+        ls -R .
+        ls -R ./source/drop || true
+        ls -R ./source/drop/reports || true
     - name: Drop artifact - reports
       if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
       uses: actions/upload-artifact@v4
       with:
         name: reports
-        path: ${{ github.workspace }}/drop/reports
+        path: ./source/drop/reports
     - name: Send to Stryker Dashboard
       if: steps.gen_mutation.outcome == 'success'
       continue-on-error: true
