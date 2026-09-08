@@ -18,7 +18,7 @@ jobs:
         working-directory: ./source
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         working-directory: /
@@ -27,7 +27,7 @@ jobs:
           apt-get install -y curl git ffmpeg ca-certificates libicu-dev
           echo "FFMPEG_BINARIES_PATH=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
@@ -115,7 +115,7 @@ jobs:
 
       - name: Drop artifact - reports
         if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reports
           path: ./source/drop/reports

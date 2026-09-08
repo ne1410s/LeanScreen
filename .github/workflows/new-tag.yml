@@ -9,10 +9,18 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    defaults:
+      run:
+        shell: bash -O globstar {0}
+        
     steps:
     - name: Install xmllint
       run: sudo apt install libxml2-utils
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         ssh-key: "${{ secrets.COMMIT_KEY }}"
     - name: Set the version
