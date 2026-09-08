@@ -22,15 +22,15 @@ The extensions are exposed to the command line in the form of a Cli tool named `
 The calling assembly needs to have ffmpeg binaries available.
 The x64 versions for the appropriate ffmpeg version are provided for windows in the Rendering.Ffmpeg project.
 
-In the case of linux, ffmpeg (v7.x) must be installed separately. For example, on Ubuntu 24.04, this can be achieved via:
+In the case of linux, ffmpeg (v8.x) can be installed on Ubuntu 26.04, this can be achieved via:
 
-`sudo add-apt-repository ppa:ubuntuhandbook1/ffmpeg7`
+`sudo apt install ffmpeg`
 
 In the case of windows, the dlls were obtained from here: https://www.gyan.dev/ffmpeg/builds/
 
 In either case, the assembly looks for ffmpeg binaries at runtime. By default, it will be in "ffmpeg" folder, relative to your invocation path.
 To provide control, you can set the environment variable, `FFMPEG_BINARIES_PATH` to an absolute path to override this.
-In Ubuntu 24.04, these could be seen in **/usr/lib/x86_64-linux-gnu** after ffmpeg was installed.
+In Ubuntu 26.04, these could be seen in **/usr/lib/x86_64-linux-gnu** after ffmpeg was installed.
 
 ## Further Notes
 ### Handy Commandies

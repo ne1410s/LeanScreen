@@ -182,7 +182,6 @@ public abstract unsafe class FfmpegDecodingSessionBase : IFfmpegDecodingSession
         ////pFormatContext->seek2any = 1;
 
         _ = ffmpeg.avformat_open_input(&pFormatContext, this.Url, null, null).avThrowIfError();
-        ffmpeg.av_format_inject_global_side_data(this.PtrFormatContext);
         _ = ffmpeg.avformat_find_stream_info(this.PtrFormatContext, null).avThrowIfError();
         AVCodec* codec = null;
 

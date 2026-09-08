@@ -2,80 +2,136 @@ name: test
 on:
   pull_request:
     paths:
-    - source/**
+      - source/**
   workflow_call:
+
 jobs:
   run_tests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:26.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     defaults:
       run:
+        shell: bash -O globstar {0}
         working-directory: ./source
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Add local packages source
-      env:
-        READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
-      run: dotnet nuget add source --name ne1410s --username ne1410s --password "${{ env.READ_REPO_PACKAGES }}" --store-password-in-clear-text "https://nuget.pkg.github.com/ne1410s/index.json"
-    - name: Install ffmpeg and set binaries var
-      run: |
-        sudo add-apt-repository -y ppa:ubuntuhandbook1/ffmpeg7
-        sudo apt update
-        sudo apt install -y ffmpeg
-        echo "FFMPEG_BINARIES_PATH="/usr/lib/x86_64-linux-gnu"" >> $GITHUB_ENV
-    - name: Restore tools
-      run: dotnet tool restore
-    - name: Build for release
-      run: dotnet build -c Release
-    - name: Generate raw coverage data
-      run: dotnet test -c Release -s .runsettings; dotnet reportgenerator -targetdir:'${{ github.workspace }}/coverage' -reports:**/coverage.cobertura.xml -reporttypes:"html;jsonsummary;cobertura"
-    - name: Send to coveralls
-      continue-on-error: true
-      uses: coverallsapp/github-action@v2
-      with:
-        file: ${{ github.workspace }}/coverage/Cobertura.xml
-        format: cobertura
-        git-branch: main
-    - name: Get coverage json
-      id: getjson
-      run: echo COVERAGE_JSON=$(tr '\r\n' ' ' <${{ github.workspace }}/coverage/Summary.json) >> $GITHUB_ENV
-    - name: Check coverage values
-      id: check_coverage
-      run: |
-        line=${{ fromJson(env.COVERAGE_JSON).summary.linecoverage }}
-        branch=${{ fromJson(env.COVERAGE_JSON).summary.branchcoverage }}
-        method=${{ fromJson(env.COVERAGE_JSON).summary.methodcoverage }}
-        [ "$line" == 100 ] && ([ "$branch" == "" ] || [ "$branch" == 100 ]) && [ "$method" == 100 ] && exit 0
-        exit 1
-    - name: Process coverage report
-      if: success() || steps.check_coverage.outcome == 'failure'
-      run: |
-        dotnet reportgenerator -targetdir:'${{ github.workspace }}/drop/reports' -reports:**/coverage.cobertura.xml -reporttypes:"htmlsummary"
-        rm -f ${{ github.workspace }}/drop/reports/summary.htm
-        mv ${{ github.workspace }}/drop/reports/summary.html ${{ github.workspace }}/drop/reports/coverage-report.html
-    - name: Get mutation data
-      id: gen_mutation
-      if: success() || steps.check_coverage.outcome == 'failure'
-      run: dotnet stryker -O ${{ github.workspace }}/drop -r html -r json
-    - name: Drop artifact - reports
-      if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
-      uses: actions/upload-artifact@v4
-      with:
-        name: reports
-        path: ${{ github.workspace }}/drop/reports
-    - name: Send to Stryker Dashboard
-      if: steps.gen_mutation.outcome == 'success'
-      continue-on-error: true
-      env:
-        STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
-        PROJECT: ${{ secrets.STRYKER_DASHBOARD_PROJECT }}
-      run: |
-        curl -X PUT https://dashboard.stryker-mutator.io/api/reports/${{ env.PROJECT }}/main \
-          -H 'Content-Type: application/json' \
-          -H 'Host: dashboard.stryker-mutator.io' \
-          -H 'X-Api-Key: ${{ env.STRYKER_DASHBOARD_API_KEY }}' \
-          -d @${{ github.workspace }}/drop/reports/mutation-report.json   
-    - name: Fail build warnings
-      run: dotnet build -c Release --no-incremental /warnaserror
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: /
+        run: |
+          apt-get update
+          apt-get install -y curl git ffmpeg ca-certificates libicu-dev
+          echo "FFMPEG_BINARIES_PATH=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Add local packages source
+        env:
+          READ_REPO_PACKAGES: ${{ secrets.READ_REPO_PACKAGES }}
+        run: |
+          dotnet nuget add source \
+            --name ne1410s \
+            --username ne1410s \
+            --password "${{ env.READ_REPO_PACKAGES }}" \
+            --store-password-in-clear-text \
+            "https://nuget.pkg.github.com/ne1410s/index.json"
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Build for release
+        run: dotnet build -c Release
+
+      - name: Generate raw coverage data
+        run: |
+          dotnet test -c Release -s .runsettings
+
+          dotnet reportgenerator \
+            -targetdir:'./coverage' \
+            -reports:**/coverage.cobertura.xml \
+            -reporttypes:"Html;JsonSummary;Cobertura"
+
+      - name: Send to coveralls
+        continue-on-error: true
+        uses: coverallsapp/github-action@v2
+        with:
+          file: ./source/coverage/Cobertura.xml
+          format: cobertura
+          git-branch: main
+
+      - name: Get coverage json
+        id: getjson
+        run: echo "COVERAGE_JSON=$(tr '\r\n' ' ' <./coverage/Summary.json)" >> $GITHUB_ENV
+
+      - name: Check coverage values
+        id: check_coverage
+        run: |
+          line=${{ fromJson(env.COVERAGE_JSON).summary.linecoverage }}
+          branch=${{ fromJson(env.COVERAGE_JSON).summary.branchcoverage }}
+          method=${{ fromJson(env.COVERAGE_JSON).summary.methodcoverage }}
+          [ "$line" = 100 ] && { [ -z "$branch" ] || [ "$branch" = "100" ]; } && [ "$method" = 100 ] && exit 0
+          exit 1
+
+      - name: Process coverage report
+        if: success() || steps.check_coverage.outcome == 'failure'
+        run: |
+          mkdir -p ./drop/reports
+          dotnet reportgenerator \
+            -targetdir:'./drop/reports' \
+            -reports:**/coverage.cobertura.xml \
+            -reporttypes:"HtmlSummary"
+          rm -f ./drop/reports/summary.htm
+          mv ./drop/reports/summary.html \
+             ./drop/reports/coverage-report.html
+
+      - name: Get mutation data
+        id: gen_mutation
+        if: success() || steps.check_coverage.outcome == 'failure'
+        run: dotnet stryker -O ./drop -r html -r json
+
+      - name: Debug artifact paths
+        if: always()
+        run: |
+          echo "PWD:"
+          pwd
+
+          echo ""
+          echo "Coverage contents:"
+          ls -R ./coverage || true
+
+          echo ""
+          echo "Drop contents:"
+          ls -R ./drop || true
+
+          echo ""
+          echo "Reports contents:"
+          ls -R ./drop/reports || true
+
+      - name: Drop artifact - reports
+        if: success() || steps.check_coverage.outcome == 'failure' || steps.gen_mutation.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: ./source/drop/reports
+
+      - name: Send to Stryker Dashboard
+        if: steps.gen_mutation.outcome == 'success'
+        continue-on-error: true
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          PROJECT: ${{ secrets.STRYKER_DASHBOARD_PROJECT }}
+        run: |
+          curl -X PUT "https://dashboard.stryker-mutator.io/api/reports/${{ env.PROJECT }}/main" \
+            -H 'Content-Type: application/json' \
+            -H 'Host: dashboard.stryker-mutator.io' \
+            -H "X-Api-Key: ${{ env.STRYKER_DASHBOARD_API_KEY }}" \
+            -d @./drop/reports/mutation-report.json
+
+      - name: Fail build warnings
+        run: dotnet build -c Release --no-incremental /warnaserror

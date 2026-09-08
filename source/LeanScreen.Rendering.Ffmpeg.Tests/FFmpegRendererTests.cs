@@ -16,21 +16,6 @@ using LeanScreen.Rendering.Ffmpeg.Decoding;
 /// </summary>
 public class FfmpegRendererTests
 {
-    internal enum DecodeMode
-    {
-        /// <summary>Cryto mode.</summary>
-        Crypto,
-
-        /// <summary>Physical source mode.</summary>
-        PhysicalFm,
-
-        /// <summary>Simple file mode.</summary>
-        SimpleFile,
-
-        /// <summary>Block read mode.</summary>
-        BlockReads,
-    }
-
     [Theory]
     [InlineData("sample.avi", 0)]
     [InlineData("sample.avi", 6 / 24d)]
@@ -55,7 +40,7 @@ public class FfmpegRendererTests
     [InlineData(1, "3c820c3da3c2338ebfa6ab8f123eb9d4", 53)]
     [InlineData(100, "69186884f769afea14402e065e55fceb", 53)]
     [InlineData(500, "2252faedce7b6e2568ca21b8eb55b9db", 53)]
-    [InlineData(72, "79f4d1aad4e61218528e6c6c8e5a3818", 53)]
+    [InlineData(72, "8de2c132e40c4b7749610fde74676f18", 53)]
     public void RenderAt_VaryingSize_ReturnsExpected(int height, string expectedMd5Hex, long expectedFrame)
     {
         // Arrange
