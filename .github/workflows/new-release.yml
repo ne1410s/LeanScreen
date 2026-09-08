@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           # For a tag-triggered release, the tag determines the version.
-          if [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
             version="${GITHUB_REF_NAME#v}"
 
           # For a manual release, calculate the next version from VersionPrefix.
