@@ -1,40 +1,59 @@
+```yaml
 name: tag
+
 on:
   push:
     branches:
-    - main
+      - main
     paths:
-    - source/**
-  workflow_dispatch: # todo: remove this demo trigger!
+      - source/**
+  
+  workflow_dispatch:
+
 jobs:
   tag:
     runs-on: ubuntu-latest
+
     container:
       image: ubuntu:26.04
+
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     defaults:
       run:
         shell: bash -O globstar {0}
-        
+
     steps:
-    - name: Install xmllint
-      run: sudo apt install libxml2-utils
-    - uses: actions/checkout@v6
-      with:
-        ssh-key: "${{ secrets.COMMIT_KEY }}"
-    - name: Set the version
-      run: |
-        shopt -s extglob
-        for file in ./source/**/!(*Test*(s)|*UnitTest*(s)).csproj; do
-          prefix="$(echo "cat /Project/PropertyGroup/VersionPrefix/text()" | xmllint --nocdata --shell "$file" | sed '1d;$d')"
-          if [[ $prefix ]]; then
-            break
-          fi
-        done
-        suffix="${{ format('pre.{0}', github.run_number) }}"
-        echo "VERSION=v${prefix:-1.0.0}-$suffix" >> $GITHUB_ENV
-    - name: Create tag
-      run: |
-        git tag ${{ env.VERSION }}
-        git push origin ${{ env.VERSION }}
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            git \
+            libxml2-utils \
+            openssh-client
+
+      - uses: actions/checkout@v6
+        with:
+          ssh-key: "${{ secrets.COMMIT_KEY }}"
+
+      - name: Set the version
+        run: |
+          shopt -s extglob
+
+          for file in ./source/**/!(*Test*(s)|*UnitTest*(s)).csproj; do
+            prefix="$(echo "cat /Project/PropertyGroup/VersionPrefix/text()" | xmllint --nocdata --shell "$file" | sed '1d;$d')"
+
+            if [[ $prefix ]]; then
+              break
+            fi
+          done
+
+          suffix="${{ format('pre.{0}', github.run_number) }}"
+          echo "VERSION=v${prefix:-1.0.0}-$suffix" >> "$GITHUB_ENV"
+
+      - name: Create tag
+        run: |
+          git tag "$VERSION"
+          git push origin "$VERSION"
+```
