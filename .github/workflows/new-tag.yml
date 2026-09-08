@@ -13,6 +13,9 @@ jobs:
   tag:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     container:
       image: ubuntu:26.04
 
@@ -32,9 +35,8 @@ jobs:
             libxml2-utils \
             openssh-client
 
-      - uses: actions/checkout@v6
-        with:
-          ssh-key: "${{ secrets.COMMIT_KEY }}"
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Set the version
         run: |
