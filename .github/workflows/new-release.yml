@@ -37,11 +37,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           ref: main
 
-      - uses: actions/setup-dotnet@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
@@ -55,12 +57,37 @@ jobs:
 
           # For a manual release, calculate the next version from VersionPrefix.
           else
-            current=$(grep -m1 '<VersionPrefix>' ./source/*.csproj | sed -E 's/.*<VersionPrefix>([^<]+)<\/VersionPrefix>.*/\1/')
+            shopt -s globstar extglob
 
-            if [[ -z "$current" ]]; then
-              echo "Could not determine current VersionPrefix"
+            versions=()
+
+            for file in ./source/**/!(*.Test*(s)|*.UnitTest*(s)).csproj; do
+              current="$(
+                sed -nE 's#.*<VersionPrefix>([^<]+)</VersionPrefix>.*#\1#p' "$file" |
+                  head -n1
+              )"
+
+              if [[ -n "$current" ]]; then
+                versions+=("$current")
+              fi
+            done
+
+            if [[ ${#versions[@]} -eq 0 ]]; then
+              echo "Could not find any VersionPrefix values"
               exit 1
             fi
+
+            current="${versions[0]}"
+
+            # All production projects should have the same version.
+            for project_version in "${versions[@]}"; do
+              if [[ "$project_version" != "$current" ]]; then
+                echo "Version mismatch detected!"
+                echo "Expected: $current"
+                echo "Found:    $project_version"
+                exit 1
+              fi
+            done
 
             echo "Current version: $current"
 
