@@ -10,6 +10,7 @@ on:
         description: "Version increment"
         required: true
         type: choice
+        default: pre-release
         options:
           - major
           - minor
@@ -57,11 +58,9 @@ jobs:
 
           # For a manual release, calculate the next version from VersionPrefix.
           else
-            shopt -s globstar extglob
-
             versions=()
 
-            for file in ./source/**/!(*.Test*(s)|*.UnitTest*(s)).csproj; do
+            while IFS= read -r -d '' file; do
               current="$(
                 sed -nE 's#.*<VersionPrefix>([^<]+)</VersionPrefix>.*#\1#p' "$file" |
                   head -n1
@@ -70,7 +69,16 @@ jobs:
               if [[ -n "$current" ]]; then
                 versions+=("$current")
               fi
-            done
+            done < <(
+              find ./source \
+                -type f \
+                -name '*.csproj' \
+                ! -name '*.Test.csproj' \
+                ! -name '*.Tests.csproj' \
+                ! -name '*.UnitTest.csproj' \
+                ! -name '*.UnitTests.csproj' \
+                -print0
+            )
 
             if [[ ${#versions[@]} -eq 0 ]]; then
               echo "Could not find any VersionPrefix values"
@@ -104,7 +112,6 @@ jobs:
             fi
 
             case "${{ inputs.increment-type }}" in
-
               major)
                 version="$((major + 1)).0.0"
                 ;;
@@ -172,13 +179,20 @@ jobs:
 
           echo "Updating project VersionPrefix to $version"
 
-          shopt -s globstar extglob
-
-          for file in ./source/**/!(*.Test*(s)|*.UnitTest*(s)).csproj; do
+          while IFS= read -r -d '' file; do
             sed \
               "s#<VersionPrefix>[^<]*</VersionPrefix>#<VersionPrefix>$version</VersionPrefix>#" \
               "$file" -i
-          done
+          done < <(
+            find ./source \
+              -type f \
+              -name '*.csproj' \
+              ! -name '*.Test.csproj' \
+              ! -name '*.Tests.csproj' \
+              ! -name '*.UnitTest.csproj' \
+              ! -name '*.UnitTests.csproj' \
+              -print0
+          )
 
           git config --global user.email "octocat@github.com"
           git config --global user.name "ci-bot"
@@ -199,13 +213,20 @@ jobs:
 
             vnext="${BASH_REMATCH[1]}$((${BASH_REMATCH[2]} + 1))"
 
-            shopt -s globstar extglob
-
-            for file in ./source/**/!(*.Test*(s)|*.UnitTest*(s)).csproj; do
+            while IFS= read -r -d '' file; do
               sed \
                 "s#<VersionPrefix>[^<]*</VersionPrefix>#<VersionPrefix>$vnext</VersionPrefix>#" \
                 "$file" -i
-            done
+            done < <(
+              find ./source \
+                -type f \
+                -name '*.csproj' \
+                ! -name '*.Test.csproj' \
+                ! -name '*.Tests.csproj' \
+                ! -name '*.UnitTest.csproj' \
+                ! -name '*.UnitTests.csproj' \
+                -print0
+            )
 
             git config --global user.email "octocat@github.com"
             git config --global user.name "ci-bot"
