@@ -13,6 +13,8 @@ using LeanScreen.MediaRepo.FileSystem;
 /// </summary>
 public class FileStoreTests
 {
+    private static readonly CancellationToken Cancel = TestContext.Current.CancellationToken;
+
     [Fact]
     [ExcludeFromCodeCoverage]
     public async Task AddMedia_IsSecure_DoesNotThrow()
@@ -82,11 +84,11 @@ public class FileStoreTests
         var dir = Guid.NewGuid().ToString();
         new DirectoryInfo(dir).Create();
         var fi = new FileInfo($"{dir}/{Guid.NewGuid()}.avi");
-        await File.WriteAllTextAsync(fi.FullName, "hello");
+        await File.WriteAllTextAsync(fi.FullName, "hello", Cancel);
         _ = fi.EncryptInSitu([9, 0, 2, 1, 0]);
         var capExt = fi.ToSecureExtension(".avi");
         var capName = $"{fi.DirectoryName}/{fi.Name[..12]}.0123" + capExt;
-        await File.WriteAllTextAsync(capName, "world");
+        await File.WriteAllTextAsync(capName, "world", Cancel);
         var sut = new FileStore(fi.DirectoryName!);
 
         // Act

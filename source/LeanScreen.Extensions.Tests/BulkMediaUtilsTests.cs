@@ -12,6 +12,8 @@ using Moq;
 /// </summary>
 public class BulkMediaUtilsTests
 {
+    private static readonly CancellationToken Cancel = TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task Ingest_WithFiles_ProcessedAsExpected()
     {
@@ -94,7 +96,7 @@ public class BulkMediaUtilsTests
         var sourceDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         var nonMediaPath = $"{sourceDir}/1.txt";
-        await File.WriteAllTextAsync(nonMediaPath, "non-perinent!");
+        await File.WriteAllTextAsync(nonMediaPath, "non-perinent!", Cancel);
 
         // Act
         _ = await sourceDir.Ingest([], targetDir.FullName, purgeNonMatching: purge);
@@ -137,7 +139,7 @@ public class BulkMediaUtilsTests
         var targetDir = ogDir.CreateSubdirectory(Guid.NewGuid().ToString());
         File.Copy($"{ogDir}/sample.flv", $"{sourceDir}/sample.flv");
         File.Copy($"{ogDir}/1.mkv", $"{sourceDir}/1.mkv");
-        await File.WriteAllTextAsync($"{targetDir}/1.mkv.24_4_300.jpg", "fake");
+        await File.WriteAllTextAsync($"{targetDir}/1.mkv.24_4_300.jpg", "fake", Cancel);
 
         // Act
         var total = await sourceDir.ApplyCaps(targetDir);

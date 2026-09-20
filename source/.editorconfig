@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# S6640: Unsafe code blocks should not be used
+dotnet_diagnostic.S6640.severity = suggestion

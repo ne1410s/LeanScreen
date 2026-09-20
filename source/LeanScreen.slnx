@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
+    <File Path=".config/dotnet-tools.json" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="stryker-config.json" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="LeanScreen.Abstractions.Tests/LeanScreen.Abstractions.Tests.csproj" />
+    <Project Path="LeanScreen.Extensions.Tests/LeanScreen.Extensions.Tests.csproj" />
+    <Project Path="LeanScreen.Imaging.SixLabors.Tests/LeanScreen.Imaging.SixLabors.Tests.csproj" />
+    <Project Path="LeanScreen.MediaRepo.FileSystem.Tests/LeanScreen.MediaRepo.FileSystem.Tests.csproj" />
+    <Project Path="LeanScreen.Rendering.Ffmpeg.Tests/LeanScreen.Rendering.Ffmpeg.Tests.csproj" />
+    <Project Path="LeanScreen.Tests/LeanScreen.Tests.csproj" />
+  </Folder>
+  <Project Path="LeanScreen.Abstractions/LeanScreen.Abstractions.csproj" />
+  <Project Path="LeanScreen.CliTool/LeanScreen.CliTool.csproj" />
+  <Project Path="LeanScreen.Extensions/LeanScreen.Extensions.csproj" />
+  <Project Path="LeanScreen.Imaging.SixLabors/LeanScreen.Imaging.SixLabors.csproj" />
+  <Project Path="LeanScreen.MediaRepo.FileSystem/LeanScreen.MediaRepo.FileSystem.csproj" />
+  <Project Path="LeanScreen.Rendering.Ffmpeg/LeanScreen.Rendering.Ffmpeg.csproj" />
+  <Project Path="LeanScreen/LeanScreen.csproj" />
+</Solution>

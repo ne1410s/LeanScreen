@@ -19,7 +19,7 @@
     <PackageTags>lean screen av multimedia cryptography</PackageTags>
     <RepositoryUrl>https://github.com/ne1410s/LeanScreen</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Title>$(AssemblyName)</Title>
     <VersionPrefix>1.1.4</VersionPrefix>
   </PropertyGroup>
@@ -31,9 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Analyse" Version="1.0.*" />
+    <PackageReference Include="Analyse" Version="1.1.0" />
     <PackageReference Include="Comanche" Version="1.2.*" />
-    <PackageReference Include="System.Text.Json" Version="10.0.*" />
   </ItemGroup>
 
   <ItemGroup>

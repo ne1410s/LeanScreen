@@ -91,7 +91,7 @@ public static class BulkMediaUtils
         foreach (var vidInfo in di.EnumerateMedia(MediaTypes.Video, false, recurse))
         {
             var realTarget = target ?? vidInfo.Directory;
-            var capPath = Path.Combine(realTarget!.FullName, vidInfo.Name + ".24_4_300.jpg");
+            var capPath = Path.Combine(realTarget.FullName, vidInfo.Name + ".24_4_300.jpg");
             if (!File.Exists(capPath))
             {
                 todo.Add(vidInfo);
@@ -105,7 +105,7 @@ public static class BulkMediaUtils
             var realTarget = target ?? vidInfo.Directory;
             using var vidStream = vidInfo.OpenRead();
             using var capStream = Snapper.Collate(vidStream, [], [], out _, 24, 4, 300);
-            var capPath = Path.Combine(realTarget!.FullName, vidInfo.Name + ".24_4_300.jpg");
+            var capPath = Path.Combine(realTarget.FullName, vidInfo.Name + ".24_4_300.jpg");
             using var ss = File.OpenWrite(capPath);
             await capStream.CopyToAsync(ss);
 
