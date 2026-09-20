@@ -50,7 +50,7 @@ jobs:
 
       - name: Generate raw coverage data
         run: |
-          dotnet test -c Release -s .runsettings
+          dotnet test -c Release --coverlet --coverlet-output-format cobertura --coverlet-include "[LeanScreen]*"
 
           dotnet reportgenerator \
             -targetdir:'./coverage' \
