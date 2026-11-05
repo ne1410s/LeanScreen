@@ -33,7 +33,7 @@ public class BulkProcessor(ISnapService snapper, IMediaRepo repo) : IBulkProcess
         IProgress<double>? onProgress = null)
     {
         var sourceFiles = source.EnumerateMedia(
-            MediaTypes.NonMedia | MediaTypes.AnyMedia,
+            MediaTypes.NonMedia | MediaTypes.AnyMedia | MediaTypes.Archive,
             recurse: recurse).ToList();
         var retVal = new BulkResponse(sourceFiles.Count);
 
